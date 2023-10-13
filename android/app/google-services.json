@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "824799785966",
+    "firebase_url": "https://logmonster-51e0a-default-rtdb.firebaseio.com",
+    "project_id": "logmonster-51e0a",
+    "storage_bucket": "logmonster-51e0a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824799785966:android:52c405cd284853570c54ff",
+        "android_client_info": {
+          "package_name": "com.edmon.scan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "824799785966-d2g0o4g43rhgbljlavohrpnqr9su02oi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMyuJZq4O_LrF2JEUXR5U7iWx3LzYJ5Xo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "824799785966-7kh9aj3mvsdcjutmlk36e9v6sudk22cs.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "824799785966-4pgv3iha8iljs3nqf46df2dkshkjfvfi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newtest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
