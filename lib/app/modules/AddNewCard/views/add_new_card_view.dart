@@ -72,10 +72,10 @@ class AddNewCardView extends GetView<AddNewCardController> {
                     controller:controller.cardNumberController,
                     keyboardType: TextInputType.number,
                     hint: "+1 123 456 789",
-                     borderColor: controller.isValidCardName.value
+                     borderColor: controller.isValidNumber.value
                           ? LightThemeColors.primaryColor
                           : null,
-                    isValid: controller.isValidCardName.value,
+                    isValid: controller.isValidNumber.value,
                       validate: controller.validateCardNumber,
                   )
                 ],

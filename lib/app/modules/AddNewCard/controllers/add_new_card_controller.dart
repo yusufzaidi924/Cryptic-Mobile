@@ -41,7 +41,7 @@ class AddNewCardController extends GetxController {
     return res;
   }
 
-   /****************************
+  /****************************
    * Validate Expire Date
    */
   String? validateExpDate(String? value) {
@@ -66,7 +66,7 @@ class AddNewCardController extends GetxController {
     return res;
   }
 
-   /****************************
+  /****************************
    * Validate Card CVV
    */
   String? validateCardCVV(String? value) {
@@ -105,6 +105,4 @@ class AddNewCardController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }
