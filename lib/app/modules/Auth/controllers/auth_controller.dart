@@ -801,12 +801,12 @@ class AuthController extends GetxController {
    */
 
   onSubmitDetail() async {
-    // if (fID.value == null || bID.value == null || selfie.value == null) {
-    //   CustomSnackBar.showCustomErrorSnackBar(
-    //       title: "WARNING", message: Messages.WARNING_UPLOAD_DOCUMENT);
-    //   return;
-    // }
-    Logger().i(authUser);
+    if (fID.value == null || bID.value == null || selfie.value == null) {
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "WARNING", message: Messages.WARNING_UPLOAD_DOCUMENT);
+      return;
+    }
+    // Logger().i(authUser);
     if (detailFormKey.currentState!.validate()) {
       EasyLoading.show();
       try {
