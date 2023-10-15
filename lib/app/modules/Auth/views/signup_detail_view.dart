@@ -13,10 +13,10 @@ import 'package:get/get.dart';
 
 class SignupDetailView extends GetView {
   SignupDetailView({Key? key}) : super(key: key);
-  AuthController controller = Get.put(AuthController());
+  // AuthController controller = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AuthController>(builder: (value) {
+    return GetBuilder<AuthController>(builder: (controller) {
       return Scaffold(
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(

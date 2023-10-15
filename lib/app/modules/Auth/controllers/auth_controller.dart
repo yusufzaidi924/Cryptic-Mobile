@@ -418,7 +418,7 @@ class AuthController extends GetxController {
         final userData = res['data']['user'];
         print(userData['id']);
         _userModel.value = UserModel.fromJson(userData);
-
+        update();
         initSignUpDetail(authUser!);
 
         // SAVE USER DATA IN LOCAL
@@ -429,7 +429,7 @@ class AuthController extends GetxController {
         CustomSnackBar.showCustomSnackBar(
             title: "SUCCESS", message: res['message']);
 
-        Get.offAllNamed(Routes.SIGNUP_DETAIL);
+        Get.toNamed(Routes.SIGNUP_DETAIL);
       } else {
         EasyLoading.dismiss();
 
@@ -801,16 +801,17 @@ class AuthController extends GetxController {
    */
 
   onSubmitDetail() async {
-    if (fID.value == null || bID.value == null || selfie.value == null) {
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: "WARNING", message: Messages.WARNING_UPLOAD_DOCUMENT);
-      return;
-    }
+    // if (fID.value == null || bID.value == null || selfie.value == null) {
+    //   CustomSnackBar.showCustomErrorSnackBar(
+    //       title: "WARNING", message: Messages.WARNING_UPLOAD_DOCUMENT);
+    //   return;
+    // }
+    Logger().i(authUser);
     if (detailFormKey.currentState!.validate()) {
       EasyLoading.show();
       try {
         final data = {
-          'uid': _userModel.value?.id ?? 0,
+          'uid': authUser?.id ?? 0,
           'first_name': detailFirstNameController.text,
           'last_name': detailLastNameController.text,
           'street': streetController.text,
