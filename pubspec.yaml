@@ -57,7 +57,7 @@ dependencies:
   flutter_easyloading: ^3.0.5
 
   flutter_image_compress: ^2.0.3
-  flutter_launcher_icons: # change app icon
+  
 
   flutter_screenutil: # make app responsive
   flutter_vector_icons: ^2.0.0
@@ -118,13 +118,15 @@ dev_dependencies:
   build_runner: # generate dart files
   hive_generator: # generate hive files
   mockito:
+  flutter_launcher_icons: # change app icon
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 flutter_icons:
   android: true
   ios: true
-  image_path: 'assets/images/logo.jpeg'
+  image_path: 'assets/images/app_icon.png'
 
 # The following section is specific to Flutter packages.
 flutter:
