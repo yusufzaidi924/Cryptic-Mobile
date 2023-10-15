@@ -47,11 +47,14 @@ class DatabaseConfig {
   static const String FEED_ROOM_NAME = "Feed";
 }
 
-class ErrorMsg {
+class Messages {
   static const String BLOCKED_MESSAGE =
       "Unfortunately, You can't send message to this user because you were blocked.";
   static const String BLOCK_MESSAGE =
       "Unfortunately, You can't send message to this user because you blocked this user.";
+  static const String SOMETHING_WENT_WRONG = "Something went wrong!";
+  static const String WARNING_UPLOAD_DOCUMENT = "Please upload documents!";
+  // static const String SUCCESS_LOGIN = 'Sign'
 }
 
 class NotificationSettingKey {

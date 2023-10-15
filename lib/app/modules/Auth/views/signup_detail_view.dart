@@ -2,6 +2,7 @@ import 'package:edmonscan/app/components/round_input.dart';
 import 'package:edmonscan/app/components/state_selector.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/regex.dart';
 import 'package:flutter/gestures.dart';
@@ -211,7 +212,9 @@ class SignupDetailView extends GetView {
                       height: 10,
                     ),
                     StateSelector(
-                      onChange: () {},
+                      onChange: (state) {
+                        controller.updateDetailState(state);
+                      },
                     ),
                   ],
                 ),
@@ -268,27 +271,59 @@ class SignupDetailView extends GetView {
                     const SizedBox(
                       height: 10,
                     ),
-                    RoundInputBox(
-                      formkey: controller.detailFormKey,
-                      controller: controller.birthController,
-                      keyboardType: TextInputType.text,
-                      radius: 10,
-                      hint: "MM/DD/YYYY",
-                      suffixWidget: IconButton(
-                        onPressed: () async {
-                          await controller.selectBirthday();
-                        },
-                        icon: Icon(Icons.calendar_month_outlined),
-                      ),
-                      borderColor: controller.isValidDetailBirth.value
-                          ? LightThemeColors.primaryColor
-                          : null,
-                      fillColor: controller.isValidDetailBirth.value
-                          ? Color(0x19655AF0)
-                          : LightThemeColors.accentColor,
-                      isValid: controller.isValidDetailBirth.value,
-                      validate: controller.validateDetailCity,
-                    ),
+                    Container(
+                        height: 45,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                              color: controller.birthController.text == ""
+                                  ? Colors.grey
+                                  : LightThemeColors.primaryColor,
+                              width: controller.birthController.text == ""
+                                  ? 1
+                                  : 2),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 12.0),
+                                child: Text(controller.birthController.text),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                await controller.selectBirthday();
+                              },
+                              icon: Icon(
+                                Icons.calendar_month_outlined,
+                                color: LightThemeColors.primaryColor,
+                              ),
+                            ),
+                          ],
+                        )),
+                    // RoundInputBox(
+                    //   formkey: controller.detailFormKey,
+                    //   controller: controller.birthController,
+                    //   keyboardType: TextInputType.text,
+                    //   radius: 10,
+                    //   hint: "YYYY-MM-DD",
+                    //   suffixWidget: IconButton(
+                    //     onPressed: () async {
+                    //       await controller.selectBirthday();
+                    //     },
+                    //     icon: Icon(Icons.calendar_month_outlined),
+                    //   ),
+                    //   borderColor: controller.isValidDetailBirth.value
+                    //       ? LightThemeColors.primaryColor
+                    //       : null,
+                    //   fillColor: controller.isValidDetailBirth.value
+                    //       ? Color(0x19655AF0)
+                    //       : LightThemeColors.accentColor,
+                    //   isValid: controller.isValidDetailBirth.value,
+                    //   validate: controller.validateBirthDay,
+                    // ),
                   ],
                 ),
 
@@ -345,7 +380,9 @@ class SignupDetailView extends GetView {
                       height: 10,
                     ),
                     StateSelector(
-                      onChange: () {},
+                      onChange: (state) {
+                        controller.updateDetailLicenseState(state);
+                      },
                     ),
                   ],
                 ),
@@ -419,7 +456,8 @@ class SignupDetailView extends GetView {
                           ),
                           image: controller.fID.value != null
                               ? DecorationImage(
-                                  image: FileImage(controller.fID.value!))
+                                  image: NetworkImage(
+                                      "${Network.BASE_URL}${controller.fID.value!}"))
                               : null,
                         ),
                         child: controller.fID.value != null
@@ -475,7 +513,8 @@ class SignupDetailView extends GetView {
                           ),
                           image: controller.bID.value != null
                               ? DecorationImage(
-                                  image: FileImage(controller.bID.value!))
+                                  image: NetworkImage(
+                                      "${Network.BASE_URL}${controller.bID.value!}"))
                               : null,
                         ),
                         child: controller.bID.value != null
@@ -532,7 +571,8 @@ class SignupDetailView extends GetView {
                           ),
                           image: controller.selfie.value != null
                               ? DecorationImage(
-                                  image: FileImage(controller.selfie.value!))
+                                  image: NetworkImage(
+                                      "${Network.BASE_URL}${controller.selfie.value!}"))
                               : null,
                         ),
                         child: controller.selfie.value != null
@@ -563,8 +603,8 @@ class SignupDetailView extends GetView {
                   onPressed: () {
                     FocusManager.instance.primaryFocus?.unfocus();
 
-                    // controller.signInWithEmail();
-                    Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+                    controller.onSubmitDetail();
+                    // Get.toNamed(Routes.VERIFY_RESULT_PAGE);
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),

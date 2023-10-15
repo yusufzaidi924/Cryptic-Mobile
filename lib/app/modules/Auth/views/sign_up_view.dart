@@ -37,12 +37,12 @@ class SignUpView extends GetView<AuthController> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: LightThemeColors.primaryColor,
             ),
           ),
-          title: Text(
+          title: const Text(
             'Register',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -62,13 +62,13 @@ class SignUpView extends GetView<AuthController> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
 
                 // --------- Username --------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Username',
                       style: TextStyle(
                         color: Color(0xFF6E6E82),
@@ -91,19 +91,19 @@ class SignUpView extends GetView<AuthController> {
                           ? LightThemeColors.primaryColor
                           : null,
                       fillColor: controller.isValidSignupUsername.value
-                          ? Color(0x19655AF0)
+                          ? const Color(0x19655AF0)
                           : LightThemeColors.accentColor,
                       isValid: controller.isValidSignupUsername.value,
                     ),
                   ],
                 ),
 
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 // --------- PHONE --------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Phone',
                       style: TextStyle(
                         color: Color(0xFF6E6E82),
@@ -119,20 +119,21 @@ class SignUpView extends GetView<AuthController> {
                     IntlPhoneField(
                       decoration: InputDecoration(
                         hintText: '123 456 7890',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
                         ),
-                        contentPadding: EdgeInsets.fromLTRB(15, 10, 20, 15),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(15, 10, 20, 15),
                         fillColor: controller.isValidSignupPhone.value
-                            ? Color(0x19655AF0)
+                            ? const Color(0x19655AF0)
                             : LightThemeColors.accentColor,
                         filled: true,
                         isDense: true,
                         suffixIcon: controller.isValidSignupPhone.value
                             ? Container(
-                                padding: EdgeInsets.all(14),
-                                child: CircleAvatar(
+                                padding: const EdgeInsets.all(14),
+                                child: const CircleAvatar(
                                   backgroundColor: Colors.green,
                                   radius: 4,
                                   child: Icon(
@@ -162,12 +163,14 @@ class SignUpView extends GetView<AuthController> {
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.red),
+                          borderSide:
+                              const BorderSide(width: 1, color: Colors.red),
                           borderRadius:
                               BorderRadius.circular(15), //<-- SEE HERE
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1, color: Colors.red),
+                          borderSide:
+                              const BorderSide(width: 1, color: Colors.red),
                           borderRadius:
                               BorderRadius.circular(15), //<-- SEE HERE
                         ),
@@ -182,12 +185,12 @@ class SignUpView extends GetView<AuthController> {
                   ],
                 ),
 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // --------- Password  --------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Password',
                       style: TextStyle(
                         color: Color(0xFF6E6E82),
@@ -209,7 +212,7 @@ class SignUpView extends GetView<AuthController> {
                           ? LightThemeColors.primaryColor
                           : null,
                       fillColor: controller.isValidSignupOldPass.value
-                          ? Color(0x19655AF0)
+                          ? const Color(0x19655AF0)
                           : LightThemeColors.accentColor,
                       isValid: controller.isValidSignupOldPass.value,
                       validate: controller.validateSignupOldPass,
@@ -217,12 +220,12 @@ class SignUpView extends GetView<AuthController> {
                   ],
                 ),
 
-                SizedBox(height: 30),
+                const SizedBox(height: 30),
                 // --------- CONFIRM PASSWORD --------------
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Confirm Password',
                       style: TextStyle(
                         color: Color(0xFF6E6E82),
@@ -244,7 +247,7 @@ class SignUpView extends GetView<AuthController> {
                           ? LightThemeColors.primaryColor
                           : null,
                       fillColor: controller.isValidSignupNewPass.value
-                          ? Color(0x19655AF0)
+                          ? const Color(0x19655AF0)
                           : LightThemeColors.accentColor,
                       isValid: controller.isValidSignupNewPass.value,
                       validate: controller.validateSignupNewPass,
@@ -252,7 +255,7 @@ class SignUpView extends GetView<AuthController> {
                   ],
                 ),
 
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Row(
@@ -260,7 +263,7 @@ class SignUpView extends GetView<AuthController> {
                     Checkbox(
                         value: controller.isAccept.value,
                         onChanged: controller.updateAcceptCheck),
-                    Expanded(
+                    const Expanded(
                       child: Text.rich(
                         TextSpan(
                           children: [
@@ -291,7 +294,7 @@ class SignUpView extends GetView<AuthController> {
                     )
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
 
@@ -301,8 +304,7 @@ class SignUpView extends GetView<AuthController> {
                   onPressed: () {
                     FocusManager.instance.primaryFocus?.unfocus();
 
-                    // controller.signInWithEmail();
-                    Get.toNamed(Routes.VERIFY_PAGE);
+                    controller.onSignUp();
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -316,13 +318,13 @@ class SignUpView extends GetView<AuthController> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Text.rich(
                   TextSpan(
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: 'Already have account ? ',
                         style: TextStyle(
                           color: Color(0xFF23233F),
@@ -338,7 +340,7 @@ class SignUpView extends GetView<AuthController> {
                           ..onTap = () async {
                             Get.back();
                           },
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Color(0xFF655AF0),
                           fontSize: 16,
                           fontFamily: 'DM Sans',
@@ -480,13 +482,13 @@ class SignUpView extends GetView<AuthController> {
     return RichText(
       text: TextSpan(
         children: [
-          TextSpan(
+          const TextSpan(
             text: 'By signing up, you agree to our ',
             style: TextStyle(color: Colors.white),
           ),
           TextSpan(
             text: 'Terms and Policy',
-            style: TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.blue),
             recognizer: TapGestureRecognizer()
               ..onTap = () async {
                 final url =

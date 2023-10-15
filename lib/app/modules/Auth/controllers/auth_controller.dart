@@ -1,11 +1,15 @@
 // import 'dart:io';
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:edmonscan/app/data/models/UserModal.dart';
 import 'package:edmonscan/app/modules/Auth/views/sign_in_view.dart';
 import 'package:edmonscan/app/modules/ProjectsPage/views/projects_page_view.dart';
+import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/local_storage.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:edmonscan/utils/regex.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,6 +43,9 @@ class AuthController extends GetxController {
   AuthController();
   final count = 0.obs;
 
+  final _userModel = Rxn<UserModel>();
+  UserModel? get authUser => _userModel.value;
+
   // ========= SignIn ========================
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final loginPhoneController = TextEditingController();
@@ -49,7 +56,9 @@ class AuthController extends GetxController {
   final isValidLoginPass = false.obs;
   final isSavePass = false.obs;
 
-  /********************
+  bool isSignInFlow = true;
+
+  /***********************
    * Update SavePass Check
    */
   updateCheckPass(bool value) {
@@ -71,7 +80,6 @@ class AuthController extends GetxController {
       isValidPhoneNumber.value = false;
     }
 
-    Logger().i(isValidPhoneNumber.value);
     update();
     return isValidPhoneNumber.value ? null : "Invalid Mobile Number";
   }
@@ -116,8 +124,42 @@ class AuthController extends GetxController {
   /**********************************
    * On SignIn
    */
-  onSignIn() {
-    Get.toNamed(Routes.VERIFY_PAGE);
+  onSignIn() async {
+    EasyLoading.show();
+    try {
+      String phone = phoneNumber.value;
+      String password = loginPasswordController.text;
+      final data = {
+        'phone': phone,
+        'password': password,
+      };
+
+      final res = await UserRepository.login(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        EasyLoading.dismiss();
+        CustomSnackBar.showCustomSnackBar(
+            title: "SUCCESS", message: "OTP code sent to your phone number.");
+
+        isSignInFlow = true;
+
+        //  GO TO OPT VERIFY PAGE
+        Get.toNamed(Routes.VERIFY_PAGE);
+      } else {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+    // Get.toNamed(Routes.VERIFY_PAGE);
   }
 
   // /**********************
@@ -223,6 +265,9 @@ class AuthController extends GetxController {
       } else if (value.isEmpty) {
         isValidSignupNewPass.value = false;
         res = 'Password is required.';
+      } else if (value != signUpPasswordController.text) {
+        isValidSignupNewPass.value = false;
+        res = 'Password is not match';
       } else {
         isValidSignupNewPass.value = true;
         res = null;
@@ -233,6 +278,193 @@ class AuthController extends GetxController {
     }
     update();
     return res;
+  }
+
+  /******************************
+   * Validate SignUp Phone Number
+   */
+  String? validateSignUpPhone(PhoneNumber? number) {
+    try {
+      if (number != null) {
+        isValidSignupPhone.value = number.isValidNumber();
+      } else {
+        isValidSignupPhone.value = false;
+      }
+    } catch (e) {
+      isValidSignupPhone.value = false;
+    }
+
+    update();
+    return isValidSignupPhone.value ? null : "Invalid Mobile Number";
+  }
+
+  /*********************
+   * Update SingUp Phone
+   */
+  void updateSignUpPhoneNumber(PhoneNumber? number) {
+    signUpphoneNumber.value = number?.completeNumber ?? "";
+    validateSignUpPhone(number);
+    update();
+  }
+
+  /*******************************************
+   * On SignUp
+   */
+  onSignUp() async {
+    EasyLoading.show();
+
+    try {
+      if (signUpFormKey.currentState!.validate()) {
+        if (!isAccept.value) {
+          // IF NOT ACCEPT TEMRS
+          CustomSnackBar.showCustomErrorSnackBar(
+              title: "WARNING", message: "Please accept Temrs and conditions!");
+          EasyLoading.dismiss();
+
+          return;
+        }
+        String username = signUpUsernameController.text;
+        String phone = signUpphoneNumber.value;
+        String password = signUpPasswordController.text;
+        final data = {
+          'username': username,
+          'phone': phone,
+          "password": password
+        };
+        final res = await UserRepository.register(data);
+        Logger().i(res);
+        if (res['statusCode'] == 200) {
+          EasyLoading.dismiss();
+
+          CustomSnackBar.showCustomSnackBar(
+              title: "SUCCESS",
+              message:
+                  "SignUp successfully! OPT code sent to your phone number.");
+
+          isSignInFlow = false;
+          //  GO TO OPT VERIFY PAGE
+          Get.toNamed(Routes.VERIFY_PAGE);
+        } else {
+          EasyLoading.dismiss();
+
+          CustomSnackBar.showCustomErrorSnackBar(
+              title: "ERROR",
+              message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        }
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  ////////////////////////// VERIFY OTP CODE /////////////////////
+  final verifyCode = "".obs;
+  /**************************
+   * Set Verification  Code
+   */
+  setVerifyCode(String code) {
+    verifyCode.value = code;
+    update();
+  }
+
+  /***************************
+   * Resend OTP Code
+   */
+  resendOtpCode() async {
+    try {
+      EasyLoading.show();
+      String phone =
+          isSignInFlow ? "${phoneNumber.value}" : "${signUpphoneNumber.value}";
+      final res = await UserRepository.resendOtpCode({'phone': phone});
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomSnackBar(
+            title: "SUCCESS", message: res['message']);
+      } else {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  /************************************
+   * On Confirm verify
+   */
+  onConfirmVerifyCode() async {
+    try {
+      EasyLoading.show();
+      String code = verifyCode.value;
+      String phone =
+          isSignInFlow ? "${phoneNumber.value}" : "${signUpphoneNumber.value}";
+      final res =
+          await UserRepository.verifyCode({'otp': code, 'phone': phone});
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        final userData = res['data']['user'];
+        print(userData['id']);
+        _userModel.value = UserModel.fromJson(userData);
+
+        initSignUpDetail(authUser!);
+
+        // SAVE USER DATA IN LOCAL
+        await saveUserData(res['data']['token'], userData);
+
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomSnackBar(
+            title: "SUCCESS", message: res['message']);
+
+        Get.offAllNamed(Routes.SIGNUP_DETAIL);
+      } else {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  saveUserData(token, data) async {
+    print(token);
+    print(data['id']);
+    print(data['username']);
+    // TOKEN
+    await storeDataToLocal(
+        key: AppLocalKeys.TOKEN, value: token, type: StorableDataType.String);
+
+    // USER ID
+    await storeDataToLocal(
+        key: AppLocalKeys.USERID,
+        value: data['id'],
+        type: StorableDataType.INT);
+
+    // USER NAME
+    await storeDataToLocal(
+        key: AppLocalKeys.USERNAME,
+        value: data['username'],
+        type: StorableDataType.String);
   }
 
   ///////////////////////// SIGN UP DETAIL  /////////////////////
@@ -260,9 +492,67 @@ class AuthController extends GetxController {
   final isValidDetailLState = false.obs;
   final isValidDetailLNumber = false.obs;
   DateTime selectedDate = DateTime.now();
-  final fID = Rxn<File>();
-  final bID = Rxn<File>();
-  final selfie = Rxn<File>();
+
+  final _detailState = "Alabama".obs;
+  String get detailState => _detailState.value;
+
+  final _detailLicenseState = "Alabama".obs;
+  String get detailLicenseState => _detailLicenseState.value;
+
+  final fID = Rxn<String>();
+  final bID = Rxn<String>();
+  final selfie = Rxn<String>();
+
+  initSignUpDetail(UserModel user) {
+    if (user.firstName != null) {
+      detailFirstNameController.text = user.firstName!;
+    }
+    if (user.lastName != null) {
+      detailLastNameController.text = user.lastName!;
+    }
+    if (user.street != null) {
+      streetController.text = user.street!;
+    }
+    if (user.city != null) {
+      cityController.text = user.city!;
+    }
+    if (user.zipcode != null) {
+      zipController.text = user.zipcode!.toString();
+    }
+
+    // if (user.birthday != null) {
+    //   zipController.text = user.birthday!.toString();
+    // }
+
+    if (user.email != null) {
+      detailEmailController.text = user.email!.toString();
+    }
+
+    if (user.licenseState != null) {
+      licenseStateController.text = user.licenseState!.toString();
+    }
+
+    if (user.licenseNumber != null) {
+      licenseNumberController.text = user.licenseNumber!.toString();
+    }
+  }
+
+  /****************************
+   * update State
+   */
+  updateDetailState(String state) {
+    _detailState.value = state;
+    update();
+  }
+
+  /****************************
+   * update State
+   */
+  updateDetailLicenseState(String state) {
+    _detailLicenseState.value = state;
+    update();
+  }
+
   /****************************
    * Validate Detail First Name
    */
@@ -385,6 +675,26 @@ class AuthController extends GetxController {
     return res;
   }
 
+  String? validateBirthDay(String? value) {
+    Logger().i(value);
+    String? res = null;
+    isValidDetailBirth.value = false;
+    if (value != null) {
+      if (!Regex.validateDate(value)) {
+        isValidDetailBirth.value = false;
+        res = 'Invalid Birthday!';
+      } else {
+        isValidDetailBirth.value = true;
+        res = null;
+      }
+    } else {
+      isValidDetailBirth.value = false;
+      res = "Please enter birthday";
+    }
+    update();
+    return res;
+  }
+
   /************************
    * Select BirthDay
    */
@@ -396,9 +706,11 @@ class AuthController extends GetxController {
       lastDate: DateTime.now(),
     );
     if (picked != null && picked != selectedDate) {
-      String formattedDate = DateFormat('MM/dd/yyyy').format(selectedDate);
+      String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
       birthController.text = formattedDate;
-      isValidDetailBirth.value = true;
+      // isValidDetailBirth.value = true;
+      // update();
+      validateBirthDay(formattedDate);
       update();
     }
   }
@@ -484,6 +796,66 @@ class AuthController extends GetxController {
   //   return res;
   // }
 
+  /******************************
+   * On Submit Detail of User
+   */
+
+  onSubmitDetail() async {
+    if (fID.value == null || bID.value == null || selfie.value == null) {
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "WARNING", message: Messages.WARNING_UPLOAD_DOCUMENT);
+      return;
+    }
+    if (detailFormKey.currentState!.validate()) {
+      EasyLoading.show();
+      try {
+        final data = {
+          'uid': _userModel.value?.id ?? 0,
+          'first_name': detailFirstNameController.text,
+          'last_name': detailLastNameController.text,
+          'street': streetController.text,
+          'city': cityController.text,
+          'state': detailState,
+          'zipcode': zipController.text,
+          'birthday': birthController.text,
+          'email': detailEmailController.text,
+          'licenseState': detailLicenseState,
+          'licenseNumber': licenseNumberController.text,
+          'frontID': fID.value,
+          'backID': bID.value,
+          'selfie': selfie.value,
+        };
+
+        Logger().i(data);
+
+        final res = await UserRepository.saveUserDetail(data);
+        Logger().i(res);
+        if (res['statusCode'] == 200) {
+          EasyLoading.dismiss();
+          CustomSnackBar.showCustomSnackBar(
+              title: "SUCCESS", message: "OTP code sent to your phone number.");
+
+          isSignInFlow = true;
+
+          //  GO TO OPT VERIFY PAGE
+          // Get.toNamed(Routes.VERIFY_PAGE);
+        } else {
+          EasyLoading.dismiss();
+
+          CustomSnackBar.showCustomErrorSnackBar(
+              title: "ERROR",
+              message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        }
+      } catch (e) {
+        EasyLoading.dismiss();
+
+        Logger().e(e.toString());
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+      }
+    }
+  }
+
   final auth = FirebaseAuth.instance;
 
   // final nextPage = ProjectsPageView();
@@ -559,34 +931,6 @@ class AuthController extends GetxController {
     }
   }
 
-  /******************************
-   * Validate SignUp Phone Number
-   */
-  String? validateSignUpPhone(PhoneNumber? number) {
-    try {
-      if (number != null) {
-        isValidSignupPhone.value = number.isValidNumber();
-      } else {
-        isValidSignupPhone.value = false;
-      }
-    } catch (e) {
-      isValidSignupPhone.value = false;
-    }
-
-    Logger().i(isValidSignupPhone.value);
-    update();
-    return isValidSignupPhone.value ? null : "Invalid Mobile Number";
-  }
-
-  /*********************
-   * Update SingUp Phone
-   */
-  void updateSignUpPhoneNumber(PhoneNumber? number) {
-    phoneNumber.value = number?.completeNumber ?? "";
-    validatePhoneNumber(number);
-    update();
-  }
-
   /**************************
    * Pick Photo
    */
@@ -598,21 +942,59 @@ class AuthController extends GetxController {
     }
     final pickedImage = await ImagePicker().getImage(source: source);
     if (pickedImage != null) {
+      File pickedFile = File(pickedImage.path);
+      String? filePath = await uploadFile(pickedFile);
+      if (filePath != null) {}
       switch (type) {
         case DOCUMENT_ID.FRONT_ID:
-          fID.value = File(pickedImage.path);
+          fID.value = filePath;
 
           break;
         case DOCUMENT_ID.BACK_ID:
-          bID.value = File(pickedImage.path);
+          bID.value = filePath;
 
           break;
         case DOCUMENT_ID.SELFIE:
-          selfie.value = File(pickedImage.path);
+          selfie.value = filePath;
           break;
         default:
       }
       update();
+    }
+  }
+
+  /*******************
+   * Upload File
+   */
+  Future<String?> uploadFile(File file) async {
+    EasyLoading.show();
+    try {
+      final res = await UserRepository.uploadFile(file);
+      Logger().i(res);
+      if (res.statusCode == 200) {
+        final responseData = await res.stream.bytesToString();
+
+        final data = jsonDecode(responseData);
+        Logger().i(data);
+
+        EasyLoading.dismiss();
+
+        return data['data']['filePath'];
+      } else {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        return null;
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+      return null;
     }
   }
 
@@ -936,7 +1318,7 @@ class AuthController extends GetxController {
   //           data['userIds'] = users;
 
   //           await FirebaseFirestore.instance
-  //               .collection(DatabaseConfig.CHAT_COLLECTION)
+  //               .collection(DatabaseConfi g.CHAT_COLLECTION)
   //               .doc(DatabaseConfig.FEED_ROOM_ID)
   //               .update(data);
   //         }

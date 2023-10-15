@@ -8,4 +8,10 @@ class Regex {
     RegExp zipCodeRegExp = new RegExp(r'^\d{5}(?:[-\s]\d{4})?$');
     return zipCodeRegExp.hasMatch(value);
   }
+
+  static bool validateDate(String value) {
+    final regex = r'^\d{4}-\d{2}-\d{2}$';
+    final match = RegExp(regex).hasMatch(value);
+    return match;
+  }
 }
