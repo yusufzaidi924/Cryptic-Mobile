@@ -19,7 +19,7 @@ class VerifyResultView extends GetView {
 
   String rejectTitle = "Application Denied";
   String rejectDesc =
-      "We’re sorry to inform you, but we could not approve your profile at this time. no further details can be shared at this point in time.Thank you for your interest in Criptacy.";
+      "We’re sorry to inform you, but we could not approve your profile at this time. no further details can be shared at this point in time.\r\n\r\nThank you for your interest in Criptacy.";
 
   @override
   Widget build(BuildContext context) {
@@ -130,8 +130,12 @@ class VerifyResultView extends GetView {
 
                     if (controller.authUser!.status == 2) {
                       Get.offAllNamed(Routes.WELCOME);
-                    } else {
+                    } else if (controller.authUser!.status == -1) {
+                      // rejected
                       Get.toNamed(Routes.SIGNUP_DETAIL);
+                    } else {
+                      Get.back();
+                      Get.back();
                     }
                     // controller.signInWithEmail();
                   },
