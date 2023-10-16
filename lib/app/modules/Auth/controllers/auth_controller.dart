@@ -418,7 +418,7 @@ class AuthController extends GetxController {
         final userData = res['data']['user'];
         print(userData['id']);
         _userModel.value = UserModel.fromJson(userData);
-        update();
+
         initSignUpDetail(authUser!);
 
         // SAVE USER DATA IN LOCAL
@@ -429,7 +429,27 @@ class AuthController extends GetxController {
         CustomSnackBar.showCustomSnackBar(
             title: "SUCCESS", message: res['message']);
 
-        Get.toNamed(Routes.SIGNUP_DETAIL);
+        switch (authUser!.status) {
+          case 0: // Not Submitted
+            Get.toNamed(Routes.SIGNUP_DETAIL);
+
+            break;
+          case 1: //  Submitted
+            Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+
+            break;
+
+          case 2: //  Approved
+            Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+
+            break;
+
+          case -1: //  Rejected
+            Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+
+            break;
+          default:
+        }
       } else {
         EasyLoading.dismiss();
 
@@ -834,12 +854,13 @@ class AuthController extends GetxController {
         if (res['statusCode'] == 200) {
           EasyLoading.dismiss();
           CustomSnackBar.showCustomSnackBar(
-              title: "SUCCESS", message: "OTP code sent to your phone number.");
-
-          isSignInFlow = true;
+              title: "SUCCESS",
+              message:
+                  "Your information is submitted successfully. Please wait until it is approved!");
 
           //  GO TO OPT VERIFY PAGE
-          // Get.toNamed(Routes.VERIFY_PAGE);
+          _userModel.value!.status = 1;
+          Get.toNamed(Routes.VERIFY_RESULT_PAGE);
         } else {
           EasyLoading.dismiss();
 

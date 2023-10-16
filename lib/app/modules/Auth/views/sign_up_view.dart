@@ -85,7 +85,7 @@ class SignUpView extends GetView<AuthController> {
                       controller: controller.signUpUsernameController,
                       keyboardType: TextInputType.text,
                       radius: 10,
-                      hint: "MondySender",
+                      hint: "Username",
                       validate: controller.validateSignupUsername,
                       borderColor: controller.isValidSignupUsername.value
                           ? LightThemeColors.primaryColor

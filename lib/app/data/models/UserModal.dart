@@ -19,6 +19,7 @@ class UserModel {
   DateTime? createdAt;
   DateTime? updatedAt;
   int otp;
+  int status = 0;
 
   UserModel({
     required this.id,
@@ -41,6 +42,7 @@ class UserModel {
     this.createdAt,
     this.updatedAt,
     required this.otp,
+    required this.status,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -71,6 +73,7 @@ class UserModel {
           ? DateTime.tryParse(json['updated_at'] as String)
           : null,
       otp: json['otp'] as int,
+      status: json['status'] as int,
     );
   }
 
