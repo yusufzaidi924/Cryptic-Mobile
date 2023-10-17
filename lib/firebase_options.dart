@@ -44,44 +44,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCIdJbXSs6wtLxDrffbqKggPT4bXlC0KCQ',
-    appId: '1:824799785966:web:58d583b7edc562f40c54ff',
-    messagingSenderId: '824799785966',
-    projectId: 'logmonster-51e0a',
-    authDomain: 'logmonster-51e0a.firebaseapp.com',
-    databaseURL: 'https://logmonster-51e0a-default-rtdb.firebaseio.com',
-    storageBucket: 'logmonster-51e0a.appspot.com',
-    measurementId: 'G-7T960CYL90',
+    apiKey: 'AIzaSyCZTu08PLw-gpOuWHKw1BM7lBTIZQLoyK0',
+    appId: '1:761267722872:web:cc5c8c177559390204eb8d',
+    messagingSenderId: '761267722872',
+    projectId: 'cryptic-a727a',
+    authDomain: 'cryptic-a727a.firebaseapp.com',
+    storageBucket: 'cryptic-a727a.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCMyuJZq4O_LrF2JEUXR5U7iWx3LzYJ5Xo',
-    appId: '1:824799785966:android:52c405cd284853570c54ff',
-    messagingSenderId: '824799785966',
-    projectId: 'logmonster-51e0a',
-    databaseURL: 'https://logmonster-51e0a-default-rtdb.firebaseio.com',
-    storageBucket: 'logmonster-51e0a.appspot.com',
+    apiKey: 'AIzaSyAr8eaq1ifG5OE3MhkS_l0_FwawYjjulfc',
+    appId: '1:761267722872:android:9d5ae5c1ce3240e604eb8d',
+    messagingSenderId: '761267722872',
+    projectId: 'cryptic-a727a',
+    storageBucket: 'cryptic-a727a.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBjljVo1RUUAC2iMciuKT-aN8uzRuFrQ-E',
-    appId: '1:824799785966:ios:6756a2a4dd2468230c54ff',
-    messagingSenderId: '824799785966',
-    projectId: 'logmonster-51e0a',
-    databaseURL: 'https://logmonster-51e0a-default-rtdb.firebaseio.com',
-    storageBucket: 'logmonster-51e0a.appspot.com',
-    iosClientId: '824799785966-qdot2ddlkm5g0rvj733p6jbgtju7mdu6.apps.googleusercontent.com',
-    iosBundleId: 'com.edmon.scan',
+    apiKey: 'AIzaSyBYRWCu5G6UnUy8MJ1JP7NFCjsFWAoPAbk',
+    appId: '1:761267722872:ios:9e00bd71c022e34a04eb8d',
+    messagingSenderId: '761267722872',
+    projectId: 'cryptic-a727a',
+    storageBucket: 'cryptic-a727a.appspot.com',
+    iosBundleId: 'com.criptyc.transfer',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBjljVo1RUUAC2iMciuKT-aN8uzRuFrQ-E',
-    appId: '1:824799785966:ios:ef3742df3ac63ddb0c54ff',
-    messagingSenderId: '824799785966',
-    projectId: 'logmonster-51e0a',
-    databaseURL: 'https://logmonster-51e0a-default-rtdb.firebaseio.com',
-    storageBucket: 'logmonster-51e0a.appspot.com',
-    iosClientId: '824799785966-o1ps93i08g4ktspvs9ilgptobb7o2fhj.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBYRWCu5G6UnUy8MJ1JP7NFCjsFWAoPAbk',
+    appId: '1:761267722872:ios:ba70e82b896c6e2304eb8d',
+    messagingSenderId: '761267722872',
+    projectId: 'cryptic-a727a',
+    storageBucket: 'cryptic-a727a.appspot.com',
     iosBundleId: 'com.example.edmonscan.RunnerTests',
   );
 }

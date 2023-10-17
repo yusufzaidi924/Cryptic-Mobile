@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "761267722872",
+    "project_id": "cryptic-a727a",
+    "storage_bucket": "cryptic-a727a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:761267722872:android:9d5ae5c1ce3240e604eb8d",
+        "android_client_info": {
+          "package_name": "com.cryptic.wallet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAr8eaq1ifG5OE3MhkS_l0_FwawYjjulfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
