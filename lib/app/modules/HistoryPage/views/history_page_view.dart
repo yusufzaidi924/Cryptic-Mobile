@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
-import '../../UploadPage/views/image_preview.dart';
 import '../controllers/history_page_controller.dart';
 
 class HistoryPageView extends GetView<HistoryPageController> {
@@ -70,10 +69,10 @@ class HistoryPageView extends GetView<HistoryPageController> {
       children: [
         InkWell(
           onTap: () {
-            Get.to(ImagePreviewPage(
-              path: image,
-              isNetwork: true,
-            ));
+            // Get.to(ImagePreviewPage(
+            //   path: image,
+            //   isNetwork: true,
+            // ));
           },
           child: Container(
             decoration: BoxDecoration(

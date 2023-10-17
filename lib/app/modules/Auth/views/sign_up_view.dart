@@ -456,7 +456,7 @@ class SignUpView extends GetView<AuthController> {
             minWidth: double.infinity,
             onPressed: () {
               AppFocus.unfocus(context);
-              controller.signUpWithEmail();
+              // controller.signUpWithEmail();
             },
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),

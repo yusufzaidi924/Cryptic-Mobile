@@ -56,6 +56,13 @@ class BottomBarView extends GetView {
               ),
               const BottomNavigationBarItem(
                 icon: Icon(
+                  Icons.chat_outlined,
+                  size: 28,
+                ),
+                label: ".",
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(
                   Icons.person_outlined,
                   size: 28,
                 ),

@@ -40,11 +40,27 @@ enum LoginMethod {
   OTHER,
 }
 
+enum UserStatus {
+  ONLINE,
+  AWAY,
+  OFFLINE,
+}
+
 class DatabaseConfig {
   static const String PROJECT_COLLECTION = "projects";
   static const String STORAGE_IMAGE_COLLECTION = "testimages";
   static const String PAPER_COLLECTION = "papers";
   static const String FEED_ROOM_NAME = "Feed";
+
+  static const String USER_COLLECTION = "users";
+  static const String CHAT_COLLECTION = "rooms";
+  static const String REPORT_COLLECTION = "reports";
+  static const String FEED_ROOM_ID = "8ITdjr6jCtv1xJ9hpWk1";
+  static const String LOGIN_LOG_COLLECTION = "loginlogs";
+  static const String PAYMENTS_COLLECTION = "payments";
+  static const String SUPPORT_COLLECTION = "supports";
+  static const String BAD_MESSAGES_COLLECTION = "bad_messages";
+  static const String CONTENTS_REPORTS_COLLECTION = "content_reports";
 }
 
 class Messages {

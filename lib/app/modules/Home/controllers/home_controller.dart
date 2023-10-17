@@ -44,6 +44,9 @@ class HomeController extends GetxController {
     }
 
     if (index == 3) {
+      Get.toNamed(Routes.CHAT_LIST);
+    }
+    if (index == 4) {
       Get.toNamed(Routes.MY_PROFILE);
     }
     selectedInex.value = index;

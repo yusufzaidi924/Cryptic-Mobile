@@ -1,6 +1,5 @@
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
-import 'package:edmonscan/app/modules/ProjectsPage/views/projects_page_view.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -85,8 +84,8 @@ class WelcomeController extends GetxController {
 
       default:
     }
-    if (currentIndex.value == length -1) {
-      Get.offAll(() => ProjectsPageView());
+    if (currentIndex.value == length - 1) {
+      // Get.offAll(() => ProjectsPageView());
     } else {
       pageController.animateToPage(
         currentIndex.value + 1,

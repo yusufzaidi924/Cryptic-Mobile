@@ -3,40 +3,29 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:edmonscan/app/data/models/UserModal.dart';
-import 'package:edmonscan/app/modules/Auth/views/sign_in_view.dart';
-import 'package:edmonscan/app/modules/ProjectsPage/views/projects_page_view.dart';
+import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/local_storage.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:edmonscan/utils/regex.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:get/get.dart';
 
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/data/local/my_shared_pref.dart';
 
 // import 'package:edmonscan/app/modules/Home/views/home_view.dart';
-import 'package:edmonscan/app/modules/Welcome/views/terms_view.dart';
-import 'package:edmonscan/app/modules/Welcome/views/welcome_view.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/phone_number.dart';
 import 'package:logger/logger.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AuthController extends GetxController {
   //TODO: Implement AuthController
@@ -57,6 +46,10 @@ class AuthController extends GetxController {
   final isSavePass = false.obs;
 
   bool isSignInFlow = true;
+
+  // Firestore user for chat
+  final _chatUser = Rxn<User>();
+  User? get chatUser => _chatUser.value;
 
   /***********************
    * Update SavePass Check
@@ -125,40 +118,42 @@ class AuthController extends GetxController {
    * On SignIn
    */
   onSignIn() async {
-    EasyLoading.show();
-    try {
-      String phone = phoneNumber.value;
-      String password = loginPasswordController.text;
-      final data = {
-        'phone': phone,
-        'password': password,
-      };
+    Get.toNamed(Routes.CHAT_LIST);
 
-      final res = await UserRepository.login(data);
-      Logger().i(res);
-      if (res['statusCode'] == 200) {
-        EasyLoading.dismiss();
-        CustomSnackBar.showCustomSnackBar(
-            title: "SUCCESS", message: "OTP code sent to your phone number.");
+    // EasyLoading.show();
+    // try {
+    //   String phone = phoneNumber.value;
+    //   String password = loginPasswordController.text;
+    //   final data = {
+    //     'phone': phone,
+    //     'password': password,
+    //   };
 
-        isSignInFlow = true;
+    //   final res = await UserRepository.login(data);
+    //   Logger().i(res);
+    //   if (res['statusCode'] == 200) {
+    //     EasyLoading.dismiss();
+    //     CustomSnackBar.showCustomSnackBar(
+    //         title: "SUCCESS", message: "OTP code sent to your phone number.");
 
-        //  GO TO OPT VERIFY PAGE
-        Get.toNamed(Routes.VERIFY_PAGE);
-      } else {
-        EasyLoading.dismiss();
+    //     isSignInFlow = true;
 
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: "ERROR",
-            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
-      }
-    } catch (e) {
-      EasyLoading.dismiss();
+    //     //  GO TO OPT VERIFY PAGE
+    //     Get.toNamed(Routes.VERIFY_PAGE);
+    //   } else {
+    //     EasyLoading.dismiss();
 
-      Logger().e(e.toString());
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
-    }
+    //     CustomSnackBar.showCustomErrorSnackBar(
+    //         title: "ERROR",
+    //         message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+    //   }
+    // } catch (e) {
+    //   EasyLoading.dismiss();
+
+    //   Logger().e(e.toString());
+    //   CustomSnackBar.showCustomErrorSnackBar(
+    //       title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    // }
     // Get.toNamed(Routes.VERIFY_PAGE);
   }
 
@@ -418,6 +413,9 @@ class AuthController extends GetxController {
         final userData = res['data']['user'];
         print(userData['id']);
         _userModel.value = UserModel.fromJson(userData);
+
+        // SAVE/GET FIRESTORE USER FOR CHAT
+        _chatUser.value = await getFirebaseUser(authUser!);
 
         initSignUpDetail(authUser!);
 
@@ -878,81 +876,6 @@ class AuthController extends GetxController {
     }
   }
 
-  final auth = FirebaseAuth.instance;
-
-  // final nextPage = ProjectsPageView();
-
-  @override
-  void onInit() async {
-    super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void goToNextPage() async {
-    Logger().i("Initialization");
-    PermissionStatus cameraStatus = await checkCameraPermission();
-    PermissionStatus galleryStatus = await checkGalleryPermission();
-
-    // if (!cameraStatus.isGranted &&  !galleryStatus.isGranted) {
-
-    //  Logger().e("All not granted");
-    //   Get.offAll(()=> WelcomeView(index : 0 ));
-
-    // } else if (!cameraStatus.isGranted ) {
-    //  Logger().e("Camera not granted");
-
-    //   Get.offAll(()=> WelcomeView(index : 1 ));
-
-    // } else if (!galleryStatus.isGranted) {
-    //  Logger().e("gallery not granted");
-
-    //   Get.offAll(()=> WelcomeView(index :2 ));
-
-    // } else {
-    //        Logger().i("All are granted");
-    // Get.offAll(()=>ProjectsPageView());
-    // }
-  }
-
-  /////////////////////////////////////////// SIGN IN ////////////////////////////////////////////
-  /******************************
-   * Login With Email & Password
-   */
-  void signInWithEmail() async {
-    String email = loginPhoneController.text.trim();
-    String password = loginPasswordController.text.trim();
-    if (loginFormKey.currentState!.validate()) {
-      EasyLoading.show(status: "Loading...");
-      try {
-        await auth.signInWithEmailAndPassword(email: email, password: password);
-
-        EasyLoading.dismiss();
-        if (auth.currentUser != null) {
-          // Save Login Method as Email
-          saveLoginMethod(LoginMethod.EMAIL);
-
-          goToNextPage();
-        } else {
-          CustomSnackBar.showCustomErrorSnackBar(
-              title: 'Failed!', message: "Opps! Please try again.");
-        }
-      } on FirebaseAuthException catch (e) {
-        EasyLoading.dismiss();
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: 'Failed!', message: "Invalid username or password");
-      }
-    }
-  }
-
   /**************************
    * Pick Photo
    */
@@ -962,7 +885,7 @@ class AuthController extends GetxController {
     } else if (source == ImageSource.gallery) {
       await requestGalleryPermission();
     }
-    final pickedImage = await ImagePicker().getImage(source: source);
+    final pickedImage = await ImagePicker().pickImage(source: source);
     if (pickedImage != null) {
       File pickedFile = File(pickedImage.path);
       String? filePath = await uploadFile(pickedFile);
@@ -1059,229 +982,36 @@ class AuthController extends GetxController {
   /******************
    * Check User Exist
    */
-  // Future<Map<String, dynamic>> checkUser(
-  //   User user, {
-  //   bool isGoogle = true,
-  // }) async {
-  //   // FirebaseChatCore.instance
-  //   //     .createGroupRoom(name: DatabaseConfig.FEED_ROOM_NAME, users: [
-  //   //   types.User(id: FirebaseAuth.instance.currentUser!.uid),
-  //   // ]);
-  //   Map<String, dynamic> _returnData = {
-  //     "isExist": false,
-  //     "isBlocked": false,
-  //   };
+  Future<User> getFirebaseUser(UserModel user) async {
+    final userRef =
+        FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
+    return await userRef.doc('${user.id}').get().then(
+      (doc) async {
+        if (doc.exists) {
+          final data = doc.data();
 
-  //   final userRef =
-  //       FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
-  //   return await userRef.doc(user.uid).get().then(
-  //     (doc) async {
-  //       if (doc.exists) {
-  //         // Get.offAll(() => const WelcomPage());
-  //         final data = doc.data();
-
-  //         bool _isBlocked = data!['metadata']['blocked'] != null
-  //             ? data['metadata']['blocked']
-  //             : false;
-
-  //         _returnData['isBlocked'] = _isBlocked;
-  //         _returnData['isExist'] = true;
-
-  //         if (_isBlocked) {
-  //           return _returnData;
-  //         }
-  //         data['id'] = user.uid;
-  //         if (data['metadata'] != null) {
-  //           data['metadata']['status'] = "online";
-  //         } else {
-  //           data['metadata'] = {'status': "online"};
-  //         }
-  //         types.User _user = types.User.fromJson(data);
-  //         authUser.value = _user;
-  //         try {
-  //           await updateUser(user: _user);
-  //           await MySharedPref.saveData(
-  //               value: true, key: MySharedPref.IS_LOGIN, type: PrefType.BOOL);
-  //           await MySharedPref.saveData(
-  //               value: "${_user.firstName} ${_user.lastName}",
-  //               key: MySharedPref.LOGIN_NAME,
-  //               type: PrefType.STRING);
-  //           await MySharedPref.saveData(
-  //               value: auth.currentUser!.email,
-  //               key: MySharedPref.LOGIN_EMAIL,
-  //               type: PrefType.STRING);
-  //           return _returnData;
-  //         } catch (e) {
-  //           throw e;
-  //         }
-  //       } else {
-  //         // await signOut(isGoogle: isGoogle);
-  //         return _returnData;
-  //       }
-  //     },
-  //   );
-  // }
-
-  /**************************************
-   * @Auth: geniusdev0813@gmail.com
-   * @Date: 2023.2.20
-   * @Desc: SignUp with Email Password
-   */
-  void signUpWithEmail() async {
-    if (signUpFormKey.currentState!.validate()) {
-      EasyLoading.show(status: 'loading...');
-
-      // SignUp With Email & Password
-      String email = signUpEmailController.text.trim();
-      String username = signUpUsernameController.text.trim();
-      String password = signUpPasswordController.text.trim();
-      try {
-        final user = await auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        if (user.user != null) {
-          try {
-            // await saveUser(email: email, name: username);
-
-            EasyLoading.dismiss();
-
-            // Save User Login Method
-            saveLoginMethod(LoginMethod.EMAIL);
-
-            goToNextPage();
-          } catch (e) {
-            Logger().e(e);
-            EasyLoading.dismiss();
-            CustomSnackBar.showCustomErrorSnackBar(
-                title: 'Failed!', message: "Something went wrong");
-          }
-
-          // saveUser(name: name);
-        }
-        // EasyLoading.dismiss();
-      } on FirebaseAuthException catch (e) {
-        // Get.back();
-        Logger().e(e.message);
-
-        EasyLoading.dismiss();
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: 'Failed!', message: "${e.message.toString()}");
-        // CustomSnackBar.showCustomSnackBar(title: 'Done successfully!', message: 'item added to wishlist');
-      }
-    }
-  }
-
-  /**********************************
-   * @Auth: geniusdev0813@gmail.com
-   * @Date: 2023.2.20
-   * @Desc: Google Login
-   */
-  void googleAuthentication({required bool isLogin}) async {
-    EasyLoading.show(
-      status: "Loading...",
-    );
-    try {
-      final googleSignin = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignin.signIn();
-      if (googleUser != null) {
-        final googleAuth = await googleUser.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-        final user = await auth.signInWithCredential(credential);
-        if (user.user != null) {
-          await saveLoginMethod(LoginMethod.GOOGLE);
-          EasyLoading.dismiss();
-
-          goToNextPage();
-
-          // if (isLogin) {
-          //   // Save Login Method as Google
-          //   goToNextPage();
-          // } else {
-          //   Logger().d("Google SignUp");
-          //   await saveUser(
-          //     name: googleUser.displayName!,
-          //     email: googleUser.email,
-          //     imgUrl: googleUser.photoUrl,
-          //   );
-          // }
+          User _user = User.fromJson(data!);
+          return _user;
         } else {
-          EasyLoading.dismiss();
-          CustomSnackBar.showCustomErrorSnackBar(
-              title: 'Failed!', message: "Something went wrong, Please retry!");
-        }
-      } else {
-        EasyLoading.dismiss();
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: 'Failed!', message: "Something went wrong, Please retry!");
-      }
-    } on FirebaseAuthException catch (e) {
-      EasyLoading.dismiss();
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: 'Failed!', message: "Something went wrong, Please retry!");
-    } catch (e) {
-      EasyLoading.dismiss();
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: 'Failed!', message: "Somthing went wrong, Please retry!");
-    }
-  }
+          User _user = new User(
+              id: user.id.toString(),
+              imageUrl: user.selfie,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              lastSeen: 0,
+              createdAt: DateTime.now().millisecondsSinceEpoch,
+              updatedAt: DateTime.now().millisecondsSinceEpoch,
+              role: Role.user,
+              metadata: {'status': 'online', 'phone': user.phone});
 
-  void appleAuthentication({required bool isLogin}) async {
-    EasyLoading.show(
-      status: "Loading...",
+          await FirebaseFirestore.instance
+              .collection(DatabaseConfig.USER_COLLECTION)
+              .doc(user.id.toString())
+              .set(_user.toJson());
+          return _user;
+        }
+      },
     );
-    try {
-      final appleResult = await SignInWithApple.getAppleIDCredential(scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ]);
-      if (appleResult != null) {
-        final oAuthProvider = OAuthProvider('apple.com');
-        final credential = oAuthProvider.credential(
-          idToken: appleResult.identityToken,
-          accessToken: appleResult.authorizationCode,
-        );
-        final user = await auth.signInWithCredential(credential);
-        if (user.user != null) {
-          // if (isLogin) {
-
-          // } else {
-          //   await saveUser(
-          //     name:
-          //         '${appleResult.givenName ?? ''} ${appleResult.familyName ?? ''}',
-          //     email: appleResult.email ?? '',
-          //   );
-          // }
-
-          // Save Login Method as Apple
-          await saveLoginMethod(LoginMethod.APPLE);
-          EasyLoading.dismiss();
-
-          goToNextPage();
-        } else {
-          EasyLoading.dismiss();
-          CustomSnackBar.showCustomErrorSnackBar(
-              title: 'Failed!', message: "Something went wrong. Please retry!");
-        }
-      } else {
-        EasyLoading.dismiss();
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: 'Failed!', message: "Something went wrong. Please retry!");
-      }
-    } on FirebaseAuthException catch (e) {
-      EasyLoading.dismiss();
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: 'Failed!',
-          message: "Oops! Something went wrong. Please retry!");
-    } catch (e) {
-      EasyLoading.dismiss();
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: 'Failed!',
-          message: "Oops! Something went wrong. Please retry!");
-    }
   }
 
   // saveUser({
@@ -1379,143 +1109,6 @@ class AuthController extends GetxController {
   //       .update(user.toJson());
   // }
 
-  signOut() async {
-    LoginMethod method = await getLoginMethod();
-    switch (method) {
-      case LoginMethod.EMAIL:
-        await FirebaseAuth.instance.signOut();
-        break;
-      case LoginMethod.GOOGLE:
-        await GoogleSignIn().signOut();
-      default:
-        await FirebaseAuth.instance.signOut();
-        break;
-    }
-
-    Get.offAll(SignInView());
-  }
-
-  /*********************************
-   * @author: geniusdev0813@gmail.com
-   * @date:   2023.6.18
-   * @desc:   Save Login Method
-   */
-  Future<void> saveLoginMethod(LoginMethod method) async {
-    int _methodNum = 0;
-    switch (method) {
-      case LoginMethod.EMAIL:
-        _methodNum = 1;
-        break;
-
-      case LoginMethod.GOOGLE:
-        _methodNum = 2;
-        break;
-      case LoginMethod.APPLE:
-        _methodNum = 3;
-        break;
-      default:
-    }
-
-    await MySharedPref.saveData(
-        value: _methodNum, key: MySharedPref.LOGIN_METHOD, type: PrefType.INT);
-  }
-
-  /****************************************************
-   * @author: geniusdev0813@gmail.com
-   * @date: 2023.6.18
-   * @desc: Get Login Method
-   */
-  Future<LoginMethod> getLoginMethod() async {
-    int _methodNum = await MySharedPref.getData(
-            key: MySharedPref.LOGIN_METHOD, type: PrefType.INT) ??
-        1;
-    switch (_methodNum) {
-      case 1:
-        return LoginMethod.EMAIL;
-      case 2:
-        return LoginMethod.GOOGLE;
-      case 3:
-        return LoginMethod.APPLE;
-      default:
-        return LoginMethod.OTHER;
-    }
-  }
-
-  // //////////////////////////////////////// Update Email //////////////////////////
-  // final GlobalKey<FormState> updateEmailFormKey = GlobalKey<FormState>();
-  // final UEFEmailController = TextEditingController();
-  // final UEFConfirmEmailController = TextEditingController();
-  // final UEFPasswordController = TextEditingController();
-  // /*************************************
-  //  * @Auth: geniusdev0813@gmail.com
-  //  * @Date: 2023.3.10
-  //  * @Desc: Update Email in Setting Page
-  //  */
-  // updateEmail() async {
-  //   if (updateEmailFormKey.currentState!.validate()) {
-  //     String password = UEFPasswordController.text;
-  //     String email = UEFEmailController.text;
-  //     try {
-  //       EasyLoading.show(status: "Updating...");
-
-  //       auth.currentUser!
-  //           .reauthenticateWithCredential(EmailAuthProvider.credential(
-  //               email: auth.currentUser!.email!, password: password))
-  //           .then((value) async {
-  //         if (value != null) {
-  //           // Update FirebaseAuth Email
-  //           await FirebaseAuth.instance.currentUser!.updateEmail(email);
-
-  //           // Update Database Email
-  //           await FirebaseFirestore.instance
-  //               .collection(DatabaseConfig.USER_COLLECTION)
-  //               .doc(auth.currentUser!.uid)
-  //               .update({"email": email});
-
-  //           await MySharedPref.saveData(
-  //               value: email,
-  //               key: MySharedPref.LOGIN_EMAIL,
-  //               type: PrefType.STRING);
-  //           Map<String, dynamic> userData = authUser.value!.toJson();
-  //           userData['email'] = email;
-  //           authUser.value = types.User.fromJson(userData);
-  //           // Clear Text Contoller
-  //           UEFConfirmEmailController.text = "";
-  //           UEFPasswordController.text = "";
-  //           UEFEmailController.text = "";
-  //           update();
-
-  //           EasyLoading.dismiss();
-  //           CustomSnackBar.showCustomSnackBar(
-  //               title: 'SUCCESS', message: "Email is updated successfully!");
-  //         } else {
-  //           EasyLoading.dismiss();
-
-  //           CustomSnackBar.showCustomErrorSnackBar(
-  //               title: 'Failed!',
-  //               message: "Oops! Something went wrong. \r\nPlease retry!");
-  //         }
-  //       }).catchError((onError) {
-  //         Logger().e(onError.toString());
-  //         EasyLoading.dismiss();
-
-  //         CustomSnackBar.showCustomErrorSnackBar(
-  //             title: 'Failed!',
-  //             message: "Oops! Something went wrong. \r\nPlease retry!");
-  //       });
-  //     } catch (e) {
-  //       Logger().e("Som");
-  //       EasyLoading.dismiss();
-
-  //       CustomSnackBar.showCustomErrorSnackBar(
-  //           title: 'Failed!',
-  //           message: "Oops! Something went wrong. \r\nPlease retry!");
-  //     }
-  //   } else {
-  //     Logger().e("Validate Error");
-  //   }
-  // }
-
   // /************************************
   //  * @Date: 2023.3.10
   //  * @Desc: Save Login Log
@@ -1577,124 +1170,20 @@ class AuthController extends GetxController {
   //   }
   // }
 
-  // //////////////////////////////////////// Update Password //////////////////////////
-  // final GlobalKey<FormState> updatePasswordFormKey = GlobalKey<FormState>();
-  // final UPFcurrentPassController = TextEditingController();
-  // final UPFConfirmPasswordController = TextEditingController();
-  // final UPFnewPassController = TextEditingController();
-  // final isSamePass = false.obs;
-  // /*************************************
-  //  * @Auth: geniusdev0813@gmail.com
-  //  * @Date: 2023.3.10
-  //  * @Desc: Update Password in Setting Page
-  //  */
-  // updatePassword() async {
-  //   if (updatePasswordFormKey.currentState!.validate()) {
-  //     String password = UPFnewPassController.text;
-  //     String oldPassword = UPFcurrentPassController.text;
-  //     if (oldPassword == password) {
-  //       isSamePass.value = true;
-  //       update();
-  //       return;
-  //     }
-  //     try {
-  //       EasyLoading.show(status: "Updating...");
-  //       auth
-  //           .signInWithEmailAndPassword(
-  //               email: auth.currentUser!.email!, password: oldPassword)
-  //           .then((value) async {
-  //         if (oldPassword == password) {
-  //           isSamePass.value = true;
-  //           update();
-  //           EasyLoading.dismiss();
-  //           return;
-  //         } else {
-  //           isSamePass.value = false;
-  //           update();
-  //           await auth.currentUser!.updatePassword(password);
+  @override
+  void onInit() async {
+    super.onInit();
+  }
 
-  //           // Clear Text Controller
-  //           UPFnewPassController.text = "";
-  //           UPFcurrentPassController.text = "";
-  //           UPFConfirmPasswordController.text = "";
+  @override
+  void onReady() {
+    super.onReady();
+  }
 
-  //           EasyLoading.dismiss();
-  //           CustomSnackBar.showCustomSnackBar(
-  //               title: 'SUCCESS', message: "Password is updated successfully!");
-  //         }
-  //       }).catchError((onError) {
-  //         EasyLoading.dismiss();
-  //         isSamePass.value = false;
-  //         update();
-  //         CustomSnackBar.showCustomErrorSnackBar(
-  //             title: 'Failed!',
-  //             message:
-  //                 "Oops! Current password is incorrect. \r\nPlease retry!");
-  //       });
-  //     } catch (e) {
-  //       Logger().e("Som");
-  //       EasyLoading.dismiss();
-  //       isSamePass.value = false;
-  //       update();
-  //       CustomSnackBar.showCustomErrorSnackBar(
-  //           title: 'Failed!', message: "Som");
-  //     }
-  //   } else {
-  //     isSamePass.value = false;
-  //     update();
-  //     Logger().e("Validate Error");
-  //   }
-  // }
-
-  // /*******************************
-  //  * @Desc: Delete Account
-  //  */
-  // Future<bool> deleteAccount(String password) async {
-  //   try {
-  //     EasyLoading.show();
-  //     if (auth.currentUser != null) {
-  //       AuthCredential credentials = EmailAuthProvider.credential(
-  //           email: auth.currentUser!.email!, password: password);
-
-  //       return await auth.currentUser!
-  //           .reauthenticateWithCredential(credentials)
-  //           .then((result) async {
-  //         // Delete Database User
-  //         await FirebaseFirestore.instance
-  //             .collection(DatabaseConfig.USER_COLLECTION)
-  //             .doc(auth.currentUser!.uid)
-  //             .delete();
-
-  //         // Delete FirebaseAuth Account
-  //         await result.user!.delete();
-
-  //         EasyLoading.dismiss();
-  //         CustomSnackBar.showCustomSnackBar(
-  //             title: 'Success',
-  //             message: "Your account is deleted successfully!");
-  //         return true;
-  //       }).onError((FirebaseAuthException error, stackTrace) {
-  //         Logger().e(error.toString());
-  //         EasyLoading.dismiss();
-  //         CustomSnackBar.showCustomErrorSnackBar(
-  //             title: 'Failed!', message: "Something went wrong!");
-  //         return false;
-  //       });
-  //     } else {
-  //       EasyLoading.dismiss();
-  //       CustomSnackBar.showCustomErrorSnackBar(
-  //           title: 'Failed!',
-  //           message: "Oops! Something went wrong. \r\nPlease retry!");
-  //       return false;
-  //     }
-  //   } catch (e) {
-  //     Logger().e("Som");
-
-  //     EasyLoading.dismiss();
-  //     CustomSnackBar.showCustomErrorSnackBar(title: 'Failed!', message: "Som");
-  //     return false;
-  //   }
-  // }
+  @override
+  void onClose() {
+    super.onClose();
+  }
 }
 
 enum DOCUMENT_ID {

@@ -11,6 +11,10 @@ import '../modules/Auth/views/sign_up_view.dart';
 import '../modules/Auth/views/signup_detail_view.dart';
 import '../modules/Auth/views/verify_result_view.dart';
 import '../modules/Auth/views/verify_view.dart';
+import '../modules/ChatList/bindings/chat_list_binding.dart';
+import '../modules/ChatList/bindings/chat_list_binding.dart';
+import '../modules/ChatList/views/chat_list_view.dart';
+import '../modules/ChatList/views/chat_list_view.dart';
 import '../modules/ConfirmPayment/bindings/confirm_payment_binding.dart';
 import '../modules/ConfirmPayment/views/confirm_payment_view.dart';
 import '../modules/Home/bindings/home_binding.dart';
@@ -25,8 +29,6 @@ import '../modules/PaymentResultPage/bindings/payment_result_page_binding.dart';
 import '../modules/PaymentResultPage/views/payment_result_page_view.dart';
 import '../modules/PhotoPreview/bindings/photo_preview_binding.dart';
 import '../modules/PhotoPreview/views/photo_preview_view.dart';
-import '../modules/ProjectsPage/bindings/projects_page_binding.dart';
-import '../modules/ProjectsPage/views/projects_page_view.dart';
 import '../modules/RequestPayment/bindings/request_payment_binding.dart';
 import '../modules/RequestPayment/views/request_payment_view.dart';
 import '../modules/SettingPage/bindings/setting_page_binding.dart';
@@ -35,8 +37,6 @@ import '../modules/TopUp/bindings/top_up_binding.dart';
 import '../modules/TopUp/views/top_up_view.dart';
 import '../modules/TransferPage/bindings/transfer_page_binding.dart';
 import '../modules/TransferPage/views/transfer_page_view.dart';
-import '../modules/UploadPage/bindings/upload_page_binding.dart';
-import '../modules/UploadPage/views/upload_page_view.dart';
 import '../modules/UserProfile/bindings/user_profile_binding.dart';
 import '../modules/UserProfile/views/user_profile_view.dart';
 import '../modules/Welcome/bindings/welcome_binding.dart';
@@ -93,11 +93,6 @@ class AppPages {
       binding: AuthBinding(),
     ),
 
-    GetPage(
-      name: _Paths.PROJECTS_PAGE,
-      page: () => ProjectsPageView(),
-      binding: ProjectsPageBinding(),
-    ),
     // GetPage(
     //   name: _Paths.UPLOAD_PAGE,
     //   page: (ProjectModel projectModel) => UploadPageView(project: project),
@@ -174,6 +169,11 @@ class AppPages {
       name: _Paths.ACCOUNT_SECURITY,
       page: () => AccountSecurityView(),
       binding: AccountSecurityBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT_LIST,
+      page: () => ChatListView(),
+      binding: ChatListBinding(),
     ),
   ];
 }

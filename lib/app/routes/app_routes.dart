@@ -27,6 +27,7 @@ abstract class Routes {
   static const REQUEST_PAYMENT = _Paths.REQUEST_PAYMENT;
   static const MY_PROFILE = _Paths.MY_PROFILE;
   static const ACCOUNT_SECURITY = _Paths.ACCOUNT_SECURITY;
+  static const CHAT_LIST = _Paths.CHAT_LIST;
 }
 
 abstract class _Paths {
@@ -56,4 +57,5 @@ abstract class _Paths {
   static const REQUEST_PAYMENT = '/request-payment';
   static const MY_PROFILE = '/my-profile';
   static const ACCOUNT_SECURITY = '/account-security';
+  static const CHAT_LIST = '/chat-list';
 }

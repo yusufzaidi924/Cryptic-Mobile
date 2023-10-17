@@ -604,7 +604,6 @@ class SignupDetailView extends GetView {
                     FocusManager.instance.primaryFocus?.unfocus();
 
                     controller.onSubmitDetail();
-                    // Get.toNamed(Routes.VERIFY_RESULT_PAGE);
                   },
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
