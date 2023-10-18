@@ -2,22 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>824799785966-stflc8qen2subv6rpdckmmbjsaqnl1cd.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.824799785966-stflc8qen2subv6rpdckmmbjsaqnl1cd</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBjljVo1RUUAC2iMciuKT-aN8uzRuFrQ-E</string>
+	<string>AIzaSyBYRWCu5G6UnUy8MJ1JP7NFCjsFWAoPAbk</string>
 	<key>GCM_SENDER_ID</key>
-	<string>824799785966</string>
+	<string>761267722872</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.edmonscan</string>
+	<string>com.criptyc.transfer</string>
 	<key>PROJECT_ID</key>
-	<string>logmonster-51e0a</string>
+	<string>cryptic-a727a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>logmonster-51e0a.appspot.com</string>
+	<string>cryptic-a727a.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,8 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:824799785966:ios:584d6cf3f158ed1d0c54ff</string>
-	<key>DATABASE_URL</key>
-	<string>https://logmonster-51e0a-default-rtdb.firebaseio.com</string>
+	<string>1:761267722872:ios:9e00bd71c022e34a04eb8d</string>
 </dict>
 </plist>

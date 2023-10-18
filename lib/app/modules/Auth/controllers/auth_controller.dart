@@ -156,7 +156,6 @@ class AuthController extends GetxController {
       CustomSnackBar.showCustomErrorSnackBar(
           title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
     }
-    Get.toNamed(Routes.VERIFY_PAGE);
   }
 
   // /**********************
