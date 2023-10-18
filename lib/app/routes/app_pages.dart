@@ -15,8 +15,12 @@ import '../modules/ChatList/bindings/chat_list_binding.dart';
 import '../modules/ChatList/bindings/chat_list_binding.dart';
 import '../modules/ChatList/views/chat_list_view.dart';
 import '../modules/ChatList/views/chat_list_view.dart';
+import '../modules/ChatRoom/bindings/chat_room_binding.dart';
+import '../modules/ChatRoom/views/chat_room_view.dart';
 import '../modules/ConfirmPayment/bindings/confirm_payment_binding.dart';
 import '../modules/ConfirmPayment/views/confirm_payment_view.dart';
+import '../modules/CreateChat/bindings/create_chat_binding.dart';
+import '../modules/CreateChat/views/create_chat_view.dart';
 import '../modules/Home/bindings/home_binding.dart';
 import '../modules/Home/views/home_view.dart';
 import '../modules/MyPMPage/bindings/my_p_m_page_binding.dart';
@@ -29,6 +33,7 @@ import '../modules/PaymentResultPage/bindings/payment_result_page_binding.dart';
 import '../modules/PaymentResultPage/views/payment_result_page_view.dart';
 import '../modules/PhotoPreview/bindings/photo_preview_binding.dart';
 import '../modules/PhotoPreview/views/photo_preview_view.dart';
+
 import '../modules/RequestPayment/bindings/request_payment_binding.dart';
 import '../modules/RequestPayment/views/request_payment_view.dart';
 import '../modules/SettingPage/bindings/setting_page_binding.dart';
@@ -174,6 +179,16 @@ class AppPages {
       name: _Paths.CHAT_LIST,
       page: () => ChatListView(),
       binding: ChatListBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_CHAT,
+      page: () => CreateChatView(),
+      binding: CreateChatBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHAT_ROOM,
+      page: () => ChatRoomView(),
+      binding: ChatRoomBinding(),
     ),
   ];
 }

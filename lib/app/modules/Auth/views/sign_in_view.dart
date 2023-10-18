@@ -15,7 +15,7 @@ import 'package:intl_phone_field/intl_phone_field.dart';
 import '../controllers/auth_controller.dart';
 
 class SignInView extends GetView<AuthController> {
-  AuthController controller = Get.put(AuthController());
+  // AuthController controller = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {

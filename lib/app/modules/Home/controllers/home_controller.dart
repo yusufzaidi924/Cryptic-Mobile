@@ -1,3 +1,4 @@
+import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,6 +45,7 @@ class HomeController extends GetxController {
     }
 
     if (index == 3) {
+      Get.delete<ChatListController>();
       Get.toNamed(Routes.CHAT_LIST);
     }
     if (index == 4) {

@@ -1,9 +1,10 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/utils/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 
 const colors = [
@@ -19,12 +20,12 @@ const colors = [
   Color(0xffc78ae5),
 ];
 
-Color getUserAvatarNameColor(types.User user) {
+Color getUserAvatarNameColor(User user) {
   final index = user.id.hashCode % colors.length;
   return colors[index];
 }
 
-String getUserName(types.User user) =>
+String getUserName(User user) =>
     '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
 
 getUserStatus(String status) {
@@ -41,13 +42,13 @@ getUserStatus(String status) {
   }
 }
 
-types.User? getOtherUser({required types.Room room}) {
-  final _user = FirebaseAuth.instance.currentUser;
-  types.User? otherUser;
-  if (room.type == types.RoomType.direct) {
+User? getOtherUser({required Room room}) {
+  final authCtrl = Get.find<AuthController>();
+  User? otherUser;
+  if (room.type == RoomType.direct) {
     try {
       otherUser = room.users.firstWhere(
-        (u) => u.id != _user!.uid,
+        (u) => u.id != authCtrl.chatUser!.id,
       );
     } catch (e) {
       Logger().e(e);
@@ -56,44 +57,48 @@ types.User? getOtherUser({required types.Room room}) {
   return otherUser;
 }
 
-types.User? getCurrentUser({required types.Room room}) {
-  final _user = FirebaseAuth.instance.currentUser;
-  types.User? otherUser;
-  if (room.type == types.RoomType.direct) {
-    try {
-      otherUser = room.users.firstWhere(
-        (u) => u.id == _user!.uid,
-      );
-    } catch (e) {
-      Logger().e(e);
-    }
-  }
-  return otherUser;
+User? getCurrentUser({required Room room}) {
+  final authCtrl = Get.find<AuthController>();
+  return authCtrl.chatUser;
+  // final _user = FirebaseAuth.instance.currentUser;
+  // User? otherUser;
+  // if (room.type == RoomType.direct) {
+  //   try {
+  //     otherUser = room.users.firstWhere(
+  //       (u) => u.id == _user!.uid,
+  //     );
+  //   } catch (e) {
+  //     Logger().e(e);
+  //   }
+  // }
+  // return otherUser;
 }
 
-getLastMessage({required types.Room room}) {
+getLastMessage({required Room room}) {
   // Last Message
   String lastMessage =
       room.metadata != null ? room.metadata!['lastMessage'] ?? "" : "";
   return lastMessage;
 }
 
-getUnreadCount({required types.Room room}) {
-  final _user = FirebaseAuth.instance.currentUser;
+getUnreadCount({required Room room}) {
+  // final _user = FirebaseAuth.instance.currentUser;
+  final authCtrl = Get.find<AuthController>();
+  User? _user = authCtrl.chatUser;
   // Unread Message Count
   return room.metadata != null
       ? room.metadata!['messageCount'] != null
-          ? room.metadata![_user!.uid] != null
-              ? room.metadata!['messageCount'] - room.metadata![_user.uid]
+          ? room.metadata![_user!.id] != null
+              ? room.metadata!['messageCount'] - room.metadata![_user.id]
               : room.metadata!['messageCount']
           : 0
       : 0;
 }
 
-types.Room? getFeedRoom({required List<types.Room> rooms}) {
-  types.Room? _feedRoom;
-  for (types.Room room in rooms) {
-    if (room.type == types.RoomType.group &&
+Room? getFeedRoom({required List<Room> rooms}) {
+  Room? _feedRoom;
+  for (Room room in rooms) {
+    if (room.type == RoomType.group &&
         room.name == DatabaseConfig.FEED_ROOM_NAME) {
       _feedRoom = room;
     }
@@ -101,7 +106,7 @@ types.Room? getFeedRoom({required List<types.Room> rooms}) {
   return _feedRoom;
 }
 
-Future<types.User?> getUserWithID(String id) async {
+Future<User?> getUserWithID(String id) async {
   final userRef =
       FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
   return await userRef.doc(id).get().then((doc) async {
@@ -109,7 +114,7 @@ Future<types.User?> getUserWithID(String id) async {
       final data = doc.data();
       data!['id'] = id;
 
-      types.User _user = types.User.fromJson(data);
+      User _user = User.fromJson(data);
       return _user;
     } else {
       return null;

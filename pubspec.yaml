@@ -95,6 +95,9 @@ dependencies:
   flutter_firebase_chat_core: ^1.6.7
   flutter_chat_types: ^3.6.2
   logger: # log events in clear way insted of (print)
+  uuid: ^3.0.7
+  # carousel_slider: ^4.2.1
+
 
 
 dev_dependencies:

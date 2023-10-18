@@ -54,7 +54,7 @@ Widget myDrawer() {
                 ),
                 onTap: () {
                   // Handle option 1 press
-                  controller.signOut();
+                  // controller.signOut();
                 },
               );
             }),

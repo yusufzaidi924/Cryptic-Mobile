@@ -54,6 +54,8 @@ class DatabaseConfig {
 
   static const String USER_COLLECTION = "users";
   static const String CHAT_COLLECTION = "rooms";
+  static const String CHAT_REQUEST_COLLECTION = "requests";
+
   static const String REPORT_COLLECTION = "reports";
   static const String FEED_ROOM_ID = "8ITdjr6jCtv1xJ9hpWk1";
   static const String LOGIN_LOG_COLLECTION = "loginlogs";

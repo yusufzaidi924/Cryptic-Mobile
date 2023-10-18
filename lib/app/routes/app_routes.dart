@@ -28,6 +28,9 @@ abstract class Routes {
   static const MY_PROFILE = _Paths.MY_PROFILE;
   static const ACCOUNT_SECURITY = _Paths.ACCOUNT_SECURITY;
   static const CHAT_LIST = _Paths.CHAT_LIST;
+  static const CREATE_CHAT = _Paths.CREATE_CHAT;
+  static const CHAT_ROOM = _Paths.CHAT_ROOM;
+  static const REQUEST_CHAT = _Paths.REQUEST_CHAT;
 }
 
 abstract class _Paths {
@@ -58,4 +61,7 @@ abstract class _Paths {
   static const MY_PROFILE = '/my-profile';
   static const ACCOUNT_SECURITY = '/account-security';
   static const CHAT_LIST = '/chat-list';
+  static const CREATE_CHAT = '/create-chat';
+  static const CHAT_ROOM = '/chat-room';
+  static const REQUEST_CHAT = '/request-chat';
 }

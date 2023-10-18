@@ -7,10 +7,12 @@ import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/local_storage.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:edmonscan/utils/regex.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:get/get.dart';
 
 import 'package:edmonscan/app/components/custom_snackbar.dart';
@@ -118,43 +120,43 @@ class AuthController extends GetxController {
    * On SignIn
    */
   onSignIn() async {
-    Get.toNamed(Routes.CHAT_LIST);
+    // Get.toNamed(Routes.CHAT_LIST);
 
-    // EasyLoading.show();
-    // try {
-    //   String phone = phoneNumber.value;
-    //   String password = loginPasswordController.text;
-    //   final data = {
-    //     'phone': phone,
-    //     'password': password,
-    //   };
+    EasyLoading.show();
+    try {
+      String phone = phoneNumber.value;
+      String password = loginPasswordController.text;
+      final data = {
+        'phone': phone,
+        'password': password,
+      };
 
-    //   final res = await UserRepository.login(data);
-    //   Logger().i(res);
-    //   if (res['statusCode'] == 200) {
-    //     EasyLoading.dismiss();
-    //     CustomSnackBar.showCustomSnackBar(
-    //         title: "SUCCESS", message: "OTP code sent to your phone number.");
+      final res = await UserRepository.login(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        EasyLoading.dismiss();
+        CustomSnackBar.showCustomSnackBar(
+            title: "SUCCESS", message: "OTP code sent to your phone number.");
 
-    //     isSignInFlow = true;
+        isSignInFlow = true;
 
-    //     //  GO TO OPT VERIFY PAGE
-    //     Get.toNamed(Routes.VERIFY_PAGE);
-    //   } else {
-    //     EasyLoading.dismiss();
+        //  GO TO OPT VERIFY PAGE
+        Get.toNamed(Routes.VERIFY_PAGE);
+      } else {
+        EasyLoading.dismiss();
 
-    //     CustomSnackBar.showCustomErrorSnackBar(
-    //         title: "ERROR",
-    //         message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
-    //   }
-    // } catch (e) {
-    //   EasyLoading.dismiss();
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
 
-    //   Logger().e(e.toString());
-    //   CustomSnackBar.showCustomErrorSnackBar(
-    //       title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
-    // }
-    // Get.toNamed(Routes.VERIFY_PAGE);
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+    Get.toNamed(Routes.VERIFY_PAGE);
   }
 
   // /**********************
@@ -850,6 +852,24 @@ class AuthController extends GetxController {
         final res = await UserRepository.saveUserDetail(data);
         Logger().i(res);
         if (res['statusCode'] == 200) {
+          // Update User Model Data
+          _userModel.value?.firstName = detailFirstNameController.text;
+          _userModel.value?.lastName = detailLastNameController.text;
+          _userModel.value?.street = streetController.text;
+          _userModel.value?.city = cityController.text;
+          _userModel.value?.state = detailState;
+          _userModel.value?.zipcode = int.parse(zipController.text);
+          _userModel.value?.birthday = DateTime.tryParse(birthController.text);
+          _userModel.value?.email = detailEmailController.text;
+          _userModel.value?.licenseState = detailLicenseState;
+          _userModel.value?.licenseNumber = licenseNumberController.text;
+          _userModel.value?.frontID = fID.value;
+          _userModel.value?.backID = bID.value;
+          _userModel.value?.selfie = selfie.value;
+
+          // Update Firebase User
+          _chatUser.value = await updateChatUser(authUser!);
+
           EasyLoading.dismiss();
           CustomSnackBar.showCustomSnackBar(
               title: "SUCCESS",
@@ -989,8 +1009,13 @@ class AuthController extends GetxController {
       (doc) async {
         if (doc.exists) {
           final data = doc.data();
+          data!['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+          data['id'] = doc.id;
+          data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+          data['role'] = 'user';
+          data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
+          User _user = User.fromJson(data);
 
-          User _user = User.fromJson(data!);
           return _user;
         } else {
           User _user = new User(
@@ -998,20 +1023,43 @@ class AuthController extends GetxController {
               imageUrl: user.selfie,
               firstName: user.firstName,
               lastName: user.lastName,
-              lastSeen: 0,
-              createdAt: DateTime.now().millisecondsSinceEpoch,
-              updatedAt: DateTime.now().millisecondsSinceEpoch,
               role: Role.user,
               metadata: {'status': 'online', 'phone': user.phone});
 
-          await FirebaseFirestore.instance
-              .collection(DatabaseConfig.USER_COLLECTION)
-              .doc(user.id.toString())
-              .set(_user.toJson());
+          // await FirebaseFirestore.instance
+          //     .collection(DatabaseConfig.USER_COLLECTION)
+          //     .doc(user.id.toString())
+          //     .set(_user.toJson());
+          await FirebaseChatCore.instance.createUserInFirestore(_user);
           return _user;
         }
       },
     );
+  }
+
+  /****************************
+   * Update User Data 
+   */
+  Future<User> updateChatUser(UserModel user) async {
+    final usersCollection =
+        FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
+    final userId = user.id; // Replace with the user ID you want to update
+
+    final userDocRef = usersCollection.doc(userId.toString());
+    User newUser = new User(
+      id: chatUser!.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      imageUrl: user.selfie,
+      lastSeen: chatUser!.lastSeen,
+      metadata: chatUser!.metadata,
+      role: chatUser!.role,
+      createdAt: chatUser!.createdAt,
+      updatedAt: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    await userDocRef.update(newUser.toJson());
+    return newUser;
   }
 
   // saveUser({
