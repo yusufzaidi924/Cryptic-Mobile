@@ -5,6 +5,7 @@ import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/views/testCall.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
@@ -165,7 +166,9 @@ class ChatRoomController extends GetxController {
           room!,
           "${me?.firstName} ${me?.lastName}",
           "Sent you a media file...",
-          avatar: me?.imageUrl,
+          avatar: me?.imageUrl != null
+              ? '${Network.BASE_URL}${me!.imageUrl}'
+              : null,
         );
         EasyLoading.dismiss();
       } catch (e) {
@@ -238,13 +241,11 @@ class ChatRoomController extends GetxController {
 
         // // Send Notification
         final me = authCtrl.chatUser;
-        await this.sendNotification(
-          room!,
-          "${me?.firstName} ${me?.lastName}",
-          "📷 Sent you an image...",
-          avatar: me?.imageUrl,
-          image: uri,
-        );
+        await this.sendNotification(room!, "${me?.firstName} ${me?.lastName}",
+            "📷 Sent you an image...",
+            avatar: me?.imageUrl != null
+                ? '${Network.BASE_URL}${me!.imageUrl}'
+                : null);
 
         EasyLoading.dismiss();
       } catch (e) {
@@ -334,11 +335,9 @@ class ChatRoomController extends GetxController {
     // SEND NOTIFICATION
     final me = authCtrl.chatUser;
     await this.sendNotification(
-      room!,
-      "${me?.firstName} ${me?.lastName}",
-      "${message.text}",
-      avatar: me?.imageUrl,
-    );
+        room!, "${me?.firstName} ${me?.lastName}", "${message.text}",
+        avatar:
+            me?.imageUrl != null ? '${Network.BASE_URL}${me!.imageUrl}' : null);
   }
 
   /*******************************
