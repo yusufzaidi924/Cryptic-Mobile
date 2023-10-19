@@ -127,8 +127,8 @@ class CallPageController extends GetxController {
 
     final params = Get.arguments;
     _user.value = params['user'];
-    channelID = params['roomID'] ?? "CritacyCallChannel";
-    // onInitCall();
+    callToken = channelID = params['token'];
+    onInitCall();
     sendCallRequestNotification();
   }
 
@@ -177,9 +177,13 @@ class CallPageController extends GetxController {
    * On Init Call
    */
   onInitCall() async {
-    String? token = await getTokenFromServer();
-    if (token != null) {
-      await initAgora(token);
+    if (callToken == null) {
+      callToken = await getTokenFromServer();
+      if (callToken != null) {
+        await initAgora(callToken!);
+      }
+    } else {
+      await initAgora(callToken!);
     }
   }
 
@@ -206,8 +210,8 @@ class CallPageController extends GetxController {
   final _remoteUserUID = Rxn<int>(null);
   int? get remoteUserUID => _remoteUserUID.value;
 
-  String channelID = '';
-  String callToken = '';
+  String channelID = DateTime.now().millisecondsSinceEpoch.toString();
+  String? callToken = '';
 
   /************************
    * Init Argora Engine
@@ -234,6 +238,9 @@ class CallPageController extends GetxController {
           _isLocalUserJoin.value = true;
           startTimer();
           update();
+
+          // SEND CALL REQUEST NOTIFICATION
+          sendCallRequestNotification();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           Logger().i("remote user $remoteUid joined");

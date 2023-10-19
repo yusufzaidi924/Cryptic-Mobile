@@ -388,11 +388,9 @@ class ChatRoomController extends GetxController {
    */
   onCall() async {
     if (room != null) {
-      int time = DateTime.now().millisecondsSinceEpoch;
       User? otherUser = getOtherUser(room: room!);
       Get.delete<CallPageController>();
-      Get.toNamed(Routes.CALL_PAGE,
-          arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
+      Get.toNamed(Routes.CALL_PAGE, arguments: {'user': otherUser});
       // Navigator.push(
       //   Get.context!,
       //   MaterialPageRoute(builder: (context) => JoinChannelVideo()),

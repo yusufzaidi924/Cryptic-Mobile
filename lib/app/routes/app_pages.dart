@@ -25,6 +25,8 @@ import '../modules/CreateChat/bindings/create_chat_binding.dart';
 import '../modules/CreateChat/views/create_chat_view.dart';
 import '../modules/Home/bindings/home_binding.dart';
 import '../modules/Home/views/home_view.dart';
+import '../modules/IncomingCall/bindings/incoming_call_binding.dart';
+import '../modules/IncomingCall/views/incoming_call_view.dart';
 import '../modules/MyPMPage/bindings/my_p_m_page_binding.dart';
 import '../modules/MyPMPage/views/my_p_m_page_view.dart';
 import '../modules/MyProfile/bindings/my_profile_binding.dart';
@@ -195,6 +197,11 @@ class AppPages {
       name: _Paths.CALL_PAGE,
       page: () => CallPageView(),
       binding: CallPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.INCOMING_CALL,
+      page: () => IncomingCallView(),
+      binding: IncomingCallBinding(),
     ),
   ];
 }

@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -128,7 +130,7 @@ class AwesomeNotificationsHelper {
                 payload, // data of the notification (it will be used when user clicks on notification)
             notificationLayout: notificationLayout ??
                 NotificationLayout
-                    .Default, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
+                    .BigPicture, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
             autoDismissible:
                 true, // dismiss notification when user clicks on it
             summary:
@@ -168,7 +170,7 @@ class AwesomeNotificationsHelper {
             payload:
                 payload, // data of the notification (it will be used when user clicks on notification)
             notificationLayout: NotificationLayout
-                .BigText, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
+                .BigPicture, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
             autoDismissible:
                 true, // dismiss notification when user clicks on it
             // summary:
@@ -219,6 +221,8 @@ class NotificationController {
 
     Logger().i('👍👍👍 ------ TAP NOTIFICATION ----- 👍👍👍');
     Logger().d(payload);
+
+    handleNotificationTap(payload);
 
     // Get.offAll(() => const SocialInboxView());
 
@@ -300,4 +304,26 @@ class NotificationChannels {
   static String get callChannelGroupKey => "call_channel_group";
   static String get callChannelGroupName => "Call Notifications Channels";
   static String get callChannelDescription => "Call Notifications Channels";
+}
+
+/*********************************
+ * Handle Notification after Tap it
+ */
+Future<void> handleNotificationTap(Map<String, String?>? payload) async {
+  if (payload != null) {
+    String type = payload['type']!;
+    switch (type) {
+      case MessageType.CALL:
+        if (payload['content'] != null) {
+          final data = jsonDecode(payload['content']!);
+          Logger().d(data);
+          Get.toNamed(Routes.INCOMING_CALL, arguments: {'data': data});
+        }
+        break;
+      case MessageType.MESSAGE:
+        break;
+
+      default:
+    }
+  }
 }

@@ -475,10 +475,7 @@ class AuthController extends GetxController {
    */
   initNotification() async {
     // inti fcm services
-    await FcmHelper.initFcm();
-
-    // initialize local notifications service
-    await AwesomeNotificationsHelper.init();
+    await FcmHelper.generateFcmToken();
   }
 
   saveUserData(token, data) async {

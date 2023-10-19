@@ -96,7 +96,7 @@ class FcmHelper {
   /// token successfully
   static _sendFcmTokenToServer(String token) {
     final AuthCtrl = Get.find<AuthController>();
-    // var token = MySharedPref.getFcmToken();
+    var token = MySharedPref.getFcmToken();
     // TODO SEND FCM TOKEN TO SERVER
     try {
       final myAuth = AuthCtrl.chatUser;
@@ -233,56 +233,61 @@ class FcmHelper {
   /// https://stackoverflow.com/a/67083337
   @pragma('vm:entry-point')
   static Future<void> _fcmBackgroundHandler(RemoteMessage message) async {
-    Map<String, dynamic>? data =
-        (message.data != null && message.data['content'] != null)
-            ? jsonDecode(message.data['content'])
-            : null;
-    AwesomeNotificationsHelper.showNotification(
-      id: 1,
-      title: message.notification?.title ?? 'Title',
-      body: message.notification?.body ?? 'Body',
-      payload: message.data
-          .cast(), // pass payload to the notification card so you can use it (when user click on notification)
-      largeIcon: data?['largeIcon'],
+    // Map<String, dynamic>? data =
+    //     (message.data != null && message.data['content'] != null)
+    //         ? jsonDecode(message.data['content'])
+    //         : null;
+    // AwesomeNotificationsHelper.showNotification(
+    //   id: 1,
+    //   title: message.notification?.title ?? 'Title',
+    //   body: message.notification?.body ?? 'Body',
+    //   payload: message.data
+    //       .cast(), // pass payload to the notification card so you can use it (when user click on notification)
+    //   largeIcon: data?['largeIcon'],
 
-      notificationLayout: NotificationLayout.Messaging,
-    );
+    //   notificationLayout: NotificationLayout.Messaging,
+    // );
+    handleNotification(message);
   }
 
   //handle fcm notification when app is open
   static Future<void> _fcmForegroundHandler(RemoteMessage message) async {
-    print("${jsonEncode(message)}");
-    Logger().d(message.notification?.body);
+    handleNotification(message);
+    // Logger().d(message.notification?.body);
 
-    Map<String, dynamic>? data =
-        (message.data != null && message.data['content'] != null)
-            ? jsonDecode(message.data['content'])
-            : null;
+    // Map<String, dynamic>? data =
+    //     (message.data != null && message.data['content'] != null)
+    //         ? jsonDecode(message.data['content'])
+    //         : null;
 
-    AwesomeNotificationsHelper.showNotification(
-      id: 1,
-      title: message.notification?.title ?? 'Title',
-      body: message.notification?.body ?? 'Body',
-      payload: message.data
-          .cast(), // pass payload to the notification card so you can use it (when user click on notification)
-      largeIcon: data?['largeIcon'],
-      notificationLayout: NotificationLayout.BigPicture,
-      actionButtons: [
-        NotificationActionButton(
-            key: "REDIRECT", label: "Redirect", autoDismissible: true),
-        NotificationActionButton(
-            key: "DISMISS",
-            label: "Dismiss",
-            actionType: ActionType.DismissAction,
-            isDangerousOption: true,
-            autoDismissible: true),
-      ],
-    );
+    // AwesomeNotificationsHelper.showNotification(
+    //   id: 1,
+    //   title: message.notification?.title ?? 'Title',
+    //   body: message.notification?.body ?? 'Body',
+    //   payload: message.data
+    //       .cast(), // pass payload to the notification card so you can use it (when user click on notification)
+    //   largeIcon: data?['largeIcon'],
+    //   notificationLayout: NotificationLayout.BigPicture,
+    //   actionButtons: [
+    //     NotificationActionButton(
+    //         key: "REDIRECT", label: "Redirect", autoDismissible: true),
+    //     NotificationActionButton(
+    //         key: "DISMISS",
+    //         label: "Dismiss",
+    //         actionType: ActionType.DismissAction,
+    //         isDangerousOption: true,
+    //         autoDismissible: true),
+    //   ],
+    // );
+
+    handleNotification(message);
   }
 
-  handleNotification(
+  static void handleNotification(
     RemoteMessage message,
   ) async {
+    Logger().i('✨----- FCM  Handler ------> ${jsonEncode(message.data)}');
+
     String type = message.data['type'];
     Map<String, dynamic>? data =
         (message.data != null && message.data['content'] != null)
@@ -300,6 +305,20 @@ class FcmHelper {
         );
         break;
 
+      case '${MessageType.MESSAGE}':
+        AwesomeNotificationsHelper.showNotification(
+          id: 1,
+          title: message.notification?.title ?? 'Title',
+          body: message.notification?.body ?? 'Body',
+          payload: message.data
+              .cast(), // pass payload to the notification card so you can use it (when user click on notification)
+          largeIcon: data?['largeIcon'],
+          summary: message.notification?.body ?? 'Summary',
+
+          notificationLayout: NotificationLayout.Messaging,
+        );
+        break;
+
       default:
         AwesomeNotificationsHelper.showNotification(
           id: 1,
@@ -308,9 +327,10 @@ class FcmHelper {
           payload: message.data
               .cast(), // pass payload to the notification card so you can use it (when user click on notification)
           largeIcon: data?['largeIcon'],
-
-          notificationLayout: NotificationLayout.Messaging,
+          summary: message.notification?.body ?? 'Summary',
+          notificationLayout: NotificationLayout.BigPicture,
         );
+        break;
     }
   }
 }

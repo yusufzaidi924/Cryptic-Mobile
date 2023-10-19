@@ -1,4 +1,6 @@
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
+import 'package:edmonscan/app/services/awesome_notifications_helper.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +31,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   Get.put(AuthController());
+
+  // inti fcm services
+  await FcmHelper.initFcm();
+
+  // initialize local notifications service
+  await AwesomeNotificationsHelper.init();
 
   runApp(
     ScreenUtilInit(
