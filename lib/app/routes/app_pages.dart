@@ -11,6 +11,8 @@ import '../modules/Auth/views/sign_up_view.dart';
 import '../modules/Auth/views/signup_detail_view.dart';
 import '../modules/Auth/views/verify_result_view.dart';
 import '../modules/Auth/views/verify_view.dart';
+import '../modules/CallPage/bindings/call_page_binding.dart';
+import '../modules/CallPage/views/call_page_view.dart';
 import '../modules/ChatList/bindings/chat_list_binding.dart';
 import '../modules/ChatList/bindings/chat_list_binding.dart';
 import '../modules/ChatList/views/chat_list_view.dart';
@@ -33,7 +35,6 @@ import '../modules/PaymentResultPage/bindings/payment_result_page_binding.dart';
 import '../modules/PaymentResultPage/views/payment_result_page_view.dart';
 import '../modules/PhotoPreview/bindings/photo_preview_binding.dart';
 import '../modules/PhotoPreview/views/photo_preview_view.dart';
-
 import '../modules/RequestPayment/bindings/request_payment_binding.dart';
 import '../modules/RequestPayment/views/request_payment_view.dart';
 import '../modules/SettingPage/bindings/setting_page_binding.dart';
@@ -189,6 +190,11 @@ class AppPages {
       name: _Paths.CHAT_ROOM,
       page: () => ChatRoomView(),
       binding: ChatRoomBinding(),
+    ),
+    GetPage(
+      name: _Paths.CALL_PAGE,
+      page: () => CallPageView(),
+      binding: CallPageBinding(),
     ),
   ];
 }

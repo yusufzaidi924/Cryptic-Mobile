@@ -1,6 +1,7 @@
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/local_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -125,11 +126,18 @@ class VerifyResultView extends GetView {
                 MaterialButton(
                   color: LightThemeColors.primaryColor,
                   minWidth: double.infinity,
-                  onPressed: () {
+                  onPressed: () async {
                     FocusManager.instance.primaryFocus?.unfocus();
 
                     if (controller.authUser!.status == 2) {
-                      Get.offAllNamed(Routes.WELCOME);
+                      bool? welcomePass = await getDataInLocal(
+                          key: AppLocalKeys.WELCOME_PASS,
+                          type: StorableDataType.BOOL);
+                      if (welcomePass == null || !welcomePass) {
+                        Get.offAllNamed(Routes.WELCOME);
+                      } else {
+                        Get.offAllNamed(Routes.HOME);
+                      }
                     } else if (controller.authUser!.status == -1) {
                       // rejected
                       Get.toNamed(Routes.SIGNUP_DETAIL);

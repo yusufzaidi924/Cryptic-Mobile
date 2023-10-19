@@ -40,23 +40,23 @@ class ChatRoomView extends GetView<ChatRoomController> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              otherUser != null
+              otherUser?.imageUrl != null
                   ? CircleAvatar(
                       backgroundColor: Color.fromARGB(182, 211, 211, 211),
                       backgroundImage: NetworkImage(
-                          "${Network.BASE_URL}${otherUser.imageUrl}"),
+                          "${Network.BASE_URL}${otherUser!.imageUrl}"),
                       radius: 28,
                     )
                   : CircleAvatar(
                       backgroundColor: Color.fromARGB(182, 211, 211, 211),
-                      backgroundImage: AssetImage("assets/images/avatar.png"),
+                      backgroundImage: AssetImage("assets/images/default.png"),
                       radius: 28,
                     ),
               SizedBox(
                 width: 20,
               ),
               Text(
-                '${otherUser?.firstName ?? ""} ${otherUser?.lastName ?? ""}',
+                '${otherUser?.firstName ?? "Criptacy"} ${otherUser?.lastName ?? "User"}',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -76,6 +76,14 @@ class ChatRoomView extends GetView<ChatRoomController> {
           // title: const Text('ChatRoomView'),
           // centerTitle: true,
           actions: [
+            IconButton(
+                onPressed: () {
+                  controller.onCall();
+                },
+                icon: Icon(
+                  Icons.call,
+                  color: Colors.white,
+                )),
             PopupMenuButton<String>(
               onSelected: (String result) {
                 // Perform an action when a menu item is selected
@@ -83,16 +91,37 @@ class ChatRoomView extends GetView<ChatRoomController> {
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 PopupMenuItem<String>(
-                  value: 'option1',
-                  child: Text('Option 1'),
+                  value: 'block',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      Icons.block_outlined,
+                      color: Colors.red,
+                    ),
+                    title: Text('Block User'),
+                  ),
                 ),
                 PopupMenuItem<String>(
-                  value: 'option2',
-                  child: Text('Option 2'),
+                  value: 'report',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      Icons.send_rounded,
+                      color: Colors.red,
+                    ),
+                    title: Text('Report User'),
+                  ),
                 ),
                 PopupMenuItem<String>(
-                  value: 'option3',
-                  child: Text('Option 3'),
+                  value: 'delete',
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: Icon(
+                      Icons.delete_forever_outlined,
+                      color: Colors.red,
+                    ),
+                    title: Text('Delete Chat'),
+                  ),
                 ),
               ],
             ),
@@ -124,13 +153,14 @@ class ChatRoomView extends GetView<ChatRoomController> {
                         inputTextCursorColor: LightThemeColors.primaryColor,
                       ),
                       messages: controller.messages,
+                      // showUserAvatars: false,
                       onAttachmentPressed: controller.handleAttachmentPressed,
                       onMessageTap: (BuildContext context, message) {
                         controller.handleMessageTap(message);
                       },
                       onPreviewDataFetched: controller.handlePreviewDataFetched,
                       onSendPressed: controller.handleSendPressed,
-                      showUserAvatars: true,
+                      showUserAvatars: false,
                       showUserNames: true,
                       user: controller.authCtrl.chatUser!,
                     ),

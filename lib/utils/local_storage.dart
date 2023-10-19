@@ -32,6 +32,9 @@ class AppLocalKeys {
 
   //theme
   static const String THEME = 'theme';
+
+  // Welcome Page
+  static const String WELCOME_PASS = 'welcome_pass';
 }
 
 Future<void> storeDataToLocal(

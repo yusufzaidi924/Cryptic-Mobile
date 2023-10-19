@@ -116,3 +116,8 @@ class AboutUsLinks {
   static const String REFUND_POLICY =
       'https://jumpshare.com/v/YJPIXmYFoRoKW06QbIuN';
 }
+
+class ArgoraConf {
+  static const APPID = "852824acc30b414494607fab503ae55c";
+  static const TOKEN = "0b25c933ddfb49298ebdca7a9fe5b04f";
+}

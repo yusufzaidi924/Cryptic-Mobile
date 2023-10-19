@@ -138,7 +138,7 @@ class ChatListView extends GetView<ChatListController> {
                         ),
                       ),
                       Text(
-                        'Requests (25)',
+                        'Requests (${controller.requests.length})',
                         style: TextStyle(
                           color: controller.tabIndex == 1
                               ? Colors.white

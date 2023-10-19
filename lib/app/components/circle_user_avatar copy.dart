@@ -32,7 +32,7 @@ Widget CircleUserAvatar({
     }
 
     // Image
-    img = "${Network.BASE_URL}${user.imageUrl}";
+    img = user.imageUrl;
 
     // Name
     name = user.firstName;
@@ -70,21 +70,34 @@ Widget CircleUserAvatar({
     },
     child: Stack(
       children: [
-        CircleAvatar(
-          radius: radius,
-          backgroundColor: backgColor,
-          backgroundImage: img != null ? NetworkImage(img) : null,
-          child: img != null
-              ? Container()
-              : Text(
-                  name != null ? name[0].toUpperCase() : "",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-        ),
+        (img != null)
+            ? CircleAvatar(
+                radius: radius,
+                backgroundColor: backgColor,
+                backgroundImage: NetworkImage("${Network.BASE_URL}${img}"),
+              )
+            : CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage('assets/images/default.png'),
+                radius: radius,
+              ),
+        // CircleAvatar(
+        //   radius: radius,
+        //   backgroundColor: backgColor,
+        //   backgroundImage: img != null
+        //       ? NetworkImage(img)
+        //       : AssetImage('assets/images/default.png'),
+        //   // child: img != null
+        //   //     ? Container()
+        //   //     : Text(
+        //   //         name != null ? name[0].toUpperCase() : "",
+        //   //         style: const TextStyle(
+        //   //           color: Colors.white,
+        //   //           fontSize: 20,
+        //   //           fontWeight: FontWeight.bold,
+        //   //         ),
+        //   //       ),
+        // ),
         Positioned(
           bottom: 0,
           right: 0,

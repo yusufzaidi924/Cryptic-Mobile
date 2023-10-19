@@ -31,6 +31,7 @@ abstract class Routes {
   static const CREATE_CHAT = _Paths.CREATE_CHAT;
   static const CHAT_ROOM = _Paths.CHAT_ROOM;
   static const REQUEST_CHAT = _Paths.REQUEST_CHAT;
+  static const CALL_PAGE = _Paths.CALL_PAGE;
 }
 
 abstract class _Paths {
@@ -64,4 +65,5 @@ abstract class _Paths {
   static const CREATE_CHAT = '/create-chat';
   static const CHAT_ROOM = '/chat-room';
   static const REQUEST_CHAT = '/request-chat';
+  static const CALL_PAGE = '/call-page';
 }

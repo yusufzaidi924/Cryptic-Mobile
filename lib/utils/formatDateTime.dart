@@ -95,3 +95,9 @@ String chatDate(DateTime date, {bool numericDates = true}) {
     return 'Just now';
   }
 }
+
+String formatTimerTime(int second) {
+  int minutes = second ~/ 60;
+  int seconds = second % 60;
+  return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+}

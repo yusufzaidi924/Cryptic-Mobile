@@ -2,8 +2,11 @@ import 'dart:io';
 
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
+import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
+import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
+import 'package:edmonscan/utils/chatUtil/chat_util.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -368,6 +371,19 @@ class ChatRoomController extends GetxController {
     }
     final updateRoom1 = room!.copyWith(metadata: metadata);
     MyChatCore.instance.updateRoom(updateRoom1);
+  }
+
+  /***********************************
+   * On Call
+   */
+  onCall() async {
+    if (room != null) {
+      int time = DateTime.now().millisecondsSinceEpoch;
+      User? otherUser = getOtherUser(room: room!);
+      Get.delete<CallPageController>();
+      Get.toNamed(Routes.CALL_PAGE,
+          arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
+    }
   }
 
   @override

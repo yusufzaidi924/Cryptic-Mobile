@@ -55,14 +55,22 @@ class CreateChatView extends GetView<CreateChatController> {
                     return ListTile(
                       contentPadding: EdgeInsets.all(0),
                       // minVerticalPadding: 10,
-                      leading: CircleAvatar(
-                        backgroundColor: Color.fromARGB(132, 217, 217, 217),
-                        backgroundImage:
-                            NetworkImage('${Network.BASE_URL}${user.imageUrl}'),
-                        radius: 30,
-                      ),
+                      leading: user.imageUrl != null
+                          ? CircleAvatar(
+                              backgroundColor:
+                                  Color.fromARGB(132, 217, 217, 217),
+                              backgroundImage: NetworkImage(
+                                  '${Network.BASE_URL}${user.imageUrl}'),
+                              radius: 30,
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Colors.white,
+                              backgroundImage:
+                                  AssetImage('assets/images/default.png'),
+                              radius: 30,
+                            ),
                       title: Text(
-                        "${user.firstName} ${user.lastName}",
+                        "${user.firstName ?? 'Criptacy'} ${user.lastName ?? 'User'}",
                         style: TextStyle(
                           color: Color(0xFF421EB7),
                           fontSize: 16,

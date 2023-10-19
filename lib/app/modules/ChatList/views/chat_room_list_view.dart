@@ -61,8 +61,7 @@ class ChatRoomListView extends GetView<ChatListController> {
     //     : false;
     // bool isNSFWMsg = TextFilter.checkMessage(lastMessage);
 
-    return ("${otherUser!.firstName} ${otherUser.lastName}".contains(search) ||
-            otherUser.lastName!.contains(search))
+    return ("${otherUser!.firstName} ${otherUser.lastName}".contains(search))
         ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -78,7 +77,7 @@ class ChatRoomListView extends GetView<ChatListController> {
                 // )),
                 leading: CircleUserAvatar(user: otherUser),
                 title: Text(
-                  "${otherUser.firstName} ${otherUser.lastName}",
+                  "${otherUser.firstName ?? 'Criptacy'} ${otherUser.lastName ?? 'User'}",
                   style: TextStyle(
                     color: Color(0xFF421EB7),
                     fontSize: 16,
