@@ -127,9 +127,10 @@ class CallPageController extends GetxController {
 
     final params = Get.arguments;
     _user.value = params['user'];
-    callToken = channelID = params['token'];
+    callToken = params['token'];
+    channelID = params['channelID'];
+
     onInitCall();
-    sendCallRequestNotification();
   }
 
   @override
@@ -143,47 +144,18 @@ class CallPageController extends GetxController {
     _dispose();
   }
 
-  /*****************
-   * Get Call Token
-   */
-  Future<String?> getTokenFromServer() async {
-    try {
-      final data = {
-        'channelId': channelID,
-        'uid': user?.id ?? 0,
-      };
-
-      final res = await AppRepository.getCallToken(data);
-      Logger().i(res);
-      if (res['statusCode'] == 200) {
-        String token = res['data']['token'];
-        Logger().i(token);
-        return token;
-      } else {
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: "ERROR",
-            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
-        return null;
-      }
-    } catch (e) {
-      Logger().e(e.toString());
-      CustomSnackBar.showCustomErrorSnackBar(
-          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
-      return null;
-    }
-  }
-
   /***********************************
    * On Init Call
    */
   onInitCall() async {
-    if (callToken == null) {
-      callToken = await getTokenFromServer();
-      if (callToken != null) {
-        await initAgora(callToken!);
-      }
-    } else {
+    if (callToken != null && channelID != null) {
       await initAgora(callToken!);
+    } else {
+      // Get.back();
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR",
+          message: "Something went wrong. Please create call again!");
+      // Get.back();
     }
   }
 
@@ -210,8 +182,8 @@ class CallPageController extends GetxController {
   final _remoteUserUID = Rxn<int>(null);
   int? get remoteUserUID => _remoteUserUID.value;
 
-  String channelID = DateTime.now().millisecondsSinceEpoch.toString();
-  String? callToken = '';
+  String? channelID;
+  String? callToken;
 
   /************************
    * Init Argora Engine
@@ -268,7 +240,7 @@ class CallPageController extends GetxController {
 
     await rtcEngine!.joinChannel(
       token: token,
-      channelId: channelID,
+      channelId: channelID!,
       uid: int.parse(authCtrl.chatUser?.id ?? '0'),
       options: const ChannelMediaOptions(),
     );
@@ -300,7 +272,11 @@ class CallPageController extends GetxController {
         message:
             '${authCtrl.chatUser?.firstName ?? "Criptacy"} ${authCtrl.chatUser?.lastName ?? "User"} is calling you now.',
         largeIcon: 'https://placebear.com/g/200/300',
-        payload: {'token': callToken, 'user': authCtrl.chatUser!.toJson()},
+        payload: {
+          'token': callToken,
+          'channelID': channelID,
+          'user': authCtrl.chatUser!.toJson()
+        },
       );
     }
   }

@@ -4,12 +4,14 @@ import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/views/testCall.dart';
+import 'package:edmonscan/app/repositories/app_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/chatUtil/chat_util.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -389,12 +391,51 @@ class ChatRoomController extends GetxController {
   onCall() async {
     if (room != null) {
       User? otherUser = getOtherUser(room: room!);
-      Get.delete<CallPageController>();
-      Get.toNamed(Routes.CALL_PAGE, arguments: {'user': otherUser});
+      String channelName =
+          'room.idDateTime.now().millisecondsSinceEpoch.toString()';
+      String? token = await getTokenFromServer(channelName);
+      if (token != null) {
+        Get.delete<CallPageController>();
+        Get.toNamed(Routes.CALL_PAGE, arguments: {
+          'user': otherUser,
+          'token': token,
+          'channelID': channelName
+        });
+      }
       // Navigator.push(
       //   Get.context!,
       //   MaterialPageRoute(builder: (context) => JoinChannelVideo()),
       // );
+    }
+  }
+
+  /*****************
+   * Get Call Token
+   */
+  Future<String?> getTokenFromServer(String channelName) async {
+    try {
+      final data = {
+        'channelId': channelName,
+        'uid': authCtrl.chatUser?.id ?? 0,
+      };
+
+      final res = await AppRepository.getCallToken(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        String token = res['data']['token'];
+        Logger().i(token);
+        return token;
+      } else {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        return null;
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+      return null;
     }
   }
 

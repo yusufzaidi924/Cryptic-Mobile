@@ -11,6 +11,7 @@ class IncomingCallController extends GetxController {
   final _user = Rxn<User>();
   User? get user => _user.value;
   String? callToken;
+  String? channelID;
   @override
   void onInit() {
     super.onInit();
@@ -20,6 +21,8 @@ class IncomingCallController extends GetxController {
     print(params['data']);
     final payload = data['payload'];
     callToken = payload['token'];
+    channelID = payload['channelID'];
+
     Logger().i('🌈 ---------- Call Token ------🌈');
     Logger().d(callToken);
     final user = payload['user'];
@@ -33,9 +36,12 @@ class IncomingCallController extends GetxController {
   onCancelCall() async {}
 
   onAcceptCall() async {
-    if (user != null && callToken != null) {
-      Get.toNamed(Routes.CALL_PAGE,
-          arguments: {'user': user, 'token': callToken});
+    if (user != null && callToken != null && channelID != null) {
+      Get.toNamed(Routes.CALL_PAGE, arguments: {
+        'user': user,
+        'token': callToken,
+        'channelID': channelID
+      });
     } else {
       CustomSnackBar.showCustomErrorSnackBar(
           title: "CALL ERROR", message: "Something went wrong! Please retry!");
