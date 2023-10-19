@@ -130,7 +130,10 @@ class CallPageController extends GetxController {
   /***************************************
    * On Cancel Call
    */
-  onCancelCall() async {}
+  onCancelCall() async {
+    await _dispose();
+    Get.back();
+  }
 
   ///////////////////////// Agora Video Call  ///////////////////////////
   final _engine = Rxn<RtcEngine>();

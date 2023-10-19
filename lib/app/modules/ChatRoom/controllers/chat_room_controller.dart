@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
+import 'package:edmonscan/app/modules/CallPage/views/testCall.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
@@ -381,8 +382,12 @@ class ChatRoomController extends GetxController {
       int time = DateTime.now().millisecondsSinceEpoch;
       User? otherUser = getOtherUser(room: room!);
       Get.delete<CallPageController>();
-      Get.toNamed(Routes.CALL_PAGE,
-          arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
+      // Get.toNamed(Routes.CALL_PAGE,
+      //     arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
+      Navigator.push(
+        Get.context!,
+        MaterialPageRoute(builder: (context) => JoinChannelVideo()),
+      );
     }
   }
 
