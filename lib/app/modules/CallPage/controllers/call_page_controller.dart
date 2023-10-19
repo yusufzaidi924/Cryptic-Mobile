@@ -300,7 +300,7 @@ class CallPageController extends GetxController {
         message:
             '${authCtrl.chatUser?.firstName ?? "Criptacy"} ${authCtrl.chatUser?.lastName ?? "User"} is calling you now.',
         largeIcon: 'https://placebear.com/g/200/300',
-        payload: {'token': callToken, 'user': user!.toJson()},
+        payload: {'token': callToken, 'user': authCtrl.chatUser!.toJson()},
       );
     }
   }
