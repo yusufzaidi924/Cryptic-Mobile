@@ -37,7 +37,7 @@ class IncomingCallController extends GetxController {
 
   onAcceptCall() async {
     if (user != null && callToken != null && channelID != null) {
-      Get.toNamed(Routes.CALL_PAGE, arguments: {
+      Get.offNamed(Routes.CALL_PAGE, arguments: {
         'user': user,
         'token': callToken,
         'channelID': channelID

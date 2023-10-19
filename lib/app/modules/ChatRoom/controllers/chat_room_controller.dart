@@ -391,8 +391,7 @@ class ChatRoomController extends GetxController {
   onCall() async {
     if (room != null) {
       User? otherUser = getOtherUser(room: room!);
-      String channelName =
-          'room.idDateTime.now().millisecondsSinceEpoch.toString()';
+      String channelName = DateTime.now().millisecondsSinceEpoch.toString();
       String? token = await getTokenFromServer(channelName);
       if (token != null) {
         Get.delete<CallPageController>();
