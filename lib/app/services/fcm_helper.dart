@@ -110,6 +110,75 @@ class FcmHelper {
     }
   }
 
+  /****************************
+   * @Auth: geniusdev0813@gmail.com
+   * @Date: 2023.10.16
+   * @Desc: Send Call Request Notification
+   */
+  static sendCallRequestNotification(
+      {required String fcmToken,
+      required String title,
+      required String message,
+      String? largeIcon,
+      String? bigImg}) async {
+    try {
+      var client = http.Client();
+      try {
+        var response =
+            await client.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "key=$FCM_SERVER_KEY",
+                },
+                body: json.encode(
+                  {
+                    "to": fcmToken,
+                    "mutable_content": true,
+                    "priority": "high",
+                    "notification": {
+                      "badge": 50,
+                      "title": title,
+                      "body": message,
+                    },
+                    "data": {
+                      "content": {
+                        "id": 1,
+                        "badge": 50,
+                        "channelKey": "alerts",
+                        "displayOnForeground": true,
+                        "notificationLayout": "BigPicture",
+                        "largeIcon": largeIcon,
+                        "bigPicture": bigImg,
+                        "showWhen": true,
+                        "autoDismissible": true,
+                        "privacy": "Private",
+                        "payload": {"secret": "Awesome Notifications Rocks!"}
+                      },
+                      "actionButtons": [
+                        {
+                          "key": "REDIRECT",
+                          "label": "Redirect",
+                          "autoDismissible": true
+                        },
+                        {
+                          "key": "DISMISS",
+                          "label": "Dismiss",
+                          "actionType": "DismissAction",
+                          "isDangerousOption": true,
+                          "autoDismissible": true
+                        }
+                      ]
+                    }
+                  },
+                ));
+      } finally {
+        client.close();
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+    }
+  }
+
   /***************************************
    * @Desc: Send Push Notification to user
    */
@@ -204,7 +273,7 @@ class FcmHelper {
 
   //handle fcm notification when app is open
   static Future<void> _fcmForegroundHandler(RemoteMessage message) async {
-    print("jsonEncode(message)");
+    print("${jsonEncode(message)}");
     Logger().d(message.notification?.body);
 
     Map<String, dynamic>? data =
@@ -220,16 +289,16 @@ class FcmHelper {
           .cast(), // pass payload to the notification card so you can use it (when user click on notification)
       largeIcon: data?['largeIcon'],
       notificationLayout: NotificationLayout.BigPicture,
-      // actionButtons: [
-      //   NotificationActionButton(
-      //       key: "REDIRECT", label: "Redirect", autoDismissible: true),
-      //   NotificationActionButton(
-      //       key: "DISMISS",
-      //       label: "Dismiss",
-      //       actionType: ActionType.DismissAction,
-      //       isDangerousOption: true,
-      //       autoDismissible: true),
-      // ],
+      actionButtons: [
+        NotificationActionButton(
+            key: "REDIRECT", label: "Redirect", autoDismissible: true),
+        NotificationActionButton(
+            key: "DISMISS",
+            label: "Dismiss",
+            actionType: ActionType.DismissAction,
+            isDangerousOption: true,
+            autoDismissible: true),
+      ],
     );
   }
 }

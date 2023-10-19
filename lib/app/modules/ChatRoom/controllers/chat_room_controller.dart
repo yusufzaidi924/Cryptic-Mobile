@@ -5,6 +5,7 @@ import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/views/testCall.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/chatUtil/chat_util.dart';
@@ -157,15 +158,15 @@ class ChatRoomController extends GetxController {
 
         MyChatCore.instance.sendMessage(message, room!.id);
         await updateChatRoom("📒 Shared a File");
-        // final me = getCurrentUser(room: room);
 
-        // // Send Notification
-        // await controller.sendNotification(
-        //   room,
-        //   "${me?.firstName} ${me?.lastName}",
-        //   "Sent you a media file...",
-        //   avatar: FirebaseAuth.instance.currentUser!.photoURL,
-        // );
+        // SEND NOTIFICATION
+        final me = authCtrl.chatUser;
+        await this.sendNotification(
+          room!,
+          "${me?.firstName} ${me?.lastName}",
+          "Sent you a media file...",
+          avatar: me?.imageUrl,
+        );
         EasyLoading.dismiss();
       } catch (e) {
         EasyLoading.dismiss();
@@ -236,14 +237,14 @@ class ChatRoomController extends GetxController {
         // final me = getCurrentUser(room: room);
 
         // // Send Notification
-        // await controller.sendNotification(
-        //   room,
-        //   "${me?.firstName} ${me?.lastName}",
-        //   "Sent you an image...",
-        //   avatar: FirebaseAuth.instance.currentUser!.photoURL,
-        //   image: uri,
-        // );
-        // }
+        final me = authCtrl.chatUser;
+        await this.sendNotification(
+          room!,
+          "${me?.firstName} ${me?.lastName}",
+          "📷 Sent you an image...",
+          avatar: me?.imageUrl,
+          image: uri,
+        );
 
         EasyLoading.dismiss();
       } catch (e) {
@@ -329,6 +330,15 @@ class ChatRoomController extends GetxController {
 
     MyChatCore.instance.sendMessage(message, room!.id);
     await updateChatRoom(message.text);
+
+    // SEND NOTIFICATION
+    final me = authCtrl.chatUser;
+    await this.sendNotification(
+      room!,
+      "${me?.firstName} ${me?.lastName}",
+      "${message.text}",
+      avatar: me?.imageUrl,
+    );
   }
 
   /*******************************
@@ -388,6 +398,29 @@ class ChatRoomController extends GetxController {
       //   Get.context!,
       //   MaterialPageRoute(builder: (context) => JoinChannelVideo()),
       // );
+    }
+  }
+
+  /*******************
+   * Send Notification
+   */
+  sendNotification(Room room, String title, String message,
+      {String? avatar, String? image}) async {
+    User? toUser = getOtherUser(room: room);
+    if (toUser != null &&
+        toUser.metadata != null &&
+        toUser.metadata!['fcm_token'] != null) {
+      String fcmToken = toUser.metadata!['fcm_token'].toString();
+
+      // Logger().i("Send Notification FCM", fcmToken);
+      FcmHelper.sendPushNotification(
+        fcmToken: fcmToken,
+        title: title,
+        message: message,
+        largeIcon: avatar,
+        bigImg: image,
+        // largeIcon: otherUser.imageUrl,
+      );
     }
   }
 
