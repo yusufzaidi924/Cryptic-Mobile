@@ -40,7 +40,7 @@ class CallPageView extends GetView<CallPageController> {
                     ? _remoteUserVideo()
                     : _localUserVideo(),
                 // BOTTOM ACTION BAR
-                Positioned(bottom: 0, left: 0, child: _bottomActionBar()),
+                Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
 
                 // CALL INFO PANEL
 
@@ -212,11 +212,14 @@ class CallPageView extends GetView<CallPageController> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Sound Button
-          actionButton(icon: Icons.volume_up, onTap: () {}),
+          actionButton(
+              isEnable: controller.isLocalUserJoin,
+              icon: Icons.volume_up,
+              onTap: () {}),
 
           // Mic Button
           actionButton(
-              isEnable: controller.isEnableMic,
+              isEnable: controller.isEnableMic && controller.isLocalUserJoin,
               icon: controller.isEnableMic ? Icons.mic : Icons.mic_off,
               onTap: () async {
                 controller.onUpdateMic();
@@ -231,7 +234,7 @@ class CallPageView extends GetView<CallPageController> {
             child: Container(
               width: 80,
               height: 80,
-              margin: EdgeInsets.only(bottom: 30),
+              margin: EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.red,
@@ -246,7 +249,7 @@ class CallPageView extends GetView<CallPageController> {
 
           // Camera Icon
           actionButton(
-              isEnable: controller.isEnableCamera,
+              isEnable: controller.isEnableCamera && controller.isLocalUserJoin,
               icon: controller.isEnableCamera
                   ? Icons.videocam
                   : Icons.videocam_off,
@@ -255,7 +258,13 @@ class CallPageView extends GetView<CallPageController> {
               }),
 
           // Change Camera
-          actionButton(icon: Icons.switch_camera_rounded, onTap: () {}),
+          actionButton(
+              isEnable:
+                  controller.isEnableSwitchCam && controller.isLocalUserJoin,
+              icon: Icons.switch_camera_rounded,
+              onTap: () {
+                controller.onSwitchCamera();
+              }),
         ],
       ),
     );
@@ -264,7 +273,9 @@ class CallPageView extends GetView<CallPageController> {
   Widget actionButton(
       {bool isEnable = true, required IconData icon, required Function onTap}) {
     return InkWell(
-      onTap: () => onTap,
+      onTap: () {
+        return onTap();
+      },
       child: CircleAvatar(
         radius: 24,
         backgroundColor: isEnable

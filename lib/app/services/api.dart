@@ -7,12 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Network {
   static String BASE_URL = 'http://3.19.101.55:3300/';
+  // static String BASE_URL = 'http://192.168.2.4:3300/';
 
   static String LOGIN = "login";
   static String REGISTER = 'signup';
   static String RESEND_OTP_CODE = 'resendCode';
   static String VERIFY_CODE = 'verifyCode';
   static String SAVE_USER_DETAIL = 'saveUserDetail';
+  static String GET_CALL_TOKEN = 'app/getCallToken';
 
   static String UPLOAD_FILE = 'uploadFile';
 

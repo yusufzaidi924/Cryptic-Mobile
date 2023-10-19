@@ -382,12 +382,12 @@ class ChatRoomController extends GetxController {
       int time = DateTime.now().millisecondsSinceEpoch;
       User? otherUser = getOtherUser(room: room!);
       Get.delete<CallPageController>();
-      // Get.toNamed(Routes.CALL_PAGE,
-      //     arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
-      Navigator.push(
-        Get.context!,
-        MaterialPageRoute(builder: (context) => JoinChannelVideo()),
-      );
+      Get.toNamed(Routes.CALL_PAGE,
+          arguments: {'user': otherUser, 'roomID': "${room!.id}${time}"});
+      // Navigator.push(
+      //   Get.context!,
+      //   MaterialPageRoute(builder: (context) => JoinChannelVideo()),
+      // );
     }
   }
 

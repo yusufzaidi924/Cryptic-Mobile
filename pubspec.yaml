@@ -97,6 +97,7 @@ dependencies:
   logger: # log events in clear way insted of (print)
   uuid: ^3.0.7
   agora_rtc_engine: ^6.2.3
+  awesome_notifications: ^0.8.2
 
   # carousel_slider: ^4.2.1
 

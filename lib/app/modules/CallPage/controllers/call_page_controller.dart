@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:edmonscan/app/components/custom_snackbar.dart';
+import 'package:edmonscan/app/repositories/app_repository.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,12 +41,21 @@ class CallPageController extends GetxController {
   onUpdateCamera({isShowAlert = true}) async {
     if (isEnableCamera) // Camera Off Request
     {
+      // rtcEngine!.disableVideo();
+      if (rtcEngine != null) {
+        rtcEngine!.enableLocalVideo(false);
+      }
+
       _isEnableCamera.value = false;
     } else {
       // Camera Open Request
       if (await Permission.camera.request().isGranted) {
         // Either the permission was already granted before or the user just granted it.
         _isEnableCamera.value = true;
+        debugPrint('👌 Camera Permission Granted');
+        if (rtcEngine != null) {
+          rtcEngine!.enableLocalVideo(true);
+        }
       } else {
         debugPrint('😜 Camera Permission Denied');
         _isEnableCamera.value = false;
@@ -83,6 +95,7 @@ class CallPageController extends GetxController {
       if (await Permission.microphone.request().isGranted) {
         // Either the permission was already granted before or the user just granted it.
         _isEnableMic.value = true;
+        debugPrint('👌 Mic Permission Granted');
       } else {
         debugPrint('😜 Mic Permission Denied');
         _isEnableMic.value = false;
@@ -92,6 +105,17 @@ class CallPageController extends GetxController {
       }
     }
     update();
+  }
+
+  final _isEnableSwitchCam = false.obs;
+  bool get isEnableSwitchCam => _isEnableSwitchCam.value;
+  onSwitchCamera() async {
+    if (rtcEngine != null) {
+      Logger().i('----------- SWITCH CAMERA ---------');
+      await rtcEngine!.switchCamera();
+      _isEnableSwitchCam.value = !_isEnableSwitchCam.value;
+      update();
+    }
   }
 
   @override
@@ -115,11 +139,44 @@ class CallPageController extends GetxController {
     _dispose();
   }
 
+  /*****************
+   * Get Call Token
+   */
+  Future<String?> getTokenFromServer() async {
+    try {
+      final data = {
+        'channelId': channelID,
+        'uid': user?.id ?? 0,
+      };
+
+      final res = await AppRepository.getCallToken(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        String token = res['data']['token'];
+        Logger().i(token);
+        return token;
+      } else {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        return null;
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+      return null;
+    }
+  }
+
   /***********************************
    * On Init Call
    */
   onInitCall() async {
-    await initAgora();
+    String? token = await getTokenFromServer();
+    if (token != null) {
+      await initAgora(token);
+    }
   }
 
   /****************************************
@@ -146,13 +203,14 @@ class CallPageController extends GetxController {
   int? get remoteUserUID => _remoteUserUID.value;
 
   String channelID = '';
+  String callToken = '';
   /************************
    * Init Argora Engine
    */
-  Future<void> initAgora() async {
+  Future<void> initAgora(String token) async {
     Logger().i('🎁 ------- Agora Init ----------✨');
     await onUpdateCamera(isShowAlert: false);
-    await onUpdateCamera(isShowAlert: false);
+    await onUpdateMic(isShowAlert: false);
     // retrieve permissions
     // await [Permission.microphone, Permission.camera].request();
 
@@ -197,17 +255,19 @@ class CallPageController extends GetxController {
     await rtcEngine!.startPreview();
 
     await rtcEngine!.joinChannel(
-      token: ArgoraConf.TOKEN,
+      token: token,
       channelId: channelID,
-      uid: 0,
+      uid: int.parse(user?.id ?? '0'),
       options: const ChannelMediaOptions(),
     );
   }
 
   Future<void> _dispose() async {
     if (rtcEngine != null) {
+      EasyLoading.show(status: "Ending...");
       await rtcEngine!.leaveChannel();
-      await rtcEngine!.release();
+      // await rtcEngine!.release();
+      EasyLoading.dismiss();
     }
   }
 }

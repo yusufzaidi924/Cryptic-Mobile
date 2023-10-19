@@ -5,6 +5,7 @@ import 'package:edmonscan/utils/constants.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import 'basic_video_configuration_widget.dart';
 import 'example_actions_widget.dart';
@@ -56,10 +57,13 @@ class _State extends State<JoinChannelVideo> {
 
     _engine.registerEventHandler(RtcEngineEventHandler(
       onError: (ErrorCodeType err, String msg) {
+        Logger().e('[onError] err: $err, msg: $msg');
         logSink.log('[onError] err: $err, msg: $msg');
       },
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
         logSink.log(
+            '[onJoinChannelSuccess] connection: ${connection.toJson()} elapsed: $elapsed');
+        Logger().i(
             '[onJoinChannelSuccess] connection: ${connection.toJson()} elapsed: $elapsed');
         setState(() {
           isJoined = true;
@@ -67,6 +71,8 @@ class _State extends State<JoinChannelVideo> {
       },
       onUserJoined: (RtcConnection connection, int rUid, int elapsed) {
         logSink.log(
+            '[onUserJoined] connection: ${connection.toJson()} remoteUid: $rUid elapsed: $elapsed');
+        Logger().i(
             '[onUserJoined] connection: ${connection.toJson()} remoteUid: $rUid elapsed: $elapsed');
         setState(() {
           remoteUid.add(rUid);
@@ -76,12 +82,16 @@ class _State extends State<JoinChannelVideo> {
           (RtcConnection connection, int rUid, UserOfflineReasonType reason) {
         logSink.log(
             '[onUserOffline] connection: ${connection.toJson()}  rUid: $rUid reason: $reason');
+        Logger().i(
+            '[onUserOffline] connection: ${connection.toJson()}  rUid: $rUid reason: $reason');
         setState(() {
           remoteUid.removeWhere((element) => element == rUid);
         });
       },
       onLeaveChannel: (RtcConnection connection, RtcStats stats) {
         logSink.log(
+            '[onLeaveChannel] connection: ${connection.toJson()} stats: ${stats.toJson()}');
+        Logger().i(
             '[onLeaveChannel] connection: ${connection.toJson()} stats: ${stats.toJson()}');
         setState(() {
           isJoined = false;

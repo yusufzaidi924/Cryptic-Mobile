@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/awesome_notifications_helper.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/local_storage.dart';
@@ -423,6 +425,9 @@ class AuthController extends GetxController {
         // SAVE USER DATA IN LOCAL
         await saveUserData(res['data']['token'], userData);
 
+        // INIT NOTIFICATION
+        await initNotification();
+
         EasyLoading.dismiss();
 
         CustomSnackBar.showCustomSnackBar(
@@ -463,6 +468,17 @@ class AuthController extends GetxController {
       CustomSnackBar.showCustomErrorSnackBar(
           title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
     }
+  }
+
+  /*********************
+   * Init After Login
+   */
+  initNotification() async {
+    // inti fcm services
+    await FcmHelper.initFcm();
+
+    // initialize local notifications service
+    await AwesomeNotificationsHelper.init();
   }
 
   saveUserData(token, data) async {
