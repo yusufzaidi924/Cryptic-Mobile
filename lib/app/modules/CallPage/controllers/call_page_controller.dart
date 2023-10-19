@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/repositories/app_repository.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -14,6 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 class CallPageController extends GetxController {
   //TODO: Implement CallPageController
 
+  final authCtrl = Get.find<AuthController>();
   final _user = Rxn<User>();
   User? get user => _user.value;
 
@@ -125,7 +128,8 @@ class CallPageController extends GetxController {
     final params = Get.arguments;
     _user.value = params['user'];
     channelID = params['roomID'] ?? "CritacyCallChannel";
-    onInitCall();
+    // onInitCall();
+    sendCallRequestNotification();
   }
 
   @override
@@ -204,6 +208,7 @@ class CallPageController extends GetxController {
 
   String channelID = '';
   String callToken = '';
+
   /************************
    * Init Argora Engine
    */
@@ -257,17 +262,39 @@ class CallPageController extends GetxController {
     await rtcEngine!.joinChannel(
       token: token,
       channelId: channelID,
-      uid: int.parse(user?.id ?? '0'),
+      uid: int.parse(authCtrl.chatUser?.id ?? '0'),
       options: const ChannelMediaOptions(),
     );
   }
 
+  /****************************
+   * Init Dispose
+   */
   Future<void> _dispose() async {
     if (rtcEngine != null) {
       EasyLoading.show(status: "Ending...");
       await rtcEngine!.leaveChannel();
       // await rtcEngine!.release();
       EasyLoading.dismiss();
+    }
+  }
+
+  /********************************
+   * Send Call Request Notification
+   */
+  Future<void> sendCallRequestNotification() async {
+    if (user != null &&
+        user?.metadata != null &&
+        user?.metadata?['fcm_token'] != null) {
+      String fcmToken = user!.metadata!['fcm_token'].toString();
+      FcmHelper.sendCallRequestNotification(
+        fcmToken: fcmToken,
+        title: "Call Request!",
+        message:
+            '${authCtrl.chatUser?.firstName ?? "Criptacy"} ${authCtrl.chatUser?.lastName ?? "User"} is calling you now.',
+        largeIcon: 'https://placebear.com/g/200/300',
+        payload: {'token': callToken, 'user': user!.toJson()},
+      );
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:edmonscan/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
@@ -115,12 +116,13 @@ class FcmHelper {
    * @Date: 2023.10.16
    * @Desc: Send Call Request Notification
    */
-  static sendCallRequestNotification(
-      {required String fcmToken,
-      required String title,
-      required String message,
-      String? largeIcon,
-      String? bigImg}) async {
+  static sendCallRequestNotification({
+    required String fcmToken,
+    required String title,
+    required String message,
+    required Map<String, dynamic> payload,
+    String? largeIcon,
+  }) async {
     try {
       var client = http.Client();
       try {
@@ -136,38 +138,13 @@ class FcmHelper {
                     "mutable_content": true,
                     "priority": "high",
                     "notification": {
-                      "badge": 50,
+                      "badge": 1,
                       "title": title,
                       "body": message,
                     },
                     "data": {
-                      "content": {
-                        "id": 1,
-                        "badge": 50,
-                        "channelKey": "alerts",
-                        "displayOnForeground": true,
-                        "notificationLayout": "BigPicture",
-                        "largeIcon": largeIcon,
-                        "bigPicture": bigImg,
-                        "showWhen": true,
-                        "autoDismissible": true,
-                        "privacy": "Private",
-                        "payload": {"secret": "Awesome Notifications Rocks!"}
-                      },
-                      "actionButtons": [
-                        {
-                          "key": "REDIRECT",
-                          "label": "Redirect",
-                          "autoDismissible": true
-                        },
-                        {
-                          "key": "DISMISS",
-                          "label": "Dismiss",
-                          "actionType": "DismissAction",
-                          "isDangerousOption": true,
-                          "autoDismissible": true
-                        }
-                      ]
+                      "type": MessageType.CALL,
+                      "content": {"largeIcon": largeIcon, "payload": payload},
                     }
                   },
                 ));
@@ -208,6 +185,7 @@ class FcmHelper {
                       "body": message,
                     },
                     "data": {
+                      "type": MessageType.MESSAGE,
                       "content": {
                         "id": 1,
                         "badge": 50,
@@ -267,7 +245,7 @@ class FcmHelper {
           .cast(), // pass payload to the notification card so you can use it (when user click on notification)
       largeIcon: data?['largeIcon'],
 
-      notificationLayout: NotificationLayout.BigPicture,
+      notificationLayout: NotificationLayout.Messaging,
     );
   }
 
@@ -301,4 +279,44 @@ class FcmHelper {
       ],
     );
   }
+
+  handleNotification(
+    RemoteMessage message,
+  ) async {
+    String type = message.data['type'];
+    Map<String, dynamic>? data =
+        (message.data != null && message.data['content'] != null)
+            ? jsonDecode(message.data['content'])
+            : null;
+    switch (type) {
+      case '${MessageType.CALL}':
+        AwesomeNotificationsHelper.showCallRequestNotification(
+          id: 2,
+          title: message.notification?.title ?? 'Title',
+          body: message.notification?.body ?? 'Body',
+          payload: message.data
+              .cast(), // pass payload to the notification card so you can use it (when user click on notification)
+          largeIcon: data?['largeIcon'],
+        );
+        break;
+
+      default:
+        AwesomeNotificationsHelper.showNotification(
+          id: 1,
+          title: message.notification?.title ?? 'Title',
+          body: message.notification?.body ?? 'Body',
+          payload: message.data
+              .cast(), // pass payload to the notification card so you can use it (when user click on notification)
+          largeIcon: data?['largeIcon'],
+
+          notificationLayout: NotificationLayout.Messaging,
+        );
+    }
+  }
+}
+
+class MessageType {
+  static const String MESSAGE = "MESSAGE";
+  static const String CALL = "CALL";
+  static const String OTHER = "OTHER";
 }

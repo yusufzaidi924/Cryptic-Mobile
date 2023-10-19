@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -52,7 +53,7 @@ class AwesomeNotificationsHelper {
             channelName: NotificationChannels.generalChannelName,
             groupKey: NotificationChannels.generalGroupKey,
             channelDescription: NotificationChannels.generalChannelDescription,
-            defaultColor: Colors.green,
+            defaultColor: LightThemeColors.primaryColor,
             ledColor: Colors.white,
             channelShowBadge: true,
             playSound: true,
@@ -64,11 +65,23 @@ class AwesomeNotificationsHelper {
               channelName: NotificationChannels.chatChannelName,
               groupKey: NotificationChannels.chatGroupKey,
               channelDescription: NotificationChannels.chatChannelDescription,
-              defaultColor: Colors.green,
+              defaultColor: LightThemeColors.primaryColor,
               ledColor: Colors.white,
               channelShowBadge: true,
               playSound: true,
-              importance: NotificationImportance.Max)
+              importance: NotificationImportance.Max),
+          NotificationChannel(
+              channelGroupKey: NotificationChannels.callChannelGroupKey,
+              channelKey: NotificationChannels.callChannelKey,
+              channelName: NotificationChannels.callChannelName,
+              groupKey: NotificationChannels.callGroupKey,
+              channelDescription: NotificationChannels.callChannelDescription,
+              defaultColor: LightThemeColors.primaryColor,
+              ledColor: Colors.white,
+              channelShowBadge: false,
+              defaultRingtoneType: DefaultRingtoneType.Ringtone,
+              playSound: true,
+              importance: NotificationImportance.Max),
         ], channelGroups: [
       NotificationChannelGroup(
         channelGroupKey: NotificationChannels.generalChannelGroupKey,
@@ -77,6 +90,10 @@ class AwesomeNotificationsHelper {
       NotificationChannelGroup(
         channelGroupKey: NotificationChannels.chatChannelGroupKey,
         channelGroupName: NotificationChannels.chatChannelGroupName,
+      ),
+      NotificationChannelGroup(
+        channelGroupKey: NotificationChannels.callChannelGroupKey,
+        channelGroupName: NotificationChannels.callChannelGroupName,
       )
     ]);
   }
@@ -124,6 +141,46 @@ class AwesomeNotificationsHelper {
       }
     });
   }
+
+  //Display Notification for user with sound
+  static showCallRequestNotification(
+      {required String title,
+      required String body,
+      required int id,
+      // String? summary,
+      // List<NotificationActionButton>? actionButtons,
+      Map<String, String>? payload,
+      String? largeIcon}) async {
+    awesomeNotifications.isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        awesomeNotifications.requestPermissionToSendNotifications();
+      } else {
+        // u can show notification
+        awesomeNotifications.createNotification(
+          content: NotificationContent(
+            id: id,
+            title: title,
+            body: body,
+            groupKey: NotificationChannels.callGroupKey,
+            channelKey: NotificationChannels.callChannelKey,
+            showWhen:
+                true, // Hide/show the time elapsed since notification was displayed
+            payload:
+                payload, // data of the notification (it will be used when user clicks on notification)
+            notificationLayout: NotificationLayout
+                .BigText, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
+            autoDismissible:
+                true, // dismiss notification when user clicks on it
+            // summary:
+            //     summary, // for ex: New message (it will be shown on status bar before notificaiton shows up)
+            largeIcon:
+                'https://placebear.com/g/200/300', // image of sender for ex (when someone send you message his image will be shown)
+          ),
+          // actionButtons: actionButtons,
+        );
+      }
+    });
+  }
 }
 
 class NotificationController {
@@ -159,6 +216,8 @@ class NotificationController {
     // example
     AwesomeNotificationsHelper.awesomeNotifications
         .decrementGlobalBadgeCounter();
+
+    Logger().i('👍👍👍 ------ TAP NOTIFICATION ----- 👍👍👍');
     Logger().d(payload);
 
     // Get.offAll(() => const SocialInboxView());
@@ -233,4 +292,12 @@ class NotificationChannels {
   static String get generalChannelName => "general notifications channels";
   static String get generalChannelDescription =>
       "Notification channel for general notifications";
+
+  // Call Notification Channel (for Call only)
+  static String get callChannelKey => "call_channel";
+  static String get callChannelName => "Call Channel";
+  static String get callGroupKey => "call_ group_key";
+  static String get callChannelGroupKey => "call_channel_group";
+  static String get callChannelGroupName => "Call Notifications Channels";
+  static String get callChannelDescription => "Call Notifications Channels";
 }
