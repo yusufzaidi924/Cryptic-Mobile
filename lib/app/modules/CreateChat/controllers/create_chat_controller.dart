@@ -3,6 +3,7 @@ import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/chatUtil/chat_util.dart';
 import 'package:edmonscan/utils/constants.dart';
@@ -71,7 +72,8 @@ class CreateChatController extends GetxController {
         );
       } else {
         // Send Chat Request
-        await sendCallRequest(otherUser);
+        await sendChatRequest(otherUser);
+
         EasyLoading.dismiss();
       }
     }
@@ -129,9 +131,9 @@ class CreateChatController extends GetxController {
   }
 
   /************************************
-   * Send Call Request
+   * Send CHAT Request
    */
-  Future<void> sendCallRequest(User user) async {
+  Future<void> sendChatRequest(User user) async {
     try {
       await FirebaseFirestore.instance
           .collection(DatabaseConfig.CHAT_REQUEST_COLLECTION)
@@ -140,6 +142,10 @@ class CreateChatController extends GetxController {
         'to': user.id.toString(),
         'createdAt': FieldValue.serverTimestamp(),
       });
+
+      // SEND NOTIFICATION
+      await sendRequestNotification(user);
+
       CustomSnackBar.showCustomSnackBar(
           title: "SUCCESS", message: "You sent chat request successfully!");
     } catch (e) {
@@ -234,6 +240,22 @@ class CreateChatController extends GetxController {
       return User.fromJson(data);
     } else {
       return null;
+    }
+  }
+
+  /*********************************
+   * Send Chat Request Notification
+   */
+  sendRequestNotification(User toUser) async {
+    if (toUser != null &&
+        toUser.metadata != null &&
+        toUser.metadata!['fcm_token'] != null) {
+      String fcmToken = toUser.metadata!['fcm_token'].toString();
+      String username = getUserName(authCtrl.chatUser!);
+      FcmHelper.sendPushNotification(
+          fcmToken: fcmToken,
+          title: "Chat Request",
+          message: '${username} sent you chat request');
     }
   }
 

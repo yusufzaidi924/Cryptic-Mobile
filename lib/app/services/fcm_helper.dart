@@ -163,6 +163,7 @@ class FcmHelper {
       {required String fcmToken,
       required String title,
       required String message,
+      MessageType? messageType,
       String? largeIcon,
       String? bigImg}) async {
     try {
@@ -185,7 +186,7 @@ class FcmHelper {
                       "body": message,
                     },
                     "data": {
-                      "type": MessageType.MESSAGE,
+                      "type": messageType ?? MessageType.MESSAGE,
                       "content": {
                         "id": 1,
                         "badge": 50,
@@ -313,7 +314,7 @@ class FcmHelper {
           payload: message.data
               .cast(), // pass payload to the notification card so you can use it (when user click on notification)
           largeIcon: data?['largeIcon'],
-          summary: message.notification?.body ?? 'Summary',
+          summary: '',
 
           notificationLayout: NotificationLayout.Messaging,
         );
@@ -327,7 +328,7 @@ class FcmHelper {
           payload: message.data
               .cast(), // pass payload to the notification card so you can use it (when user click on notification)
           largeIcon: data?['largeIcon'],
-          summary: message.notification?.body ?? 'Summary',
+          summary: '',
           notificationLayout: NotificationLayout.BigPicture,
         );
         break;
@@ -338,5 +339,6 @@ class FcmHelper {
 class MessageType {
   static const String MESSAGE = "MESSAGE";
   static const String CALL = "CALL";
+  static const String CHAT_REQUEST = "CHAT_REQUEST";
   static const String OTHER = "OTHER";
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
@@ -320,7 +321,17 @@ Future<void> handleNotificationTap(Map<String, String?>? payload) async {
           Get.toNamed(Routes.INCOMING_CALL, arguments: {'data': data});
         }
         break;
+      case MessageType.CHAT_REQUEST:
+        final authCtrl = Get.find<AuthController>();
+        if (authCtrl != null && authCtrl.chatUser != null) {
+          Get.toNamed(Routes.CHAT_LIST);
+        }
+        break;
       case MessageType.MESSAGE:
+        final authCtrl = Get.find<AuthController>();
+        if (authCtrl != null && authCtrl.chatUser != null) {
+          Get.toNamed(Routes.CHAT_LIST);
+        }
         break;
 
       default:
