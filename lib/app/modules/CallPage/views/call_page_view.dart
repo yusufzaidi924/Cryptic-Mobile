@@ -39,10 +39,28 @@ class CallPageView extends GetView<CallPageController> {
                 controller.remoteUserUID != null
                     ? _remoteUserVideo()
                     : _localUserVideo(),
+
+                // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
+                Positioned(
+                  top: 50,
+                  right: 0,
+                  child: Container(
+                    color: Colors.green,
+                    width: Get.width * 0.4,
+                    height: Get.width * 0.4,
+                    child: _localUserVideo(),
+                  ),
+                ),
+
                 // BOTTOM ACTION BAR
                 Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
 
                 // CALL INFO PANEL
+                Positioned(
+                  bottom: Get.height * 0.2,
+                  left: 0,
+                  child: callInfoPanel(),
+                )
 
                 // Container(
                 //     width: Get.width,
@@ -181,6 +199,7 @@ class CallPageView extends GetView<CallPageController> {
             ),
           ),
           Container(
+            margin: EdgeInsets.only(top: 10),
             padding: EdgeInsets.symmetric(vertical: 6, horizontal: 15),
             decoration: ShapeDecoration(
               color: Colors.white.withOpacity(0.2800000011920929),
