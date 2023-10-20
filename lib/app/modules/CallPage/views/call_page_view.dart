@@ -15,6 +15,8 @@ class CallPageView extends GetView<CallPageController> {
 
   @override
   Widget build(BuildContext context) {
+    final _animationDuration = Duration(milliseconds: 600);
+    final _animationCurve = Curves.fastOutSlowIn;
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -34,125 +36,57 @@ class CallPageView extends GetView<CallPageController> {
               // centerTitle: true,
               elevation: 0,
             ),
-            body: GestureDetector(
-              onTap: () {
-                controller.toggleTap();
-              },
-              child: Stack(
-                children: [
-                  if (controller.remoteUserUID != null) _remoteUserVideo(),
+            body: Stack(
+              children: [
+                Container(
+                  width: Get.width,
+                  height: Get.height,
+                  color: Colors.black,
+                ),
+                if (controller.remoteUserUID != null) _remoteUserVideo(),
 
-                  // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
-                  AnimatedPositioned(
-                    duration: Duration(milliseconds: 300),
-                    top: controller.isFullScreen.value ? 0 : null,
-                    bottom: controller.isFullScreen.value ? null : 0,
-                    right: controller.isFullScreen.value ? 0 : null,
-                    left: controller.isFullScreen.value ? null : 0,
+                // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
+                Obx(
+                  () => AnimatedPositioned(
+                    width: controller.remoteUserUID != null
+                        ? Get.width * 0.3
+                        : Get.width,
+                    height: controller.remoteUserUID != null
+                        ? Get.width * 0.4
+                        : Get.height,
+                    top: controller.remoteUserUID != null ? 100.0 : 0.0,
+                    right: controller.remoteUserUID != null ? 0 : 0.0,
+                    duration: _animationDuration,
+                    curve: _animationCurve,
                     child: Container(
-                      width: controller.isFullScreen.value ? Get.width : 100,
-                      height: controller.isFullScreen.value ? Get.height : 100,
-                      color: Colors.green,
-                      // Your camera screen widget goes here
+                      decoration: ShapeDecoration(
+                        color: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              controller.remoteUserUID != null ? 10 : 0),
+                          side: BorderSide(
+                              color: Colors.yellow,
+                              width: controller.remoteUserUID != null ? 1 : 0),
+                        ),
+                      ),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                              controller.remoteUserUID != null ? 10 : 0),
+                          child: _localUserVideo()),
                     ),
                   ),
+                ),
 
-                  // Positioned.fill(
-                  //   child: SlideTransition(
-                  //     position: controller.animation,
-                  //     child: Container(
-                  //       decoration: ShapeDecoration(
-                  //         color: Colors.transparent,
-                  //         shape: RoundedRectangleBorder(
-                  //           borderRadius: BorderRadius.circular(
-                  //               controller.remoteUserUID != null ? 10 : 0),
-                  //           side: BorderSide(
-                  //               color: Colors.yellow,
-                  //               width:
-                  //                   controller.remoteUserUID != null ? 1 : 0),
-                  //         ),
-                  //       ),
-                  //       // width: Get.width * 0.3,
-                  //       // height: Get.width * 0.4,
-                  //       child: ClipRRect(
-                  //           borderRadius: BorderRadius.circular(
-                  //               controller.remoteUserUID != null ? 10 : 0),
-                  //           child: _localUserVideo()),
-                  //     ),
-                  //   ),
-                  // ),
+                // BOTTOM ACTION BAR
+                Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
 
-                  // BOTTOM ACTION BAR
-                  Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
-
-                  // CALL INFO PANEL
-                  Positioned(
-                    bottom: Get.height * 0.2,
-                    left: 0,
-                    child: callInfoPanel(),
-                  )
-
-                  // Container(
-                  //     width: Get.width,
-                  //     padding: EdgeInsets.only(top: 100, bottom: 50),
-                  //     decoration: BoxDecoration(
-                  //       gradient: LinearGradient(
-                  //         begin: Alignment.topCenter,
-                  //         end: Alignment.bottomCenter,
-                  //         colors: [
-                  //           LightThemeColors.primaryColor,
-                  //           Colors.black
-                  //         ],
-                  //       ),
-                  //     ),
-                  //     child: Column(
-                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //       children: [
-                  //         // USER AVATAR
-                  //         Column(
-                  //           children: [
-                  //             controller.user?.imageUrl != null
-                  //                 ? CircleAvatar(
-                  //                     radius: 60,
-                  //                     backgroundColor:
-                  //                         Color.fromARGB(159, 159, 157, 241),
-                  //                     backgroundImage: NetworkImage(
-                  //                         '${Network.BASE_URL}${controller.user!.imageUrl}'),
-                  //                   )
-                  //                 : CircleAvatar(
-                  //                     radius: 60,
-                  //                     backgroundColor:
-                  //                         Color.fromARGB(159, 159, 157, 241),
-                  //                     backgroundImage: AssetImage(
-                  //                         'assets/images/default.png'),
-                  //                   ),
-                  //             SizedBox(height: 16),
-                  //             Text(
-                  //               '${controller.user?.firstName ?? "Criptacy"} ${controller.user?.lastName ?? "User"}',
-                  //               style: TextStyle(
-                  //                 color: Colors.white,
-                  //                 fontSize: 24,
-                  //                 fontWeight: FontWeight.bold,
-                  //               ),
-                  //             ),
-                  //             SizedBox(
-                  //               height: 30,
-                  //             ),
-                  //             Text(
-                  //               'Calling...',
-                  //               style: TextStyle(
-                  //                 color: const Color.fromARGB(
-                  //                     255, 209, 209, 209),
-                  //                 fontSize: 18,
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   ),
-                ],
-              ),
+                // CALL INFO PANEL
+                Positioned(
+                  bottom: Get.height * 0.2,
+                  left: 0,
+                  child: callInfoPanel(),
+                )
+              ],
             ),
           );
         });
@@ -161,12 +95,83 @@ class CallPageView extends GetView<CallPageController> {
   //Remote User Video
   Widget _remoteUserVideo() {
     if (controller.remoteUserUID != null) {
-      return AgoraVideoView(
-        controller: VideoViewController.remote(
-          rtcEngine: controller.rtcEngine!,
-          canvas: VideoCanvas(uid: controller.remoteUserUID),
-          connection: RtcConnection(channelId: controller.channelID),
-        ),
+      return Stack(
+        children: [
+          controller.isEnableRemoteVideo
+              ? AgoraVideoView(
+                  controller: VideoViewController.remote(
+                    rtcEngine: controller.rtcEngine!,
+                    canvas: VideoCanvas(uid: controller.remoteUserUID),
+                    connection: RtcConnection(channelId: controller.channelID),
+                  ),
+                )
+              : Container(
+                  width: Get.width,
+                  height: Get.height,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 150,
+                      ),
+                      controller.user?.imageUrl != null
+                          ? CircleAvatar(
+                              radius: Get.width * 0.15,
+                              backgroundColor:
+                                  Color.fromARGB(159, 180, 180, 180),
+                              backgroundImage: NetworkImage(
+                                  '${Network.BASE_URL}${controller.user!.imageUrl}'),
+                            )
+                          : CircleAvatar(
+                              radius: 60,
+                              backgroundColor:
+                                  Color.fromARGB(159, 180, 180, 180),
+                              backgroundImage:
+                                  AssetImage('assets/images/default.png'),
+                            ),
+                    ],
+                  ),
+                ),
+
+          // ICONS
+          Positioned(
+            top: 100,
+            left: 20,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: controller.isEnableRemoteVideo
+                      ? const Color.fromARGB(161, 158, 158, 158)
+                      : Colors.red,
+                  child: Icon(
+                    controller.isEnableRemoteVideo
+                        ? Icons.videocam
+                        : Icons.videocam_off,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: controller.isEnableRemoteVideo
+                      ? const Color.fromARGB(161, 158, 158, 158)
+                      : Colors.red,
+                  child: Icon(
+                    controller.isEnableRemoteVideo ? Icons.mic : Icons.mic_off,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
       );
     } else {
       return Container();
@@ -176,12 +181,37 @@ class CallPageView extends GetView<CallPageController> {
   // Local User Video
   Widget _localUserVideo() {
     return controller.isLocalUserJoin
-        ? AgoraVideoView(
-            controller: VideoViewController(
-              rtcEngine: controller.rtcEngine!,
-              canvas: const VideoCanvas(uid: 0),
-            ),
-          )
+        ? controller.isEnableCamera
+            ? AgoraVideoView(
+                controller: VideoViewController(
+                  rtcEngine: controller.rtcEngine!,
+                  canvas: const VideoCanvas(uid: 0),
+                ),
+              )
+            : Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 150,
+                    ),
+                    controller.user?.imageUrl != null
+                        ? CircleAvatar(
+                            radius: Get.width * 0.15,
+                            backgroundColor: Color.fromARGB(159, 180, 180, 180),
+                            backgroundImage: NetworkImage(
+                                '${Network.BASE_URL}${controller.user!.imageUrl}'),
+                          )
+                        : CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Color.fromARGB(159, 180, 180, 180),
+                            backgroundImage:
+                                AssetImage('assets/images/default.png'),
+                          ),
+                  ],
+                ),
+              )
         : Container(
             width: Get.width,
             height: Get.height,
@@ -272,7 +302,7 @@ class CallPageView extends GetView<CallPageController> {
               isEnable: controller.isEnableMic && controller.isLocalUserJoin,
               icon: controller.isEnableMic ? Icons.mic : Icons.mic_off,
               onTap: () async {
-                controller.onUpdateMic();
+                await controller.onUpdateMic();
               }),
 
           // SizedBox(height: 32),
@@ -309,8 +339,7 @@ class CallPageView extends GetView<CallPageController> {
 
           // Change Camera
           actionButton(
-              isEnable:
-                  controller.isEnableSwitchCam && controller.isLocalUserJoin,
+              isEnable: true,
               icon: Icons.switch_camera_rounded,
               onTap: () {
                 controller.onSwitchCamera();

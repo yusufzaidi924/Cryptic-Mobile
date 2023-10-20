@@ -97,22 +97,33 @@ class CallPageController extends GetxController {
   onUpdateMic({isShowAlert = true}) async {
     if (isEnableMic) // Mic Off Request
     {
-      _isEnableMic.value = false;
+      if (rtcEngine != null) {
+        await rtcEngine!.muteLocalAudioStream(true);
+        _isEnableMic.value = false;
+        update();
+      }
     } else {
       // Mic Open Request
       if (await Permission.microphone.request().isGranted) {
         // Either the permission was already granted before or the user just granted it.
-        _isEnableMic.value = true;
         debugPrint('👌 Mic Permission Granted');
+        if (rtcEngine != null) {
+          _isEnableMic.value = true;
+          await rtcEngine!.muteLocalAudioStream(false);
+          update();
+        }
       } else {
         debugPrint('😜 Mic Permission Denied');
+        // if (rtcEngine != null) {
+        //   await rtcEngine!.muteLocalAudioStream(true);
+        // }
         _isEnableMic.value = false;
+        update();
         if (isShowAlert) {
           showPermissionDeniedDialog("Microphone");
         }
       }
     }
-    update();
   }
 
   final _isEnableSwitchCam = false.obs;
@@ -136,7 +147,7 @@ class CallPageController extends GetxController {
     channelID = params['channelID'];
     role = params['role'] ?? 'publisher';
 
-    // onInitCall();
+    onInitCall();
   }
 
   @override
@@ -165,11 +176,6 @@ class CallPageController extends GetxController {
     }
   }
 
-  /****************************************
-   * On Create Call
-   */
-  onCreateCall() async {}
-
   /***************************************
    * On Cancel Call
    */
@@ -187,6 +193,12 @@ class CallPageController extends GetxController {
 
   final _remoteUserUID = Rxn<int>(null);
   int? get remoteUserUID => _remoteUserUID.value;
+
+  final _isEnableRemoteVideo = false.obs;
+  bool get isEnableRemoteVideo => _isEnableRemoteVideo.value;
+
+  final _isEnableRemoteMic = false.obs;
+  bool get isEnableRemoteMic => _isEnableRemoteMic.value;
 
   String? channelID;
   String? callToken;
@@ -247,6 +259,30 @@ class CallPageController extends GetxController {
 
           update();
         },
+        // onRemoteAudioStats: (RtcConnection connection, RemoteAudioStats stats) {
+        //   if (stats != RemoteAudioState.remoteAudioStateDecoding) {
+        //     _isEnableRemoteMic.value = false;
+        //   }
+        //   update();
+        // },
+        // onRemoteVideoStats: (connection, state) {
+        //   if (state != RemoteVideoState.remoteVideoStateDecoding) {
+        //     _isEnableRemoteVideo.value = false;
+        //   }
+        //   update();
+        // },
+        onUserEnableVideo: (connection, remoteUid, enabled) {
+          _isEnableRemoteVideo.value = enabled;
+          update();
+        },
+        onUserMuteAudio: (connection, remoteUid, muted) {
+          _isEnableRemoteMic.value = !muted;
+          update();
+        },
+        onUserMuteVideo: (connection, remoteUid, muted) {
+          _isEnableRemoteVideo.value = !muted;
+          update();
+        },
         onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
           Logger().i(
               '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
@@ -276,13 +312,13 @@ class CallPageController extends GetxController {
   }
 
   /****************************
-   * Init Dispose
+   * Call Dispose
    */
   Future<void> _dispose() async {
     if (rtcEngine != null) {
       EasyLoading.show(status: "Ending...");
       await rtcEngine!.leaveChannel();
-      // await rtcEngine!.release();
+      await rtcEngine!.release();
       EasyLoading.dismiss();
     }
   }
