@@ -45,8 +45,8 @@ class IncomingCallController extends GetxController {
     if (user != null && callToken != null && channelID != null) {
       String? token = await getTokenFromServer(channelID!);
       if (token != null) {
-        // Get.offNamed(Routes.CALL_PAGE, arguments: {
-        Get.toNamed(Routes.CALL_PAGE, arguments: {
+        Get.offNamed(Routes.CALL_PAGE, arguments: {
+          // Get.toNamed(Routes.CALL_PAGE, arguments: {
           'user': user,
           'token': token,
           'channelID': channelID,
