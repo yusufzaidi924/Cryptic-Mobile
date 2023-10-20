@@ -34,105 +34,125 @@ class CallPageView extends GetView<CallPageController> {
               // centerTitle: true,
               elevation: 0,
             ),
-            body: Stack(
-              children: [
-                if (controller.remoteUserUID != null) _remoteUserVideo(),
+            body: GestureDetector(
+              onTap: () {
+                controller.toggleTap();
+              },
+              child: Stack(
+                children: [
+                  if (controller.remoteUserUID != null) _remoteUserVideo(),
 
-                // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
-                Positioned.fill(
-                  child: SlideTransition(
-                    position: controller.animation,
+                  // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
+                  AnimatedPositioned(
+                    duration: Duration(milliseconds: 300),
+                    top: controller.isFullScreen.value ? 0 : null,
+                    bottom: controller.isFullScreen.value ? null : 0,
+                    right: controller.isFullScreen.value ? 0 : null,
+                    left: controller.isFullScreen.value ? null : 0,
                     child: Container(
-                      decoration: ShapeDecoration(
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              controller.remoteUserUID != null ? 10 : 0),
-                          side: BorderSide(
-                              color: Colors.yellow,
-                              width: controller.remoteUserUID != null ? 1 : 0),
-                        ),
-                      ),
-                      // width: Get.width * 0.3,
-                      // height: Get.width * 0.4,
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              controller.remoteUserUID != null ? 10 : 0),
-                          child: _localUserVideo()),
+                      width: controller.isFullScreen.value ? Get.width : 100,
+                      height: controller.isFullScreen.value ? Get.height : 100,
+                      color: Colors.green,
+                      // Your camera screen widget goes here
                     ),
                   ),
-                ),
 
-                // BOTTOM ACTION BAR
-                Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
+                  // Positioned.fill(
+                  //   child: SlideTransition(
+                  //     position: controller.animation,
+                  //     child: Container(
+                  //       decoration: ShapeDecoration(
+                  //         color: Colors.transparent,
+                  //         shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(
+                  //               controller.remoteUserUID != null ? 10 : 0),
+                  //           side: BorderSide(
+                  //               color: Colors.yellow,
+                  //               width:
+                  //                   controller.remoteUserUID != null ? 1 : 0),
+                  //         ),
+                  //       ),
+                  //       // width: Get.width * 0.3,
+                  //       // height: Get.width * 0.4,
+                  //       child: ClipRRect(
+                  //           borderRadius: BorderRadius.circular(
+                  //               controller.remoteUserUID != null ? 10 : 0),
+                  //           child: _localUserVideo()),
+                  //     ),
+                  //   ),
+                  // ),
 
-                // CALL INFO PANEL
-                Positioned(
-                  bottom: Get.height * 0.2,
-                  left: 0,
-                  child: callInfoPanel(),
-                )
+                  // BOTTOM ACTION BAR
+                  Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
 
-                // Container(
-                //     width: Get.width,
-                //     padding: EdgeInsets.only(top: 100, bottom: 50),
-                //     decoration: BoxDecoration(
-                //       gradient: LinearGradient(
-                //         begin: Alignment.topCenter,
-                //         end: Alignment.bottomCenter,
-                //         colors: [
-                //           LightThemeColors.primaryColor,
-                //           Colors.black
-                //         ],
-                //       ),
-                //     ),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //       children: [
-                //         // USER AVATAR
-                //         Column(
-                //           children: [
-                //             controller.user?.imageUrl != null
-                //                 ? CircleAvatar(
-                //                     radius: 60,
-                //                     backgroundColor:
-                //                         Color.fromARGB(159, 159, 157, 241),
-                //                     backgroundImage: NetworkImage(
-                //                         '${Network.BASE_URL}${controller.user!.imageUrl}'),
-                //                   )
-                //                 : CircleAvatar(
-                //                     radius: 60,
-                //                     backgroundColor:
-                //                         Color.fromARGB(159, 159, 157, 241),
-                //                     backgroundImage: AssetImage(
-                //                         'assets/images/default.png'),
-                //                   ),
-                //             SizedBox(height: 16),
-                //             Text(
-                //               '${controller.user?.firstName ?? "Criptacy"} ${controller.user?.lastName ?? "User"}',
-                //               style: TextStyle(
-                //                 color: Colors.white,
-                //                 fontSize: 24,
-                //                 fontWeight: FontWeight.bold,
-                //               ),
-                //             ),
-                //             SizedBox(
-                //               height: 30,
-                //             ),
-                //             Text(
-                //               'Calling...',
-                //               style: TextStyle(
-                //                 color: const Color.fromARGB(
-                //                     255, 209, 209, 209),
-                //                 fontSize: 18,
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-              ],
+                  // CALL INFO PANEL
+                  Positioned(
+                    bottom: Get.height * 0.2,
+                    left: 0,
+                    child: callInfoPanel(),
+                  )
+
+                  // Container(
+                  //     width: Get.width,
+                  //     padding: EdgeInsets.only(top: 100, bottom: 50),
+                  //     decoration: BoxDecoration(
+                  //       gradient: LinearGradient(
+                  //         begin: Alignment.topCenter,
+                  //         end: Alignment.bottomCenter,
+                  //         colors: [
+                  //           LightThemeColors.primaryColor,
+                  //           Colors.black
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     child: Column(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         // USER AVATAR
+                  //         Column(
+                  //           children: [
+                  //             controller.user?.imageUrl != null
+                  //                 ? CircleAvatar(
+                  //                     radius: 60,
+                  //                     backgroundColor:
+                  //                         Color.fromARGB(159, 159, 157, 241),
+                  //                     backgroundImage: NetworkImage(
+                  //                         '${Network.BASE_URL}${controller.user!.imageUrl}'),
+                  //                   )
+                  //                 : CircleAvatar(
+                  //                     radius: 60,
+                  //                     backgroundColor:
+                  //                         Color.fromARGB(159, 159, 157, 241),
+                  //                     backgroundImage: AssetImage(
+                  //                         'assets/images/default.png'),
+                  //                   ),
+                  //             SizedBox(height: 16),
+                  //             Text(
+                  //               '${controller.user?.firstName ?? "Criptacy"} ${controller.user?.lastName ?? "User"}',
+                  //               style: TextStyle(
+                  //                 color: Colors.white,
+                  //                 fontSize: 24,
+                  //                 fontWeight: FontWeight.bold,
+                  //               ),
+                  //             ),
+                  //             SizedBox(
+                  //               height: 30,
+                  //             ),
+                  //             Text(
+                  //               'Calling...',
+                  //               style: TextStyle(
+                  //                 color: const Color.fromARGB(
+                  //                     255, 209, 209, 209),
+                  //                 fontSize: 18,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                ],
+              ),
             ),
           );
         });

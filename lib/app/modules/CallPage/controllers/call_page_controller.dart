@@ -15,8 +15,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 class CallPageController extends GetxController {
   //TODO: Implement CallPageController
-  late AnimationController animationController;
-  late Animation<Offset> animation;
 
   final authCtrl = Get.find<AuthController>();
   final _user = Rxn<User>();
@@ -89,6 +87,11 @@ class CallPageController extends GetxController {
     );
   }
 
+  var isFullScreen = false.obs;
+  toggleTap() {
+    isFullScreen.toggle();
+  }
+
   final _isEnableMic = false.obs;
   bool get isEnableMic => _isEnableMic.value;
   onUpdateMic({isShowAlert = true}) async {
@@ -127,26 +130,13 @@ class CallPageController extends GetxController {
   void onInit() {
     super.onInit();
 
-    animationController = AnimationController(
-      duration: Duration(milliseconds: 500),
-      vsync: Get.find(),
-    );
-
-    animation = Tween<Offset>(
-      begin: Offset.zero,
-      end: Offset(0.7, -0.7),
-    ).animate(CurvedAnimation(
-      parent: animationController,
-      curve: Curves.easeInOut,
-    ));
-
     final params = Get.arguments;
     _user.value = params['user'];
     callToken = params['token'];
     channelID = params['channelID'];
     role = params['role'] ?? 'publisher';
 
-    onInitCall();
+    // onInitCall();
   }
 
   @override
@@ -156,7 +146,6 @@ class CallPageController extends GetxController {
 
   @override
   void onClose() {
-    animationController.dispose();
     super.onClose();
     _dispose();
   }
@@ -245,7 +234,6 @@ class CallPageController extends GetxController {
           _remoteUserUID.value = remoteUid;
 
           // Move Local Camera to Top Right Corner
-          animationController.forward();
 
           update();
         },
@@ -256,7 +244,6 @@ class CallPageController extends GetxController {
           _remoteUserUID.value = null;
 
           // Restore Local Camear As Full Screen
-          animationController.reverse();
 
           update();
         },
