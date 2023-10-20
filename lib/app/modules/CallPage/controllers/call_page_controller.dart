@@ -129,6 +129,7 @@ class CallPageController extends GetxController {
     _user.value = params['user'];
     callToken = params['token'];
     channelID = params['channelID'];
+    role = params['role'] ?? 'publisher';
 
     onInitCall();
   }
@@ -184,6 +185,7 @@ class CallPageController extends GetxController {
 
   String? channelID;
   String? callToken;
+  String role = 'publisher';
 
   /************************
    * Init Argora Engine
@@ -216,8 +218,10 @@ class CallPageController extends GetxController {
           startTimer();
           update();
 
-          // SEND CALL REQUEST NOTIFICATION
-          // sendCallRequestNotification();
+          if (role == 'publisher') {
+            // SEND CALL REQUEST NOTIFICATION
+            sendCallRequestNotification();
+          }
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           Logger().i("remote user $remoteUid joined");
@@ -241,7 +245,12 @@ class CallPageController extends GetxController {
 
     print('************** RTC Engine Event Register ***********');
 
-    await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
+    if (role == 'publisher') {
+      await rtcEngine!
+          .setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    } else {
+      await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
+    }
     await rtcEngine!.enableVideo();
     await rtcEngine!.startPreview();
 
@@ -251,7 +260,7 @@ class CallPageController extends GetxController {
     await rtcEngine!.joinChannel(
       token: token,
       channelId: channelName,
-      uid: int.parse(authCtrl.chatUser?.id ?? ''),
+      uid: int.parse(authCtrl.chatUser?.id ?? '0'),
       options: const ChannelMediaOptions(),
     );
   }

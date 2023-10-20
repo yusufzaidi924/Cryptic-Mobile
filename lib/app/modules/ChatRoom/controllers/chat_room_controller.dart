@@ -399,7 +399,8 @@ class ChatRoomController extends GetxController {
         Get.toNamed(Routes.CALL_PAGE, arguments: {
           'user': otherUser,
           'token': token,
-          'channelID': channelName
+          'channelID': channelName,
+          'role': 'publisher'
         });
       }
       // Navigator.push(
