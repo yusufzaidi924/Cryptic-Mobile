@@ -99,6 +99,25 @@ class MyChatCore {
     );
   }
 
+  /******************
+   * Check Room Exist
+   */
+  Future<bool> checkRoomExist(User otherUser) async {
+    final fu = firebaseUser;
+
+    final userIds = [fu!.id, otherUser.id]..sort();
+
+    final roomQuery = await getFirebaseFirestore()
+        .collection(config.roomsCollectionName)
+        .where('type', isEqualTo: RoomType.direct.toShortString())
+        .where('userIds', isEqualTo: userIds)
+        .limit(1)
+        .get();
+
+    // Check if room already exist.
+    return roomQuery.docs.isNotEmpty;
+  }
+
   /// Creates a direct chat for 2 people. Add [metadata] for any additional
   /// custom data.
   Future<Room> createRoom(

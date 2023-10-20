@@ -98,6 +98,7 @@ dependencies:
   uuid: ^3.0.7
   agora_rtc_engine: ^6.2.3
   awesome_notifications: ^0.8.2
+  flutter_contacts: ^1.1.7+1
 
   # carousel_slider: ^4.2.1
 

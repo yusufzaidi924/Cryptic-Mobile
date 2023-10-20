@@ -14,4 +14,8 @@ class Regex {
     final match = RegExp(regex).hasMatch(value);
     return match;
   }
+
+  static String removeSpecialChars(String phoneNumber) {
+    return phoneNumber.replaceAll(RegExp(r'[^\d]'), '');
+  }
 }

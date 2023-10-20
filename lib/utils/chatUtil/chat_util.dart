@@ -26,7 +26,7 @@ Color getUserAvatarNameColor(User user) {
 }
 
 String getUserName(User user) =>
-    '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();
+    '${user.firstName ?? 'Criptacy'} ${user.lastName ?? 'User'}'.trim();
 
 getUserStatus(String status) {
   switch (status) {

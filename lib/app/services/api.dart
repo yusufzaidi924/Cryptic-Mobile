@@ -14,6 +14,7 @@ class Network {
   static String RESEND_OTP_CODE = 'resendCode';
   static String VERIFY_CODE = 'verifyCode';
   static String SAVE_USER_DETAIL = 'saveUserDetail';
+  static String SEND_INVITE_SMS = 'sendInviteSMS';
   static String GET_CALL_TOKEN = 'app/getCallToken';
 
   static String UPLOAD_FILE = 'uploadFile';

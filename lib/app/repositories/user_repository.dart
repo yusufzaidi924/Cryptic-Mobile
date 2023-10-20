@@ -88,6 +88,13 @@ class UserRepository {
     return body;
   }
 
+  // ========== SEND INVITE SMS TO USER  ==================
+  static Future<Map<String, dynamic>> sendInviteSMS(data) async {
+    var res = await Network().authData(data, Network.SEND_INVITE_SMS);
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // ========== UPLOAD FILE  ==================
   static Future uploadFile(File file) async {
     StreamedResponse res =
