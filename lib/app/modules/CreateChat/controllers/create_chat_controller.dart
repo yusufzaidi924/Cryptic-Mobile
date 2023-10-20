@@ -184,7 +184,7 @@ class CreateChatController extends GetxController {
     try {
       String phoneNumber = "+" + Regex.removeSpecialChars(phone);
       Logger().d(phoneNumber);
-      User? user = await checkUserWithPhone(phone);
+      User? user = await checkUserWithPhone(phoneNumber);
       EasyLoading.dismiss();
 
       if (user != null) {
@@ -226,17 +226,23 @@ class CreateChatController extends GetxController {
    * Check user Exist with phone number
    */
   Future<User?> checkUserWithPhone(String phone) async {
+    Logger().d(phone);
     final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection(DatabaseConfig.CHAT_REQUEST_COLLECTION)
-        .where('phone', isEqualTo: phone)
-        .limit(1)
+        .collection(DatabaseConfig.USER_COLLECTION)
+        .where('metadata.phone', isEqualTo: phone)
+        // .limit(1)
         .get();
 
     if (snapshot.docs.isNotEmpty) {
       final user = snapshot.docs.first;
+
       print('User ${user.id} exists');
       Map<String, dynamic> data = user.data() as Map<String, dynamic>;
       Logger().d(data);
+      data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
+      data['id'] = user.id;
+      data['lastSeen'] = data['lastSeen']?.millisecondsSinceEpoch;
+      data['updatedAt'] = data['updatedAt']?.millisecondsSinceEpoch;
       return User.fromJson(data);
     } else {
       return null;

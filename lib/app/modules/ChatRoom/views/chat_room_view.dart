@@ -88,19 +88,49 @@ class ChatRoomView extends GetView<ChatRoomController> {
               onSelected: (String result) {
                 // Perform an action when a menu item is selected
                 print('Selected: $result');
+                switch (result) {
+                  case 'block':
+                    controller.blockUser();
+                    break;
+
+                  case 'unblock':
+                    controller.unblockUser();
+                    break;
+
+                  case 'report':
+                    controller.onReportUser();
+                    break;
+
+                  case 'delete':
+                    controller.deleteRoom();
+                    break;
+                  default:
+                }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: 'block',
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Icon(
-                      Icons.block_outlined,
-                      color: Colors.red,
-                    ),
-                    title: Text('Block User'),
-                  ),
-                ),
+                controller.isBlocked
+                    ? PopupMenuItem<String>(
+                        value: 'unblock',
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            Icons.lock_open_outlined,
+                            color: Colors.red,
+                          ),
+                          title: Text('Unblock User'),
+                        ),
+                      )
+                    : PopupMenuItem<String>(
+                        value: 'block',
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            Icons.block_outlined,
+                            color: Colors.red,
+                          ),
+                          title: Text('Block User'),
+                        ),
+                      ),
                 PopupMenuItem<String>(
                   value: 'report',
                   child: ListTile(

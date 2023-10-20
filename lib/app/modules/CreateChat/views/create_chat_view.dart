@@ -177,8 +177,10 @@ class CreateChatView extends GetView<CreateChatController> {
                                   ? ListTile(
                                       contentPadding: const EdgeInsets.all(0),
                                       // minVerticalPadding: 10,
-                                      leading: contact.photoFetched ||
-                                              contact.thumbnailFetched
+                                      leading: (contact.photoFetched &&
+                                                  contact.photo != null) ||
+                                              (contact.thumbnailFetched &&
+                                                  contact.thumbnail != null)
                                           ? CircleAvatar(
                                               backgroundColor:
                                                   const Color.fromARGB(

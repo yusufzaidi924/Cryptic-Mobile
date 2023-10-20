@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/controllers/call_page_controller.dart';
@@ -30,6 +31,7 @@ import 'package:http/http.dart' as http;
 class ChatRoomController extends GetxController {
   //TODO: Implement ChatRoomController
   final authCtrl = Get.find<AuthController>();
+  final TextEditingController reportController = TextEditingController();
 
   final count = 0.obs;
 
@@ -46,6 +48,8 @@ class ChatRoomController extends GetxController {
     _room.value = params['room'];
     initRoom(room);
     clearUnreadCount();
+
+    checkUserBlock(room);
     update();
   }
 
@@ -53,7 +57,7 @@ class ChatRoomController extends GetxController {
    * Init Room
    */
   initRoom(Room? room) async {
-    if (room == null) return _messages.bindStream(Stream.empty());
+    if (room == null) return _messages.bindStream(const Stream.empty());
 
     try {
       final streamMessages = MyChatCore.instance.messages(room);
@@ -84,44 +88,44 @@ class ChatRoomController extends GetxController {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.camera_alt_outlined,
                   color: LightThemeColors.primaryColor,
                 ),
-                title: Text('Take a Photo'),
+                title: const Text('Take a Photo'),
                 onTap: () {
                   Get.back();
                   handleImageSelection(ImageSource.camera);
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.photo_library_sharp,
                   color: LightThemeColors.primaryColor,
                 ),
-                title: Text('From Gallery'),
+                title: const Text('From Gallery'),
                 onTap: () {
                   Get.back();
                   handleImageSelection(ImageSource.gallery);
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.folder_open_outlined,
                   color: LightThemeColors.primaryColor,
                 ),
-                title: Text('File'),
+                title: const Text('File'),
                 onTap: () {
                   Get.back();
                   handleFileSelection();
                 },
               ),
               ListTile(
-                leading: Icon(
+                leading: const Icon(
                   Icons.close,
                   color: LightThemeColors.primaryColor,
                 ),
-                title: Text('Cancel'),
+                title: const Text('Cancel'),
                 onTap: () {
                   Get.back();
                 },
@@ -461,6 +465,217 @@ class ChatRoomController extends GetxController {
         bigImg: image,
         // largeIcon: otherUser.imageUrl,
       );
+    }
+  }
+
+  /*****************************
+   * Delete Chat Room
+   */
+  deleteRoom() async {
+    showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Chat Room'),
+          content:
+              const Text('Are you sure you want to delete this chat room?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Dismiss dialog
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  EasyLoading.show();
+                  if (room == null) return;
+                  final requestRef = FirebaseFirestore.instance
+                      .collection(DatabaseConfig.CHAT_COLLECTION)
+                      .doc(room!.id);
+                  await requestRef.delete();
+                  EasyLoading.dismiss();
+
+                  Get.back();
+                } catch (e) {
+                  Logger().e(e);
+
+                  EasyLoading.dismiss();
+                  CustomSnackBar.showCustomErrorSnackBar(
+                      title: "ERROR", message: e.toString());
+                }
+                // Dismiss dialog
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /**************************
+   * OnReportUser
+   */
+  onReportUser() {
+    Get.defaultDialog(
+      title: 'Report User',
+      content: TextField(
+        controller: reportController,
+        maxLines: 5,
+        minLines: 2,
+        decoration: const InputDecoration(
+          hintText: 'Enter report content',
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () async {
+            // Submit report content
+            await submitReport();
+            // Close dialog box
+            Get.back();
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+
+  /***********************
+   * Submit Report
+   */
+  Future<void> submitReport() async {
+    if (room == null) return;
+    try {
+      EasyLoading.show();
+      Get.back();
+
+      User? otherUser = getOtherUser(room: room!);
+      String content = reportController.text;
+
+      await FirebaseFirestore.instance
+          .collection(DatabaseConfig.REPORT_COLLECTION)
+          .add({
+        'fromUID': authCtrl.chatUser!.id.toString(),
+        'reportUID': otherUser!.id.toString(),
+        'content': content,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      reportController.text = "";
+      EasyLoading.dismiss();
+      await Future.delayed(const Duration(seconds: 1));
+
+      CustomSnackBar.showCustomSnackBar(
+          title: "SUCCESS", message: "Your report is submitted successfully!");
+    } catch (e) {
+      Logger().e(e);
+      EasyLoading.dismiss();
+
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: e.toString());
+    }
+  }
+
+  final _isBlocked = false.obs;
+  bool get isBlocked => _isBlocked.value;
+
+  /********************
+   * Block User
+   */
+  blockUser() async {
+    if (room == null) return;
+    User? user = getOtherUser(room: room!);
+    if (user == null) return;
+    EasyLoading.show();
+    try {
+      final CollectionReference usersRef =
+          FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
+
+      User? reportUser = authCtrl.chatUser;
+      if (reportUser != null) {
+        Map<String, dynamic>? metadata = reportUser.metadata;
+        if (metadata!['blockList'] == null) {
+          metadata['blockList'] = [user.id];
+        } else {
+          metadata['blockList'].add(user.id);
+        }
+
+        usersRef.doc(authCtrl.chatUser!.id).update({"metadata": metadata});
+
+        EasyLoading.dismiss();
+        CustomSnackBar.showCustomSnackBar(
+          title: 'Success',
+          message: "This user is blocked!",
+        );
+        _isBlocked.value = true;
+        update();
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: 'Failed!', message: e.toString());
+    }
+  }
+
+  /********************
+   * Block User
+   */
+  unblockUser() async {
+    if (room == null) return;
+    User? user = getOtherUser(room: room!);
+    if (user == null) return;
+    EasyLoading.show();
+    try {
+      final CollectionReference usersRef =
+          FirebaseFirestore.instance.collection(DatabaseConfig.USER_COLLECTION);
+
+      User? reportUser = authCtrl.chatUser;
+      if (reportUser != null) {
+        Map<String, dynamic>? metadata = reportUser.metadata;
+        if (metadata!['blockList'] == null) {
+        } else {
+          metadata['blockList'].remove(user.id);
+        }
+
+        usersRef.doc(authCtrl.chatUser!.id).update({"metadata": metadata});
+
+        EasyLoading.dismiss();
+        CustomSnackBar.showCustomSnackBar(
+          title: 'Success',
+          message: "This user is unblocked successfully!",
+        );
+
+        _isBlocked.value = false;
+
+        update();
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: 'Failed!', message: e.toString());
+    }
+  }
+
+  /***********************
+   * Check Block status
+   */
+  checkUserBlock(Room? room) async {
+    User? myUser = authCtrl.chatUser;
+    if (room == null || myUser == null) return;
+
+    User? otherUser = getOtherUser(room: room);
+    if (myUser.metadata!['blockList'] != null) {
+      if (myUser.metadata!['blockList'] != null) {
+        final blockList = myUser.metadata!['blockList'] as List;
+        if (blockList.contains(otherUser!.id)) {
+          _isBlocked.value = true;
+          update();
+        }
+      }
     }
   }
 
