@@ -41,22 +41,26 @@ class CallPageView extends GetView<CallPageController> {
                     : _localUserVideo(),
 
                 // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
-                Positioned(
-                  top: 100,
-                  right: 0,
-                  child: Container(
-                    decoration: ShapeDecoration(
-                      color: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.yellow, width: 1),
+                if (controller.remoteUserUID != null &&
+                    controller.isLocalUserJoin)
+                  Positioned(
+                    top: 100,
+                    right: 0,
+                    child: Container(
+                      decoration: ShapeDecoration(
+                        color: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: Colors.yellow, width: 1),
+                        ),
                       ),
+                      width: Get.width * 0.3,
+                      height: Get.width * 0.4,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: _localUserVideo()),
                     ),
-                    width: Get.width * 0.3,
-                    height: Get.width * 0.4,
-                    child: _localUserVideo(),
                   ),
-                ),
 
                 // BOTTOM ACTION BAR
                 Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
