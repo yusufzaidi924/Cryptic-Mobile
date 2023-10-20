@@ -34,28 +34,25 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  app_settings: ^5.1.1
+  # app_settings: ^5.1.1
 
   cached_network_image: ^3.2.3
-  carousel_slider: ^4.2.1
+  # carousel_slider: ^4.2.1
   cloud_firestore: ^4.8.1
   device_info_plus: ^9.1.0
   dio: # for api requests
   dotted_line: ^3.1.0
   dropdown_search: ^5.0.6
-  faker:
+  # faker:
   file_picker:
   firebase_core: ^2.14.0 # to initialize firebase services
   firebase_messaging: # fcm services
   firebase_storage: ^11.0.0
   credit_card_validator: ^2.1.0
 
-
-  flutter_automation: ^2.0.0
   flutter_easyloading: ^3.0.5
 
   flutter_image_compress: ^2.0.3
-  
 
   flutter_screenutil: # make app responsive
   flutter_vector_icons: ^2.0.0
@@ -80,13 +77,12 @@ dependencies:
   profanity_filter: ^2.0.0
 
   shared_preferences: ^2.0.6
-  syncfusion_flutter_datepicker: ^20.4.52
-  syncfusion_flutter_pdfviewer: ^20.4.54
+  # syncfusion_flutter_datepicker: ^20.4.52
+  # syncfusion_flutter_pdfviewer: ^20.4.54
   typed_data: ^1.3.1
   url_launcher: ^6.1.10
   permission_handler: ^11.0.1
   firebase_database: ^10.2.3
-  dotted_border: ^2.1.0
   flutter_otp_text_field: ^1.1.1
   qr_flutter: ^4.1.0
 
@@ -99,10 +95,6 @@ dependencies:
   agora_rtc_engine: ^6.2.3
   awesome_notifications: ^0.8.2
   flutter_contacts: ^1.1.7+1
-
-  # carousel_slider: ^4.2.1
-
-
 
 dev_dependencies:
   integration_test:
@@ -122,6 +114,8 @@ dev_dependencies:
   change_app_package_name: # change package name
   rename_app: # rename app
   http_mock_adapter: # mocking dio for testing
+
+  flutter_automation: ^2.0.0
 
 
 
