@@ -416,6 +416,7 @@ class ChatRoomController extends GetxController {
       final data = {
         'channelId': channelName,
         'uid': authCtrl.chatUser?.id ?? 0,
+        'role': 'publisher'
       };
 
       final res = await AppRepository.getCallToken(data);

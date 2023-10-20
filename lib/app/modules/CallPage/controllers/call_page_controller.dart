@@ -149,7 +149,7 @@ class CallPageController extends GetxController {
    */
   onInitCall() async {
     if (callToken != null && channelID != null) {
-      await initAgora(callToken!);
+      await initAgora(callToken!, channelID!);
     } else {
       // Get.back();
       CustomSnackBar.showCustomErrorSnackBar(
@@ -188,7 +188,7 @@ class CallPageController extends GetxController {
   /************************
    * Init Argora Engine
    */
-  Future<void> initAgora(String token) async {
+  Future<void> initAgora(String token, String channelName) async {
     Logger().i('🎁 ------- Agora Init ----------✨');
     await onUpdateCamera(isShowAlert: false);
     await onUpdateMic(isShowAlert: false);
@@ -202,8 +202,13 @@ class CallPageController extends GetxController {
       channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
     ));
 
+    print('************** RTC Engine End Create ***********');
+
     rtcEngine!.registerEventHandler(
       RtcEngineEventHandler(
+        onError: (ErrorCodeType err, String msg) {
+          Logger().e('[onError] err: $err, msg: $msg');
+        },
         onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
           Logger().i("local user ${connection.localUid} joined");
 
@@ -212,7 +217,7 @@ class CallPageController extends GetxController {
           update();
 
           // SEND CALL REQUEST NOTIFICATION
-          sendCallRequestNotification();
+          // sendCallRequestNotification();
         },
         onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
           Logger().i("remote user $remoteUid joined");
@@ -234,14 +239,19 @@ class CallPageController extends GetxController {
       ),
     );
 
-    await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    print('************** RTC Engine Event Register ***********');
+
+    await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
     await rtcEngine!.enableVideo();
     await rtcEngine!.startPreview();
 
+    print('************** RTC Engine conf eng 🚒 ***********');
+    print(token);
+    print(channelName);
     await rtcEngine!.joinChannel(
       token: token,
-      channelId: channelID!,
-      uid: int.parse(authCtrl.chatUser?.id ?? '0'),
+      channelId: channelName,
+      uid: 0,
       options: const ChannelMediaOptions(),
     );
   }

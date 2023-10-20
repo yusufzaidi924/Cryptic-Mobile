@@ -106,8 +106,9 @@ class _State extends State<JoinChannelVideo> {
 
   Future<void> _joinChannel() async {
     await _engine.joinChannel(
-      token: '${ArgoraConf.TOKEN}',
-      channelId: _controller.text,
+      token:
+          '007eJxTYGhrXVDZJVr5YBlTqrzC2pNKQhLdJ6bce+f2QEcwTfBo0GUFBgtTIwsjk8TkZGODJBNDExNLEzMD87TEJFMD48RUU9Nk40TD1OBaw1Sh+84MjEDIAsQgwAQmmcEkC5jkZTA0szQ3NzaxNDM2NzdiYjA0BwDseB44',
+      channelId: '1697734963772',
       uid: 0,
       options: ChannelMediaOptions(
         channelProfile: _channelProfileType,
