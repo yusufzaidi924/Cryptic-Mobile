@@ -372,11 +372,11 @@ class MyChatCore {
     final collection = orderByCreatedAt
         ? getFirebaseFirestore()
             .collection(DatabaseConfig.CHAT_REQUEST_COLLECTION)
-            .where('toUID', arrayContains: fu.id)
+            .where('to', arrayContains: fu.id)
             .orderBy('createdAt', descending: true)
         : getFirebaseFirestore()
             .collection(config.roomsCollectionName)
-            .where('toUID', arrayContains: fu.id);
+            .where('to', arrayContains: fu.id);
 
     return collection.snapshots().asyncMap(
           (query) => ProcessRoom.processRequestsQuery(

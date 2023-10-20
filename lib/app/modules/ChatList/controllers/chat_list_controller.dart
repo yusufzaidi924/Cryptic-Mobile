@@ -113,6 +113,7 @@ class ChatListController extends GetxController {
   void onInit() {
     super.onInit();
     roomListInit();
+    chatRequestListInit();
   }
 
   @override
