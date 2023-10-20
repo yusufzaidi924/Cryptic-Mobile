@@ -36,31 +36,32 @@ class CallPageView extends GetView<CallPageController> {
             ),
             body: Stack(
               children: [
-                controller.remoteUserUID != null
-                    ? _remoteUserVideo()
-                    : _localUserVideo(),
+                if (controller.remoteUserUID != null) _remoteUserVideo(),
 
                 // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
-                if (controller.remoteUserUID != null &&
-                    controller.isLocalUserJoin)
-                  Positioned(
-                    top: 100,
-                    right: 0,
+                Positioned.fill(
+                  child: SlideTransition(
+                    position: controller.animation,
                     child: Container(
                       decoration: ShapeDecoration(
                         color: Colors.transparent,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: Colors.yellow, width: 1),
+                          borderRadius: BorderRadius.circular(
+                              controller.remoteUserUID != null ? 10 : 0),
+                          side: BorderSide(
+                              color: Colors.yellow,
+                              width: controller.remoteUserUID != null ? 1 : 0),
                         ),
                       ),
-                      width: Get.width * 0.3,
-                      height: Get.width * 0.4,
+                      // width: Get.width * 0.3,
+                      // height: Get.width * 0.4,
                       child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(
+                              controller.remoteUserUID != null ? 10 : 0),
                           child: _localUserVideo()),
                     ),
                   ),
+                ),
 
                 // BOTTOM ACTION BAR
                 Positioned(bottom: 20, left: 0, child: _bottomActionBar()),

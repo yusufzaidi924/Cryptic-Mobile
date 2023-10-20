@@ -1,4 +1,3 @@
-import 'package:dotted_border/dotted_border.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

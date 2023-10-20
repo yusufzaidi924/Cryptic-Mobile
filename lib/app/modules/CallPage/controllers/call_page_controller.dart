@@ -15,6 +15,8 @@ import 'package:permission_handler/permission_handler.dart';
 
 class CallPageController extends GetxController {
   //TODO: Implement CallPageController
+  late AnimationController animationController;
+  late Animation<Offset> animation;
 
   final authCtrl = Get.find<AuthController>();
   final _user = Rxn<User>();
@@ -125,6 +127,19 @@ class CallPageController extends GetxController {
   void onInit() {
     super.onInit();
 
+    animationController = AnimationController(
+      duration: Duration(milliseconds: 500),
+      vsync: Get.find(),
+    );
+
+    animation = Tween<Offset>(
+      begin: Offset.zero,
+      end: Offset(0.7, -0.7),
+    ).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeInOut,
+    ));
+
     final params = Get.arguments;
     _user.value = params['user'];
     callToken = params['token'];
@@ -141,6 +156,7 @@ class CallPageController extends GetxController {
 
   @override
   void onClose() {
+    animationController.dispose();
     super.onClose();
     _dispose();
   }
@@ -227,6 +243,10 @@ class CallPageController extends GetxController {
           Logger().i("remote user $remoteUid joined");
 
           _remoteUserUID.value = remoteUid;
+
+          // Move Local Camera to Top Right Corner
+          animationController.forward();
+
           update();
         },
         onUserOffline: (RtcConnection connection, int remoteUid,
@@ -234,6 +254,10 @@ class CallPageController extends GetxController {
           Logger().e("remote user $remoteUid left channel");
 
           _remoteUserUID.value = null;
+
+          // Restore Local Camear As Full Screen
+          animationController.reverse();
+
           update();
         },
         onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
