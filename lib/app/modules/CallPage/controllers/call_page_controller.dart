@@ -245,12 +245,11 @@ class CallPageController extends GetxController {
 
     print('************** RTC Engine Event Register ***********');
 
-    if (role == 'publisher') {
-      await rtcEngine!
-          .setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    } else {
-      await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
-    }
+    // if (role == 'publisher') {
+    await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
+    // } else {
+    //   await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
+    // }
     await rtcEngine!.enableVideo();
     await rtcEngine!.startPreview();
 

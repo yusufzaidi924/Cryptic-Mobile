@@ -42,11 +42,17 @@ class CallPageView extends GetView<CallPageController> {
 
                 // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
                 Positioned(
-                  top: 50,
+                  top: 100,
                   right: 0,
                   child: Container(
-                    color: Colors.green,
-                    width: Get.width * 0.4,
+                    decoration: ShapeDecoration(
+                      color: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.yellow, width: 1),
+                      ),
+                    ),
+                    width: Get.width * 0.3,
                     height: Get.width * 0.4,
                     child: _localUserVideo(),
                   ),
