@@ -39,7 +39,9 @@ class IncomingCallController extends GetxController {
   /******************************
    * onCancelCall
    */
-  onCancelCall() async {}
+  onCancelCall() async {
+    Get.back();
+  }
 
   onAcceptCall() async {
     if (user != null && callToken != null && channelID != null) {
