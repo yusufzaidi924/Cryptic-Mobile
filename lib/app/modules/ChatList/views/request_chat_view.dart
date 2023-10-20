@@ -2,11 +2,13 @@ import 'package:edmonscan/app/components/circle_user_avatar%20copy.dart';
 import 'package:edmonscan/app/data/models/RequestChatModel.dart';
 import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/chatUtil/chat_util.dart';
 import 'package:edmonscan/utils/formatDateTime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 class RequestChatView extends GetView<ChatListController> {
   const RequestChatView({Key? key}) : super(key: key);
@@ -18,6 +20,8 @@ class RequestChatView extends GetView<ChatListController> {
               child: Text("No Requests"),
             )
           : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.all(0),
               itemCount: controller.requests.length,
               itemBuilder: (context, index) {
@@ -41,15 +45,15 @@ class RequestChatView extends GetView<ChatListController> {
   }
 
   Widget _reqquestRow(RequestChatModel request, String search) {
-    return ("${request.fromUser!.firstName} ${request.fromUser!.lastName}"
-            .contains(search))
+    Logger().d(request.fromUser?.toJson());
+    return (getUserName(request.fromUser!).contains(search))
         ? Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 contentPadding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
 
-                onTap: () => controller.onTapChatRequest(request),
+                // onTap: () => controller.onTapChatRequest(request),
                 // onLongPress: () => Get.to(ProfileView(
                 //   user: otherUser,
                 //   lastMessage: !isNSFWAllowed && isNSFWMsg
@@ -58,7 +62,7 @@ class RequestChatView extends GetView<ChatListController> {
                 // )),
                 leading: CircleUserAvatar(user: request.fromUser),
                 title: Text(
-                  "${request.fromUser!.firstName} ${request.fromUser!.lastName}",
+                  getUserName(request.fromUser!),
                   style: TextStyle(
                     color: Color(0xFF421EB7),
                     fontSize: 16,
@@ -83,23 +87,30 @@ class RequestChatView extends GetView<ChatListController> {
                   ),
                 ),
 
-                trailing: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.check,
-                        color: LightThemeColors.primaryColor,
+                trailing: Container(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () async {
+                          await controller.onAcceptRequest(request);
+                        },
+                        icon: Icon(
+                          Icons.check,
+                          color: LightThemeColors.primaryColor,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.red,
+                      IconButton(
+                        onPressed: () {
+                          controller.onRejectRequest(request);
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          color: Colors.red,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Padding(

@@ -76,10 +76,10 @@ class ProcessRoom {
 
     data['createdAt'] = data['createdAt']?.millisecondsSinceEpoch;
     data['id'] = doc.id;
-    final fromUser = await fetchUser(
-        instance, data['fromUID'] as String, usersCollectionName);
+    final fromUser =
+        await fetchUser(instance, data['from'] as String, usersCollectionName);
     final toUser =
-        await fetchUser(instance, data['toUID'] as String, usersCollectionName);
+        await fetchUser(instance, data['to'] as String, usersCollectionName);
 
     data['fromUser'] = fromUser;
     data['toUser'] = toUser;

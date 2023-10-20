@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/data/models/RequestChatModel.dart';
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -10,7 +15,7 @@ import 'package:logger/logger.dart';
 class ChatListController extends GetxController {
   //TODO: Implement ChatListController
   final PageController pageController = PageController();
-
+  final authCtrl = Get.find<AuthController>();
   /***********************
    * onPageChanged
    */
@@ -107,6 +112,69 @@ class ChatListController extends GetxController {
       searchTextCtrl.text = value;
       update();
     }
+  }
+
+  /*******************************
+   * @Auth: genius0813@gmail.com
+   * @Date: 2022.10.19
+   * @Desc: Accept Chat Request
+   */
+  onAcceptRequest(RequestChatModel request) async {
+    User? otherUser = request.fromUser;
+    if (otherUser == null) return;
+    await onCreateChatRoom(otherUser);
+    await deleteRequest(request);
+  }
+
+  /*************************
+   * Create Chat Room
+   */
+  onCreateChatRoom(User otherUser) async {
+    Logger().i(otherUser.id);
+    try {
+      // EasyLoading.show(status: "Loading...");
+      EasyLoading.show();
+      // final authCtrl = Get.find<AuthController>();
+      // final _user = authCtrl.chatUser;
+      final room = await MyChatCore.instance.createRoom(otherUser, metadata: {
+        "messageCount": 0,
+        otherUser.id: 0,
+        authCtrl.chatUser!.id: 0,
+        "lastMessage": "",
+      });
+
+      EasyLoading.dismiss();
+
+      // Go To Chat Room Page
+      Get.toNamed(Routes.CHAT_ROOM, arguments: {
+        'room': room,
+      });
+    } catch (e) {
+      Logger().e('$e');
+      EasyLoading.dismiss();
+    }
+  }
+
+  /**********************************
+   * onRejectRequest
+   */
+  onRejectRequest(RequestChatModel request) async {
+    try {
+      EasyLoading.show();
+      await deleteRequest(request);
+      EasyLoading.dismiss();
+    } catch (e) {
+      Logger().e(e);
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: e.toString());
+    }
+  }
+
+  Future<void> deleteRequest(RequestChatModel request) async {
+    final requestRef = FirebaseFirestore.instance
+        .collection(DatabaseConfig.CHAT_REQUEST_COLLECTION)
+        .doc(request.id);
+    await requestRef.delete();
   }
 
   @override
