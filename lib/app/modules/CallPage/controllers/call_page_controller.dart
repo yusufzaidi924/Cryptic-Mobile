@@ -251,7 +251,7 @@ class CallPageController extends GetxController {
     await rtcEngine!.joinChannel(
       token: token,
       channelId: channelName,
-      uid: 0,
+      uid: int.parse(authCtrl.chatUser?.id ?? ''),
       options: const ChannelMediaOptions(),
     );
   }
