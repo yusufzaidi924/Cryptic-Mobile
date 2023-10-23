@@ -27,6 +27,8 @@ import '../modules/Home/bindings/home_binding.dart';
 import '../modules/Home/views/home_view.dart';
 import '../modules/IncomingCall/bindings/incoming_call_binding.dart';
 import '../modules/IncomingCall/views/incoming_call_view.dart';
+import '../modules/MnemonicPage/bindings/mnemonic_page_binding.dart';
+import '../modules/MnemonicPage/views/mnemonic_page_view.dart';
 import '../modules/MyPMPage/bindings/my_p_m_page_binding.dart';
 import '../modules/MyPMPage/views/my_p_m_page_view.dart';
 import '../modules/MyProfile/bindings/my_profile_binding.dart';
@@ -41,6 +43,8 @@ import '../modules/RequestPayment/bindings/request_payment_binding.dart';
 import '../modules/RequestPayment/views/request_payment_view.dart';
 import '../modules/SettingPage/bindings/setting_page_binding.dart';
 import '../modules/SettingPage/views/setting_page_view.dart';
+import '../modules/Splash/bindings/splash_binding.dart';
+import '../modules/Splash/views/splash_view.dart';
 import '../modules/TopUp/bindings/top_up_binding.dart';
 import '../modules/TopUp/views/top_up_view.dart';
 import '../modules/TransferPage/bindings/transfer_page_binding.dart';
@@ -202,6 +206,16 @@ class AppPages {
       name: _Paths.INCOMING_CALL,
       page: () => IncomingCallView(),
       binding: IncomingCallBinding(),
+    ),
+    GetPage(
+      name: _Paths.SPLASH,
+      page: () => SplashView(),
+      binding: SplashBinding(),
+    ),
+    GetPage(
+      name: _Paths.MNEMONIC_PAGE,
+      page: () => MnemonicPageView(),
+      binding: MnemonicPageBinding(),
     ),
   ];
 }

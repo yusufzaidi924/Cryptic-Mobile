@@ -35,6 +35,9 @@ class AppLocalKeys {
 
   // Welcome Page
   static const String WELCOME_PASS = 'welcome_pass';
+
+  //-------------- WALLET -----------------------
+  static const String MNEMONIC_CODE = 'mnemonic_code';
 }
 
 Future<void> storeDataToLocal(

@@ -33,6 +33,8 @@ abstract class Routes {
   static const REQUEST_CHAT = _Paths.REQUEST_CHAT;
   static const CALL_PAGE = _Paths.CALL_PAGE;
   static const INCOMING_CALL = _Paths.INCOMING_CALL;
+  static const SPLASH = _Paths.SPLASH;
+  static const MNEMONIC_PAGE = _Paths.MNEMONIC_PAGE;
 }
 
 abstract class _Paths {
@@ -68,4 +70,6 @@ abstract class _Paths {
   static const REQUEST_CHAT = '/request-chat';
   static const CALL_PAGE = '/call-page';
   static const INCOMING_CALL = '/incoming-call';
+  static const SPLASH = '/splash';
+  static const MNEMONIC_PAGE = '/mnemonic-page';
 }

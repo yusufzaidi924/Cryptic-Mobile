@@ -1,6 +1,7 @@
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/services/awesome_notifications_helper.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
+import 'package:edmonscan/utils/local_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -54,10 +55,8 @@ Future<void> main() async {
           debugShowCheckedModeBanner: false,
           theme: MyTheme.getThemeData(isLight: true),
           builder: EasyLoading.init(),
-          initialRoute: FirebaseAuth.instance.currentUser != null
-              ? Routes.PROJECTS_PAGE
-              // ? Routes.WELCOME
-              : AppPages.INITIAL, // first screen to show when app is running
+          initialRoute:
+              Routes.SPLASH, // first screen to show when app is running
           getPages: AppPages.routes, // app screens
           locale: MySharedPref.getCurrentLocal(), // app language
           translations: LocalizationService

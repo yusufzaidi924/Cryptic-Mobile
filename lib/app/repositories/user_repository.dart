@@ -81,6 +81,13 @@ class UserRepository {
     return body;
   }
 
+// ========== RESTORE ACCOUNT  ==================
+  static Future<Map<String, dynamic>> restoreAccount(data) async {
+    var res = await Network().authData(data, Network.RESTORE_ACCOUNT);
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // ========== SAVE USER DETAIL  ==================
   static Future<Map<String, dynamic>> saveUserDetail(data) async {
     var res = await Network().authData(data, Network.SAVE_USER_DETAIL);

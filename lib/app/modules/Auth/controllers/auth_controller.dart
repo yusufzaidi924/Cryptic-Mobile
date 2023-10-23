@@ -29,6 +29,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logger/logger.dart';
 
 class AuthController extends GetxController {
@@ -1072,6 +1073,78 @@ class AuthController extends GetxController {
 
     await userDocRef.update(newUser.toJson());
     return newUser;
+  }
+
+  /*******************************
+   * @Auth: geniusdev0813@gmail.com
+   * @Desc: Restore Account
+   * @Date: 2023.10.23
+   */
+  Future<String> restoreAccount() async {
+    String? token = await getDataInLocal(
+        key: AppLocalKeys.TOKEN, type: StorableDataType.String);
+    if (token == null) {
+      return Routes.SIGN_IN;
+    } else {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      Logger().d(decodedToken); // print('header: ${jwtData.header}');
+
+      final now = DateTime.now().millisecondsSinceEpoch;
+      print(now);
+      if (decodedToken['exp'] < now / 1000) {
+        Logger().e("👀------- SESSION EXPIRED ---------- 👀");
+        return Routes.SIGN_IN;
+      } else {
+        try {
+          final res = await UserRepository.restoreAccount(
+              {'uid': decodedToken['userId']});
+          Logger().i(res);
+          if (res['statusCode'] == 200) {
+            final userData = res['data']['user'];
+            print(userData['id']);
+            _userModel.value = UserModel.fromJson(userData);
+
+            if (authUser!.status == 2) {
+              // SAVE/GET FIRESTORE USER FOR CHAT
+              _chatUser.value = await getFirebaseUser(authUser!);
+
+              initSignUpDetail(authUser!);
+
+              // SAVE USER DATA IN LOCAL
+              await saveUserData(res['data']['token'], userData);
+
+              // INIT NOTIFICATION
+              await initNotification();
+
+              // CHECK MNEMONIC CODE
+              String? mnemonic_code = await getDataInLocal(
+                  key: AppLocalKeys.MNEMONIC_CODE,
+                  type: StorableDataType.String);
+
+              Logger().d(mnemonic_code);
+              if (mnemonic_code != null) {
+                return Routes.HOME;
+              } else {
+                return Routes.MNEMONIC_PAGE;
+              }
+            } else {
+              return Routes.SIGN_IN;
+            }
+          } else {
+            Logger().e(res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+            // CustomSnackBar.showCustomErrorSnackBar(
+            //     title: "ERROR",
+            //     message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+            return Routes.SIGN_IN;
+          }
+        } catch (e) {
+          Logger().e(e);
+          // CustomSnackBar.showCustomErrorSnackBar(
+          //     title: "ERROR", message: e.toString());
+          return Routes.SIGN_IN;
+        }
+      }
+    }
   }
 
   // saveUser({
