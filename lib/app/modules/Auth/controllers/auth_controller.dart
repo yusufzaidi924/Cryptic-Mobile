@@ -1132,12 +1132,18 @@ class AuthController extends GetxController {
               await initNotification();
 
               // CHECK MNEMONIC CODE
+              // await storeDataToLocal(
+              //     key: AppLocalKeys.MNEMONIC_CODE,
+              //     value:
+              //         "decide much danger enhance gown good rigid panic begin evoke ball winner",
+              //     type: StorableDataType.String);
               String? mnemonic_code = await getDataInLocal(
                   key: AppLocalKeys.MNEMONIC_CODE,
                   type: StorableDataType.String);
 
               Logger().d(mnemonic_code);
-              if (mnemonic_code != null) {
+              Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
+              if (mnemonic_code != null && authUser!.btcAddress != null) {
                 await initBTCWallet(mnemonic_code);
                 return Routes.HOME;
               } else {
@@ -1187,6 +1193,25 @@ class AuthController extends GetxController {
     }
   }
 
+  /***********************
+   * @Date: 2023.10.24
+   * @Desc: Get User List
+   */
+  updateBtcAddress(String address) async {
+    try {
+      final res = await UserRepository.updateBtcAddress(
+          {'btc_wallet': address}, authUser!.id.toString());
+      if (res['statusCode'] == 200) {
+        return true;
+      } else {
+        throw res['message'] ?? Messages.SOMETHING_WENT_WRONG;
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      throw e;
+    }
+  }
+
   //---------------------------------------------- BITCOIN -------------------------------
   final _btcService = Rxn<BitcoinService>();
   BitcoinService? get btcService => _btcService.value;
@@ -1196,6 +1221,7 @@ class AuthController extends GetxController {
   }
 
   initBTCWallet(String mnemonic) async {
+    Logger().d("🏈Mnemonic: ${mnemonic}");
     try {
       if (mnemonic == "") return;
       BitcoinService bitcoinService = new BitcoinService(
@@ -1212,6 +1238,8 @@ class AuthController extends GetxController {
       await bitcoinService.blockchainInit();
       await bitcoinService.getBalance(wallet);
 
+      // Update User Wallet Address
+      await updateBtcAddress(address);
       update();
       CustomSnackBar.showCustomSnackBar(
           title: "SUCCESS",
@@ -1223,6 +1251,17 @@ class AuthController extends GetxController {
       CustomSnackBar.showCustomErrorSnackBar(
           title: "ERROR", message: e.toString());
     }
+  }
+
+  /***********************************
+   * @Auth: geniusdev0813@gmail.com
+   * @Date: 2023.10.24
+   * @Desc: Log Out User
+   */
+  logout() async {
+    await removeDataInLocal(AppLocalKeys.TOKEN);
+
+    Get.offAllNamed(Routes.SIGN_IN);
   }
 
   // saveUser({

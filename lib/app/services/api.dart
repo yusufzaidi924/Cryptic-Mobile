@@ -17,6 +17,7 @@ class Network {
   static String SAVE_USER_DETAIL = 'saveUserDetail';
   static String SEND_INVITE_SMS = 'sendInviteSMS';
   static String GET_ALL_USERS = 'getUsers';
+  static String UPDATE_BTC_ADDRESS = 'updateBtcAddress';
   static String GET_CALL_TOKEN = 'app/getCallToken';
 
   static String UPLOAD_FILE = 'uploadFile';

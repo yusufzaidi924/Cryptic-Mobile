@@ -1,6 +1,7 @@
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
+import 'package:edmonscan/app/modules/ConfirmPayment/controllers/confirm_payment_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -27,16 +28,34 @@ class TransferPageController extends GetxController {
    */
   onTransfer() async {
     if (formKey.currentState!.validate()) {
+      if (selectedUser == null) {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ALERT",
+            message: "Please select user to transfer crypto currency");
+        return;
+      } else if (selectedUser?.btcAddress == null) {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ALERT", message: "This user doesn't have BTC wallet yet.");
+        return;
+      }
+      Get.delete<ConfirmPaymentController>();
       final res = await Get.toNamed(Routes.CONFIRM_PAYMENT);
+
       Logger().d(res);
       if (res == null) return;
       if (res == true) {
         try {
-          String address = '';
+          EasyLoading.show();
+          // String address = 'mxvH4v7XdWXM61WnJMtXAyoeavp12SGn4p';
+          String address = selectedUser!.btcAddress!;
           final amount = double.parse(amountCtrl.text);
           int satAmount = (amount * CryptoConf.BITCOIN_DIGIT).toInt();
+          Logger().d('SATOSHI : $satAmount');
           await authCtrl.btcService!.sendTx(address, satAmount);
+          EasyLoading.dismiss();
         } catch (e) {
+          EasyLoading.dismiss();
+          print(e.toString());
           Logger().e(e);
           CustomSnackBar.showCustomErrorSnackBar(
               title: "ERROR", message: e.toString());
@@ -45,6 +64,13 @@ class TransferPageController extends GetxController {
     }
     // Get.toNamed(Routes.CONFIRM_PAYMENT);
   }
+
+  /******************************
+   * @Auth: geniusdev0813
+   * @Date: 2023.10.24
+   * @Desc: Save Transaction
+   */
+  saveTransaction() {}
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final amountCtrl = TextEditingController();
@@ -57,7 +83,7 @@ class TransferPageController extends GetxController {
       double? amount = double.tryParse(value);
       if (amount == null) {
         return "Invalid number format!";
-      } else if (amount < 0) {
+      } else if (amount < CryptoConf.BITCOIN_MIN_AMOUNT) {
         return "Minium amount is ${CryptoConf.BITCOIN_MIN_AMOUNT}BTC";
       } else if ((authCtrl.btcService != null) &&
           (amount > authCtrl.btcService!.balance)) {

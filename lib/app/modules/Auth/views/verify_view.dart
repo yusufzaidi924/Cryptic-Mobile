@@ -122,7 +122,7 @@ class VerifyView extends GetView {
                 numberOfFields: 6,
                 borderColor: LightThemeColors.primaryColor,
                 borderRadius: BorderRadius.circular(10),
-                fieldWidth: 50,
+                fieldWidth: Get.width / 8,
 
                 //set to true to show as box or false to show as dash
                 showFieldAsBox: true,

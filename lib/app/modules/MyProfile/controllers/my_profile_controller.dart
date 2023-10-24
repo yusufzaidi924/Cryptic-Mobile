@@ -1,3 +1,4 @@
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +8,7 @@ import '../views/my_profile_view.dart';
 class MyProfileController extends GetxController {
   //TODO: Implement MyProfileController
 
-  final count = 0.obs;
+  final authCtrl = Get.find<AuthController>();
 
   List menuList = [
     menuItem(
@@ -62,5 +63,7 @@ class MyProfileController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
+  onLogout() async {
+    await authCtrl.logout();
+  }
 }

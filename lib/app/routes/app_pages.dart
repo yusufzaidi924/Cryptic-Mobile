@@ -33,6 +33,8 @@ import '../modules/MyPMPage/bindings/my_p_m_page_binding.dart';
 import '../modules/MyPMPage/views/my_p_m_page_view.dart';
 import '../modules/MyProfile/bindings/my_profile_binding.dart';
 import '../modules/MyProfile/views/my_profile_view.dart';
+import '../modules/MyQR/bindings/my_q_r_binding.dart';
+import '../modules/MyQR/views/my_q_r_view.dart';
 import '../modules/OnBoard/bindings/on_board_binding.dart';
 import '../modules/OnBoard/views/on_board_view.dart';
 import '../modules/PaymentResultPage/bindings/payment_result_page_binding.dart';
@@ -216,6 +218,11 @@ class AppPages {
       name: _Paths.MNEMONIC_PAGE,
       page: () => MnemonicPageView(),
       binding: MnemonicPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.MY_Q_R,
+      page: () => MyQRView(),
+      binding: MyQRBinding(),
     ),
   ];
 }

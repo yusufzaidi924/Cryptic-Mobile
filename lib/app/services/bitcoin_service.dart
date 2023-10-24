@@ -16,6 +16,7 @@ class BitcoinService {
   Wallet? wallet;
   String? walletAddress;
   int balance = 0;
+  Blockchain? blockchain;
 
   BitcoinService(
       {Network network = Network.Testnet,
@@ -43,13 +44,14 @@ class BitcoinService {
       this.mnemonic = mnemonic;
 
       final descriptors = await getDescriptors(mnemonic);
-      await blockchainInit();
+      final block = await blockchainInit();
       final res = await Wallet.create(
           descriptor: descriptors[0],
           changeDescriptor: descriptors[1],
           network: this.network,
           databaseConfig: const DatabaseConfig.memory());
       wallet = res;
+      await syncWallet(block);
       return res;
     } on Exception catch (e) {
       print("Error: ${e.toString()}");
@@ -60,12 +62,14 @@ class BitcoinService {
   Future<String> getWalletAddress(Wallet wallet) async {
     var addressInfo = await getNewAddress(wallet);
     walletAddress = addressInfo.address;
+    print('🎁 Wallet Address : $walletAddress');
     return addressInfo.address;
   }
 
   Future<AddressInfo> getNewAddress(Wallet wallet) async {
     final res = await wallet.getAddress(addressIndex: const AddressIndex());
-    print(res.address);
+    print('🎁 Wallet New Address : ${res.address}');
+
     return res;
   }
 
@@ -75,13 +79,11 @@ class BitcoinService {
       for (var e in [KeychainKind.External, KeychainKind.Internal]) {
         final mnemonic = await Mnemonic.fromString(mnemonicStr);
         final descriptorSecretKey = await DescriptorSecretKey.create(
-          network: Network.Testnet,
+          network: this.network,
           mnemonic: mnemonic,
         );
         final descriptor = await Descriptor.newBip84(
-            secretKey: descriptorSecretKey,
-            network: Network.Testnet,
-            keychain: e);
+            secretKey: descriptorSecretKey, network: this.network, keychain: e);
         descriptors.add(descriptor);
       }
       return descriptors;
@@ -93,7 +95,7 @@ class BitcoinService {
 
   Future<Blockchain> blockchainInit() async {
     try {
-      final blockchain = await Blockchain.create(
+      final _blockchain = await Blockchain.create(
           config: BlockchainConfig.electrum(
               config: ElectrumConfig(
                   stopGap: 10,
@@ -101,7 +103,8 @@ class BitcoinService {
                   retry: 5,
                   url: "ssl://electrum.blockstream.info:60002",
                   validateDomain: false)));
-      return blockchain;
+      blockchain = _blockchain;
+      return _blockchain;
     } on Exception catch (e) {
       print("Error : ${e.toString()}");
       throw e;
@@ -111,6 +114,8 @@ class BitcoinService {
   Future<int> getBalance(Wallet wallet) async {
     final balanceObj = await wallet.getBalance();
     balance = balanceObj.total;
+
+    print("💖💖💖 Wallet Balance: ${balance} , ${balanceObj.confirmed}");
     return balanceObj.total;
   }
 
@@ -137,5 +142,9 @@ class BitcoinService {
     } on Exception catch (e) {
       throw e.toString();
     }
+  }
+
+  syncWallet(Blockchain blockchain) async {
+    wallet!.sync(blockchain);
   }
 }

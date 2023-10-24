@@ -1,6 +1,8 @@
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/formatDateTime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
 import 'package:get/get.dart';
 
@@ -14,7 +16,7 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
   Widget build(BuildContext context) {
     return GetBuilder<ConfirmPaymentController>(builder: (value) {
       return Scaffold(
-        backgroundColor: Color(0xFFEEEFF3),
+        backgroundColor: const Color(0xFFEEEFF3),
         appBar: AppBar(
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -36,7 +38,7 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Color(0xFF23233F),
             ),
@@ -44,20 +46,20 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
           actions: [
             PopupMenuButton(
               itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 1'),
                   value: 1,
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 2'),
                   value: 2,
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 3'),
                   value: 3,
                 ),
               ],
-              icon: Icon(
+              icon: const Icon(
                 Icons.more_vert,
                 color: Color(0xFF23233F),
               ),
@@ -76,24 +78,35 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
             children: [
               // --------- CONFIRM AVATAR ------
               Container(
-                margin: EdgeInsets.symmetric(vertical: 30),
+                margin: const EdgeInsets.symmetric(vertical: 30),
                 width: Get.width * 0.3,
                 height: Get.width * 0.3,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/images/confirm_avatar.png'),
                   ),
                 ),
               ),
 
-              Text(
-                'Enter OTP SMS Code To Verify This Transfer',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontFamily: 'DM Sans',
-                  fontWeight: FontWeight.w500,
+              Container(
+                width: Get.width,
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: const Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Enter OTP SMS Code To Verify This Transfer',
+                        textAlign: TextAlign.center,
+                        // overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -101,12 +114,13 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
               Container(
                 width: Get.width,
                 color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                margin: EdgeInsets.symmetric(vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                margin: const EdgeInsets.symmetric(vertical: 15),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Enter Your OTP Code',
                       style: TextStyle(
                         color: Color(0xFF23233F),
@@ -115,58 +129,71 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: "845-784",
-                        labelStyle: TextStyle(
-                          color: LightThemeColors.primaryColor,
-                        ),
-                        border: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                      ),
+                    SizedBox(height: 15),
+                    OtpTextField(
+                      numberOfFields: 6,
+                      borderColor: LightThemeColors.primaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                      fieldWidth: Get.width / 8,
+
+                      //set to true to show as box or false to show as dash
+                      showFieldAsBox: true,
+                      //runs when a code is typed in
+                      onCodeChanged: (String code) {
+                        //handle validation or checks here
+                      },
+                      //runs when every textfield is filled
+                      onSubmit: (String verificationCode) {
+                        controller.setVerifyCode(verificationCode);
+                        // showDialog(
+                        //     context: context,
+                        //     builder: (context) {
+                        //       return AlertDialog(
+                        //         title: Text("Verification Code"),
+                        //         content: Text('Code entered is $verificationCode'),
+                        //       );
+                        //     });
+                      }, // end onSubmit
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               //-------------- TIME --------
-              Text(
-                'RESEND CODE IN : 00:39',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFF4363F6),
-                  fontSize: 18,
-                  fontFamily: 'DM Sans',
-                  fontWeight: FontWeight.w500,
-                  height: 0.09,
-                ),
-              ),
-              SizedBox(height: 30),
+              Builder(builder: (context) {
+                String time = formatTimerTime(controller.estimateTime);
+                return Text(
+                  'RESEND CODE IN : $time',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF4363F6),
+                    fontSize: 18,
+                    fontFamily: 'DM Sans',
+                    fontWeight: FontWeight.w500,
+                    height: 0.09,
+                  ),
+                );
+              }),
+              const SizedBox(height: 30),
               // --------- AGREEMENT -----
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Checkbox(value: false, onChanged: (value) {}),
+                        Checkbox(
+                            value: controller.terms1.value,
+                            onChanged: (value) {
+                              controller.updateTerms1(value);
+                            }),
                         // SizedBox(
                         //   width: 10,
                         // ),
-                        Text.rich(
+                        const Text.rich(
                           TextSpan(
                             children: [
                               TextSpan(
@@ -196,11 +223,15 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Checkbox(value: false, onChanged: (value) {}),
+                        Checkbox(
+                            value: controller.terms2.value,
+                            onChanged: (value) {
+                              controller.updateTerms2(value);
+                            }),
                         // SizedBox(
                         //   wid, th: 10,
                         // ),
-                        Expanded(
+                        const Expanded(
                           child: Text(
                             'I understand that all transfers are final once sent and can not be reversed, cancelled or refunded.',
                             style: TextStyle(
@@ -219,49 +250,56 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
               ),
 
               // -------------- BUTTON ---------------
-              InkWell(
-                onTap: () {
-                  // value.onTransfer();
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 40),
-                  decoration: ShapeDecoration(
-                    color: LightThemeColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 54,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: LightThemeColors.primaryColor,
-                        ),
+              Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
+                child: InkWell(
+                  onTap: () {
+                    controller.verifyCode();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: ShapeDecoration(
+                      color: controller.verifyCode == ''
+                          ? Color.fromARGB(236, 117, 112, 184)
+                          : LightThemeColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      Expanded(
-                        child: Text(
-                          'CONFIRM TRANSFER',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontFamily: 'DM Sans',
-                            fontWeight: FontWeight.w500,
+                    ),
+                    child: Container(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 50,
+                            height: 54,
+                            decoration: ShapeDecoration(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward,
+                              color: LightThemeColors.primaryColor,
+                            ),
                           ),
-                        ),
-                      )
-                    ],
+                          const Expanded(
+                            child: Text(
+                              'CONFIRM TRANSFER',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontFamily: 'DM Sans',
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               )

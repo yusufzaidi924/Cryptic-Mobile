@@ -35,6 +35,7 @@ abstract class Routes {
   static const INCOMING_CALL = _Paths.INCOMING_CALL;
   static const SPLASH = _Paths.SPLASH;
   static const MNEMONIC_PAGE = _Paths.MNEMONIC_PAGE;
+  static const MY_Q_R = _Paths.MY_Q_R;
 }
 
 abstract class _Paths {
@@ -72,4 +73,5 @@ abstract class _Paths {
   static const INCOMING_CALL = '/incoming-call';
   static const SPLASH = '/splash';
   static const MNEMONIC_PAGE = '/mnemonic-page';
+  static const MY_Q_R = '/my-q-r';
 }

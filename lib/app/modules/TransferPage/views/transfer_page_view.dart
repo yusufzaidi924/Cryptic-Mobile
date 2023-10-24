@@ -2,6 +2,7 @@ import 'package:edmonscan/app/components/underLine_input.dart';
 import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -209,52 +210,56 @@ class TransferPageView extends GetView<TransferPageController> {
                   color: Colors.white,
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
-                        child: Text.rich(
-                          TextSpan(
-                            children: [
-                              const TextSpan(
-                                text: 'Amount ',
-                                style: TextStyle(
-                                  color: Color(0xFF23233F),
-                                  fontSize: 18,
-                                  fontFamily: 'DM Sans',
-                                  fontWeight: FontWeight.w500,
+                      Builder(builder: (context) {
+                        int amount =
+                            controller.authCtrl.btcService?.balance ?? 0;
+                        double btcAmount = amount / CryptoConf.BITCOIN_DIGIT;
+                        return Container(
+                          width: double.infinity,
+                          child: Text.rich(
+                            TextSpan(
+                              children: [
+                                const TextSpan(
+                                  text: 'Amount ',
+                                  style: TextStyle(
+                                    color: Color(0xFF23233F),
+                                    fontSize: 18,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
-                              ),
-                              const TextSpan(
-                                text: '(Balance: ',
-                                style: TextStyle(
-                                  color: Color(0xFF23233F),
-                                  fontSize: 16,
-                                  fontFamily: 'DM Sans',
-                                  fontWeight: FontWeight.w400,
+                                const TextSpan(
+                                  text: '(Balance: ',
+                                  style: TextStyle(
+                                    color: Color(0xFF23233F),
+                                    fontSize: 16,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text:
-                                    '\$${controller.authCtrl.btcService?.balance ?? "0.0"}',
-                                style: const TextStyle(
-                                  color: Color(0xFF655AF0),
-                                  fontSize: 16,
-                                  fontFamily: 'DM Sans',
-                                  fontWeight: FontWeight.w400,
+                                TextSpan(
+                                  text: '${btcAmount} BTC',
+                                  style: const TextStyle(
+                                    color: Color(0xFF655AF0),
+                                    fontSize: 16,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                              const TextSpan(
-                                text: ')',
-                                style: TextStyle(
-                                  color: Color(0xFF23233F),
-                                  fontSize: 16,
-                                  fontFamily: 'DM Sans',
-                                  fontWeight: FontWeight.w400,
+                                const TextSpan(
+                                  text: ')',
+                                  style: TextStyle(
+                                    color: Color(0xFF23233F),
+                                    fontSize: 16,
+                                    fontFamily: 'DM Sans',
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      }),
                       // SizedBox(height: 10),
                       TextFormField(
                         controller: controller.amountCtrl,
@@ -278,6 +283,8 @@ class TransferPageView extends GetView<TransferPageController> {
                                 color: LightThemeColors.primaryColor),
                           ),
                         ),
+                        onChanged: (value) =>
+                            controller.formKey.currentState!.validate(),
                         validator: (value) => controller.validateAmount(value),
                       ),
                     ],
@@ -371,6 +378,8 @@ class TransferPageView extends GetView<TransferPageController> {
                                 color: LightThemeColors.primaryColor),
                           ),
                         ),
+                        onChanged: (value) =>
+                            controller.formKey.currentState!.validate(),
                         validator: (value) => controller.validateMessage(value),
                       ),
                     ],

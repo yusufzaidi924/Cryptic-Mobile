@@ -214,7 +214,7 @@ class MyProfileView extends GetView<MyProfileController> {
               // -------------- BUTTON ---------------
               InkWell(
                 onTap: () {
-                  // value.onRequestPayment();
+                  value.onLogout();
                 },
                 child: Container(
                   width: double.infinity,

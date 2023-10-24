@@ -109,6 +109,15 @@ class UserRepository {
     return body;
   }
 
+  // ========== UPDATE WALLET ADDRESSS  ==================
+  static Future<Map<String, dynamic>> updateBtcAddress(
+      data, String userID) async {
+    var res = await Network()
+        .authData(data, Network.UPDATE_BTC_ADDRESS + '/${userID}');
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // ========== UPLOAD FILE  ==================
   static Future uploadFile(File file) async {
     StreamedResponse res =

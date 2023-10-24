@@ -78,10 +78,10 @@ class MnemonicPageController extends GetxController {
       final address = await bitcoinService.getWalletAddress(wallet);
       walletAddress.value = address;
 
-      authCtrl.updateBTCservice(bitcoinService);
+      // final block = await bitcoinService.blockchainInit();
 
-      await bitcoinService.blockchainInit();
       await bitcoinService.getBalance(wallet);
+      authCtrl.updateBTCservice(bitcoinService);
 
       // SAVE MNEMONIC TO LOCAL
       await storeDataToLocal(
@@ -89,6 +89,7 @@ class MnemonicPageController extends GetxController {
           value: mnemonic,
           type: StorableDataType.String);
 
+      await authCtrl.updateBtcAddress(address);
       EasyLoading.dismiss();
 
       update();

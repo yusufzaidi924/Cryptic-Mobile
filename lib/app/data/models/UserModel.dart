@@ -8,6 +8,7 @@ class UserModel {
   String? street;
   String? city;
   String? state;
+  String? btcAddress;
   int? zipcode;
   DateTime? birthday;
   String? licenseState;
@@ -41,6 +42,7 @@ class UserModel {
     this.selfie,
     this.createdAt,
     this.updatedAt,
+    this.btcAddress,
     required this.otp,
     required this.status,
   });
@@ -56,6 +58,7 @@ class UserModel {
       street: json['street'] as String?,
       city: json['city'] as String?,
       state: json['state'] as String?,
+      btcAddress: json['btc_wallet'] as String?,
       zipcode: json['zipcode'] as int?,
       birthday: json['birthday'] != null
           ? DateTime.tryParse(json['birthday'] as String)
@@ -88,6 +91,7 @@ class UserModel {
     data['street'] = this.street;
     data['city'] = this.city;
     data['state'] = this.state;
+    data['btcAddress'] = this.btcAddress;
     data['zipcode'] = this.zipcode;
     data['birthday'] = this.birthday?.toIso8601String();
     data['licenseState'] = this.licenseState;

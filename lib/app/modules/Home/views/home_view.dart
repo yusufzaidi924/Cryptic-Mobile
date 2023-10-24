@@ -1,6 +1,8 @@
 import 'package:edmonscan/app/components/bell_widget.dart';
 import 'package:edmonscan/app/components/top_menu_item.dart';
 import 'package:edmonscan/app/modules/Home/views/bottom_bar_view.dart';
+import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -56,16 +58,22 @@ class HomeView extends GetView<HomeController> {
                               height: 1.0,
                             ),
                           ),
-                          Text(
-                            '\$ ${controller.authCtrl.btcService?.balance ?? ""}',
-                            style: TextStyle(
-                              color: Color(0xFFFEBC11),
-                              fontSize: 24,
-                              fontFamily: 'DM Sans',
-                              fontWeight: FontWeight.w500,
-                              height: 1.5,
-                            ),
-                          )
+                          Builder(builder: (context) {
+                            int amount =
+                                controller.authCtrl.btcService?.balance ?? 0;
+                            double btcAmount =
+                                amount / CryptoConf.BITCOIN_DIGIT;
+                            return Text(
+                              '${btcAmount} BTC',
+                              style: TextStyle(
+                                color: Color(0xFFFEBC11),
+                                fontSize: 24,
+                                fontFamily: 'DM Sans',
+                                fontWeight: FontWeight.w500,
+                                height: 1.5,
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -122,17 +130,19 @@ class HomeView extends GetView<HomeController> {
                             title: "Wallet",
                           ),
 
-                          // QR Scan
-
                           topItemMenu(
-                            onTap: () {},
+                            onTap: () {
+                              // Get.toNamed(Routes.MY_Q_R);
+                            },
                             icon: 'assets/images/scan.png',
                             title: "QR Scan",
                           ),
 
                           // My QRCode
                           topItemMenu(
-                            onTap: () {},
+                            onTap: () {
+                              Get.toNamed(Routes.MY_Q_R);
+                            },
                             icon: 'assets/images/qr.png',
                             title: "My QR",
                           ),
