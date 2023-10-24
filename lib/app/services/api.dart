@@ -6,8 +6,8 @@ import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Network {
-  // static String BASE_URL = 'http://3.19.101.55:3300/';
-  static String BASE_URL = 'http://192.168.2.4:3300/';
+  static String BASE_URL = 'http://3.19.101.55:3300/';
+  // static String BASE_URL = 'http://192.168.2.4:3300/';
 
   static String LOGIN = "login";
   static String REGISTER = 'signup';

@@ -131,11 +131,12 @@ class MnemonicPageView extends GetView<MnemonicPageController> {
                                               Get.width * 0.5 / 60,
                                         ),
                                         shrinkWrap: true,
-                                        itemCount: 12,
+                                        itemCount:
+                                            controller.mnemonicList.length,
                                         itemBuilder: (context, index) {
-                                          final controller =
-                                              TextEditingController(
-                                                  text: 'Default value');
+                                          final txtCtrl = TextEditingController(
+                                              text: controller
+                                                  .mnemonicList[index]);
                                           return Row(
                                             children: [
                                               SizedBox(
@@ -163,7 +164,7 @@ class MnemonicPageView extends GetView<MnemonicPageController> {
                                                             10),
                                                   ),
                                                   child: TextField(
-                                                    controller: controller,
+                                                    controller: txtCtrl,
                                                     style: const TextStyle(
                                                       fontSize: 14,
                                                       color: Colors.black,
@@ -187,23 +188,28 @@ class MnemonicPageView extends GetView<MnemonicPageController> {
                             SizedBox(
                               height: 20,
                             ),
-                            Container(
-                              width: double.infinity,
-                              height: 50,
-                              decoration: ShapeDecoration(
-                                color: const Color(0xFF655AF0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                            InkWell(
+                              onTap: () {
+                                controller.createWallet();
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                height: 50,
+                                decoration: ShapeDecoration(
+                                  color: const Color(0xFF655AF0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                 ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  'Done',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontFamily: 'DM Sans',
-                                    fontWeight: FontWeight.w500,
+                                child: const Center(
+                                  child: Text(
+                                    'Create Wallet',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontFamily: 'DM Sans',
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),

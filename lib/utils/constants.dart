@@ -1,3 +1,4 @@
+import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:flutter/material.dart';
 
 class MyColors {
@@ -120,4 +121,11 @@ class AboutUsLinks {
 class ArgoraConf {
   static const APPID = "852824acc30b414494607fab503ae55c";
   static const TOKEN = "0b25c933ddfb49298ebdca7a9fe5b04f";
+}
+
+class CryptoConf {
+  // BITCOIN TESTNET
+  static const BITCOIN_NETWORK = Network.Testnet;
+  static const BITCOIN_PATH = "m/84'/1'/0'";
+  static const BITCOIN_PASSWORD = "password";
 }

@@ -7,6 +7,7 @@ import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/app/services/awesome_notifications_helper.dart';
+import 'package:edmonscan/app/services/bitcoin_service.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/chatUtil/chat_core.dart';
@@ -1123,6 +1124,7 @@ class AuthController extends GetxController {
 
               Logger().d(mnemonic_code);
               if (mnemonic_code != null) {
+                await initBTCWallet(mnemonic_code);
                 return Routes.HOME;
               } else {
                 return Routes.MNEMONIC_PAGE;
@@ -1144,6 +1146,44 @@ class AuthController extends GetxController {
           return Routes.SIGN_IN;
         }
       }
+    }
+  }
+
+  //---------------------------------------------- BITCOIN -------------------------------
+  final _btcService = Rxn<BitcoinService>();
+  BitcoinService? get btcService => _btcService.value;
+  updateBTCservice(BitcoinService btcService) {
+    _btcService.value = btcService;
+    update();
+  }
+
+  initBTCWallet(String mnemonic) async {
+    try {
+      if (mnemonic == "") return;
+      BitcoinService bitcoinService = new BitcoinService(
+        network: CryptoConf.BITCOIN_NETWORK,
+        path: CryptoConf.BITCOIN_PATH,
+        password: CryptoConf.BITCOIN_PASSWORD,
+      );
+      final wallet =
+          await bitcoinService.createOrRestoreWallet(mnemonic: mnemonic);
+      final address = await bitcoinService.getWalletAddress(wallet);
+
+      updateBTCservice(bitcoinService);
+
+      await bitcoinService.blockchainInit();
+      await bitcoinService.getBalance(wallet);
+
+      update();
+      CustomSnackBar.showCustomSnackBar(
+          title: "SUCCESS",
+          message: "Your BITCOIN wallet is loaded successfully!");
+
+      // Get.offAll(Routes.HOME);
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: e.toString());
     }
   }
 

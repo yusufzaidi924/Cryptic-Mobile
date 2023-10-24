@@ -24,7 +24,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
       ),
     );
 
-    Color _backgroudColor = Color.fromARGB(255, 236, 236, 236);
+    Color _backgroudColor = const Color.fromARGB(255, 236, 236, 236);
 
     return GetBuilder<ChatRoomController>(builder: (value) {
       /***********************
@@ -36,28 +36,28 @@ class ChatRoomView extends GetView<ChatRoomController> {
             : null;
         return Container(
           width: Get.width,
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               otherUser?.imageUrl != null
                   ? CircleAvatar(
-                      backgroundColor: Color.fromARGB(182, 211, 211, 211),
+                      backgroundColor: const Color.fromARGB(182, 211, 211, 211),
                       backgroundImage: NetworkImage(
                           "${Network.BASE_URL}${otherUser!.imageUrl}"),
                       radius: 28,
                     )
-                  : CircleAvatar(
+                  : const CircleAvatar(
                       backgroundColor: Color.fromARGB(182, 211, 211, 211),
                       backgroundImage: AssetImage("assets/images/default.png"),
                       radius: 28,
                     ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Text(
                 '${otherUser?.firstName ?? "Criptacy"} ${otherUser?.lastName ?? "User"}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                   fontFamily: 'DM Sans',
@@ -80,7 +80,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                 onPressed: () {
                   controller.onCall();
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.call,
                   color: Colors.white,
                 )),
@@ -109,7 +109,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 controller.isBlocked
-                    ? PopupMenuItem<String>(
+                    ? const PopupMenuItem<String>(
                         value: 'unblock',
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
@@ -120,7 +120,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           title: Text('Unblock User'),
                         ),
                       )
-                    : PopupMenuItem<String>(
+                    : const PopupMenuItem<String>(
                         value: 'block',
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
@@ -131,7 +131,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                           title: Text('Block User'),
                         ),
                       ),
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'report',
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -142,7 +142,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     title: Text('Report User'),
                   ),
                 ),
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'delete',
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -166,7 +166,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                 child: Container(
                   decoration: ShapeDecoration(
                     color: _backgroudColor,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(32),
                         topRight: Radius.circular(32),
@@ -174,7 +174,7 @@ class ChatRoomView extends GetView<ChatRoomController> {
                     ),
                   ),
                   child: Container(
-                    padding: EdgeInsets.only(top: 32),
+                    padding: const EdgeInsets.only(top: 32),
                     child: Chat(
                       theme: DefaultChatTheme(
                         inputBackgroundColor: Colors.white,

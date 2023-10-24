@@ -15,7 +15,7 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
+      const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light,
@@ -23,21 +23,21 @@ class HomeView extends GetView<HomeController> {
     );
     return GetBuilder<HomeController>(builder: (value) {
       return Scaffold(
-        backgroundColor: Color(0xFFEEEFF3),
+        backgroundColor: const Color(0xFFEEEFF3),
         body: Column(
           children: [
             //-------- HEADER---------------
             Stack(
               children: [
                 Container(
-                  padding: EdgeInsets.only(bottom: 37),
+                  padding: const EdgeInsets.only(bottom: 37),
                   color: Colors.white,
                   child: Container(
                     width: Get.width,
                     height: 185,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
+                      image: const DecorationImage(
                         image: AssetImage('assets/images/home_header.png'),
                         fit: BoxFit.cover,
                       ),
@@ -57,7 +57,7 @@ class HomeView extends GetView<HomeController> {
                             ),
                           ),
                           Text(
-                            '\$12,769.00',
+                            '\$ ${controller.authCtrl.btcService?.balance ?? ""}',
                             style: TextStyle(
                               color: Color(0xFFFEBC11),
                               fontSize: 24,
@@ -88,7 +88,7 @@ class HomeView extends GetView<HomeController> {
                   child: Container(
                     width: Get.width,
                     height: 74,
-                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Container(
                       decoration: ShapeDecoration(
                         color: Colors.white,
@@ -96,7 +96,7 @@ class HomeView extends GetView<HomeController> {
                           borderRadius: BorderRadius.circular(15),
                         ),
                         shadows: [
-                          BoxShadow(
+                          const BoxShadow(
                             color: Color(0x193D566E),
                             blurRadius: 12,
                             offset: Offset(0, 3),
@@ -150,14 +150,14 @@ class HomeView extends GetView<HomeController> {
                     //------- RECENT USERS ---------
                     Container(
                       color: Colors.white,
-                      padding: EdgeInsets.only(top: 35),
+                      padding: const EdgeInsets.only(top: 35),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             width: Get.width,
                             padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Text(
+                            child: const Text(
                               'Send again',
                               textAlign: TextAlign.start,
                               style: TextStyle(
@@ -170,7 +170,7 @@ class HomeView extends GetView<HomeController> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.only(top: 10),
+                            margin: const EdgeInsets.only(top: 10),
                             height:
                                 100, // Set the height of the horizontal ListView
                             child: ListView.builder(
@@ -193,16 +193,16 @@ class HomeView extends GetView<HomeController> {
                     //------- CURRENCIES ----------
                     Container(
                       height: 250,
-                      margin: EdgeInsets.symmetric(vertical: 15),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+                      margin: const EdgeInsets.symmetric(vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 13),
                       color: Colors.white,
                       width: Get.width,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Purchase Currency',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -213,7 +213,7 @@ class HomeView extends GetView<HomeController> {
                               height: 1.0,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Expanded(
@@ -221,7 +221,7 @@ class HomeView extends GetView<HomeController> {
                               scrollDirection: Axis.horizontal,
                               padding: EdgeInsets.zero,
                               gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2, // Number of columns
                                 childAspectRatio:
                                     1.1, // Width to height ratio of grid items
@@ -232,13 +232,13 @@ class HomeView extends GetView<HomeController> {
                                 return Column(
                                   children: [
                                     Image.asset('assets/images/coin.png'),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 8,
                                     ),
                                     Text(
                                       'BTC${index}',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Color(0xFF23233F),
                                         fontSize: 14,
                                         fontFamily: 'DM Sans',
@@ -261,8 +261,8 @@ class HomeView extends GetView<HomeController> {
                       color: Colors.white,
                       // margin: EdgeInsets.symmetric(vertical: 15),
                       width: Get.width,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 15),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,16 +275,16 @@ class HomeView extends GetView<HomeController> {
                                 child: Container(
                                   width: 80,
                                   height: 5,
-                                  decoration:
-                                      BoxDecoration(color: Color(0xFFDDDDDD)),
+                                  decoration: const BoxDecoration(
+                                      color: Color(0xFFDDDDDD)),
                                 ),
                               )
                             ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
-                          Text(
+                          const Text(
                             'Transaction History',
                             style: TextStyle(
                               color: Color(0xFF23233F),
@@ -293,7 +293,7 @@ class HomeView extends GetView<HomeController> {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           Expanded(
@@ -306,23 +306,23 @@ class HomeView extends GetView<HomeController> {
                                   Container(
                                     width: 56,
                                     height: 56,
-                                    padding: EdgeInsets.all(4),
-                                    decoration: ShapeDecoration(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: const ShapeDecoration(
                                       shape: OvalBorder(
                                         side: BorderSide(
                                             width: 1, color: Color(0xFF655AF0)),
                                       ),
                                     ),
-                                    child: CircleAvatar(
+                                    child: const CircleAvatar(
                                       backgroundColor: Colors.grey,
                                       backgroundImage: AssetImage(
                                           'assets/images/avatar.png'),
                                     ),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 12,
                                   ),
-                                  Expanded(
+                                  const Expanded(
                                     child: Column(
                                       // mainAxisSize: MainAxisSize.max,
                                       crossAxisAlignment:
@@ -393,9 +393,8 @@ class HomeView extends GetView<HomeController> {
                               );
                             },
                             separatorBuilder: (context, index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5.0),
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 5.0),
                                 child: Divider(
                                   height: 1, // Set the height of the separator
                                   color: Colors
@@ -407,7 +406,7 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                   ],
@@ -428,7 +427,7 @@ class HomeView extends GetView<HomeController> {
         return onTap();
       },
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -437,8 +436,8 @@ class HomeView extends GetView<HomeController> {
             Container(
               width: 56,
               height: 56,
-              padding: EdgeInsets.all(4),
-              decoration: ShapeDecoration(
+              padding: const EdgeInsets.all(4),
+              decoration: const ShapeDecoration(
                 shape: OvalBorder(
                   side: BorderSide(width: 1, color: Color(0xFF655AF0)),
                 ),
@@ -448,14 +447,14 @@ class HomeView extends GetView<HomeController> {
                 backgroundImage: AssetImage(avatar),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             Text(
               '${name}',
               textAlign: TextAlign.center,
               overflow: TextOverflow.clip,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF23233F),
                 fontSize: 14,
                 fontFamily: 'DM Sans',

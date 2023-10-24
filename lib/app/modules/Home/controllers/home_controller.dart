@@ -1,3 +1,4 @@
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ class HomeController extends GetxController {
   //TODO: Implement HomeController
 
   final count = 0.obs;
+
+  final authCtrl = Get.find<AuthController>();
 
   final selectedInex = 0.obs;
   final PageController pageController = PageController();

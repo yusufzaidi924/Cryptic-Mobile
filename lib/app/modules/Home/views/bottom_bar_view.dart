@@ -44,11 +44,21 @@ class BottomBarView extends GetView {
                 label: ".",
               ),
               BottomNavigationBarItem(
-                icon: Image.asset('assets/images/transfer_icon.png'),
+                icon: controller.selectedInex == 1
+                    ? Image.asset(
+                        'assets/images/transfer_icon.png',
+                        color: LightThemeColors.primaryColor,
+                      )
+                    : Image.asset('assets/images/transfer_icon.png'),
                 label: ".",
               ),
               BottomNavigationBarItem(
-                icon: Image.asset('assets/images/trans_his_icon.png'),
+                icon: controller.selectedInex == 2
+                    ? Image.asset(
+                        'assets/images/trans_his_icon.png',
+                        color: LightThemeColors.primaryColor,
+                      )
+                    : Image.asset('assets/images/trans_his_icon.png'),
                 // Icon(
                 //   Ionicons.ios_location_outline,
                 // ),
