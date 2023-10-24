@@ -446,7 +446,21 @@ class AuthController extends GetxController {
             break;
 
           case 2: //  Approved
-            Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+
+            // CHECK MNEMONIC CODE
+            String? mnemonic_code = await getDataInLocal(
+                key: AppLocalKeys.MNEMONIC_CODE, type: StorableDataType.String);
+
+            Logger().d(mnemonic_code);
+            if (mnemonic_code != null) {
+              await initBTCWallet(mnemonic_code);
+              Get.toNamed(Routes.VERIFY_RESULT_PAGE);
+            } else {
+              // return Routes.MNEMONIC_PAGE;
+              Get.toNamed(Routes.HOME);
+
+              // Get.toNamed(Routes.MNEMONIC_PAGE);
+            }
 
             break;
 
@@ -1146,6 +1160,30 @@ class AuthController extends GetxController {
           return Routes.SIGN_IN;
         }
       }
+    }
+  }
+
+  /********************************
+   * @Auth: geniusdev0813@gmail.com
+   * @Date: 2023.10.13
+   * @Desc: Get User List
+   */
+  Future<List<UserModel>> getUsers() async {
+    try {
+      final res = await UserRepository.getAllUsers();
+      if (res['statusCode'] == 200) {
+        final resData = res['data'];
+        Logger().d(resData);
+        return resData
+            .map((data) => UserModel.fromJson(data))
+            .toList()
+            .cast<UserModel>();
+      } else {
+        throw res['message'] ?? Messages.SOMETHING_WENT_WRONG;
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      throw e;
     }
   }
 

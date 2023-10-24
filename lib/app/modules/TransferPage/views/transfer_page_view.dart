@@ -1,4 +1,6 @@
 import 'package:edmonscan/app/components/underLine_input.dart';
+import 'package:edmonscan/app/data/models/UserModel.dart';
+import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +17,7 @@ class TransferPageView extends GetView<TransferPageController> {
   Widget build(BuildContext context) {
     return GetBuilder<TransferPageController>(builder: (value) {
       return Scaffold(
-        backgroundColor: Color(0xFFEEEFF3),
+        backgroundColor: const Color(0xFFEEEFF3),
         appBar: AppBar(
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -37,7 +39,7 @@ class TransferPageView extends GetView<TransferPageController> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios,
               color: Color(0xFF23233F),
             ),
@@ -45,20 +47,20 @@ class TransferPageView extends GetView<TransferPageController> {
           actions: [
             PopupMenuButton(
               itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 1'),
                   value: 1,
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 2'),
                   value: 2,
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   child: Text('Option 3'),
                   value: 3,
                 ),
               ],
-              icon: Icon(
+              icon: const Icon(
                 Icons.more_vert,
                 color: Color(0xFF23233F),
               ),
@@ -71,288 +73,360 @@ class TransferPageView extends GetView<TransferPageController> {
           elevation: 0.0,
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              // --------- USER INFO ------
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 15),
-                width: Get.width,
-                color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/images/avatar.png',
+          child: Form(
+            key: controller.formKey,
+            child: Column(
+              children: [
+                // --------- USER INFO ------
+
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 15),
+                  width: Get.width,
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                  child: DropdownButton<UserModel>(
+                    isExpanded: true,
+                    value: controller.selectedUser,
+                    itemHeight: 60,
+                    onChanged: (UserModel? userModel) {
+                      controller.updateSelectedUser(userModel!);
+                    },
+                    items: controller.users.map((user) {
+                      return DropdownMenuItem<UserModel>(
+                        value: user,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Row(
+                            children: [
+                              user.selfie != null
+                                  ? CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          '${Network.BASE_URL}${user.selfie}'),
+                                      radius: 28,
+                                    )
+                                  : const CircleAvatar(
+                                      backgroundImage: AssetImage(
+                                        'assets/images/default.png',
+                                      ),
+                                      radius: 28,
+                                    ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    user.username,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontFamily: 'DM Sans',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Text(
+                                    user.phone,
+                                    style: const TextStyle(
+                                      color: Color(0xFF6E6E82),
+                                      fontSize: 14,
+                                      fontFamily: 'DM Sans',
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
-                          radius: 28,
                         ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jonathan Doe',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              '505-287-8051',
-                              style: TextStyle(
-                                color: Color(0xFF6E6E82),
-                                fontSize: 14,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-
-              // ------------ SELECT CURRENCY ------
-              Container(
-                width: Get.width,
-                color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Choose your currency',
-                      style: TextStyle(
-                        color: Color(0xFF23233F),
-                        fontSize: 18,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    // UnderLineInputBox(
-                    //     formkey: formkey,
-                    //     controller: controller,
-                    //     hint: hint,
-                    //     validate: validate)
-                  ],
-                ),
-              ),
-
-              //---------- AMOUNT INPUT --------------
-              Container(
-                margin: EdgeInsets.only(top: 15),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                width: Get.width,
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Amount ',
-                              style: TextStyle(
-                                color: Color(0xFF23233F),
-                                fontSize: 18,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '(Balance: ',
-                              style: TextStyle(
-                                color: Color(0xFF23233F),
-                                fontSize: 16,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            TextSpan(
-                              text: '\$12,769.00',
-                              style: TextStyle(
-                                color: Color(0xFF655AF0),
-                                fontSize: 16,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            TextSpan(
-                              text: ')',
-                              style: TextStyle(
-                                color: Color(0xFF23233F),
-                                fontSize: 16,
-                                fontFamily: 'DM Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    // SizedBox(height: 10),
-                    TextField(
-                      decoration: InputDecoration(
-                        prefix: Text('\$'),
-                        labelText: 'Enter amount',
-                        labelStyle: TextStyle(
-                          color: LightThemeColors.primaryColor,
-                        ),
-                        border: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide:
-                              BorderSide(color: LightThemeColors.primaryColor),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              //------------- GREETING OPTION---------
-              Container(
-                width: Get.width,
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 15),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Include a Greeting *(optional)',
-                      style: TextStyle(
-                        color: Color(0xFF23233F),
-                        fontSize: 18,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 15),
-                      height: 100,
-                      width: Get.width,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 10,
-                        itemBuilder: (BuildContext context, int indext) {
-                          return Container(
-                            width: 90,
-                            height: 80,
-                            decoration: ShapeDecoration(
-                              color: Color(0xFFEB5A5A).withOpacity(0.1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Image.asset(
-                                'assets/images/greeting_avatar.png'),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(width: 15);
-                        },
-                      ),
-                    )
-                  ],
-                ),
-              ),
-
-              //------------- MESSAGE -------
-              Container(
-                width: Get.width,
-                color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  children: [
-                    Text(
-                      'Add a message (Limit 120 Characters)',
-                      style: TextStyle(
-                        color: Color(0xFF23233F),
-                        fontSize: 18,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // -------------- BUTTON ---------------
-              InkWell(
-                onTap: () {
-                  value.onTransfer();
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 40),
-                  decoration: ShapeDecoration(
-                    color: LightThemeColors.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                      );
+                    }).toList(),
                   ),
-                  child: Row(
+                ),
+
+                // ------------ SELECT CURRENCY ------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Choose your currency',
+                        style: TextStyle(
+                          color: Color(0xFF23233F),
+                          fontSize: 18,
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      DropdownButton<String>(
+                        isExpanded: true,
+                        value: 'Bitcoin',
+                        onChanged: (String? string) {},
+                        style: const TextStyle(
+                          fontSize: 16, // Customize the font size
+                          color: Colors.blue, // Customize the text color
+                          fontWeight:
+                              FontWeight.bold, // Customize the font weight
+                        ),
+                        items: ['Bitcoin'].map((String item) {
+                          return DropdownMenuItem<String>(
+                            value: item,
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                fontSize:
+                                    14, // Customize the font size of the dropdown menu items
+                                color: Colors
+                                    .black, // Customize the text color of the dropdown menu items
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      // UnderLineInputBox(
+                      //     formkey: formkey,
+                      //     controller: controller,
+                      //     hint: hint,
+                      //     validate: validate)
+                    ],
+                  ),
+                ),
+
+                //---------- AMOUNT INPUT --------------
+                Container(
+                  margin: const EdgeInsets.only(top: 15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  width: Get.width,
+                  color: Colors.white,
+                  child: Column(
                     children: [
                       Container(
-                        width: 50,
-                        height: 54,
-                        decoration: ShapeDecoration(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        width: double.infinity,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Amount ',
+                                style: TextStyle(
+                                  color: Color(0xFF23233F),
+                                  fontSize: 18,
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: '(Balance: ',
+                                style: TextStyle(
+                                  color: Color(0xFF23233F),
+                                  fontSize: 16,
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    '\$${controller.authCtrl.btcService?.balance ?? "0.0"}',
+                                style: const TextStyle(
+                                  color: Color(0xFF655AF0),
+                                  fontSize: 16,
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ')',
+                                style: TextStyle(
+                                  color: Color(0xFF23233F),
+                                  fontSize: 16,
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward,
-                          color: LightThemeColors.primaryColor,
                         ),
                       ),
-                      Expanded(
-                        child: Text(
-                          'SWIPE TO TRANSFER',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontFamily: 'DM Sans',
-                            fontWeight: FontWeight.w500,
+                      // SizedBox(height: 10),
+                      TextFormField(
+                        controller: controller.amountCtrl,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          prefix: Text('\$'),
+                          labelText: 'Enter amount',
+                          labelStyle: TextStyle(
+                            color: LightThemeColors.primaryColor,
                           ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                        ),
+                        validator: (value) => controller.validateAmount(value),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //------------- GREETING OPTION---------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  margin: const EdgeInsets.symmetric(vertical: 15),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Include a Greeting *(optional)',
+                        style: TextStyle(
+                          color: Color(0xFF23233F),
+                          fontSize: 18,
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 15),
+                        height: 100,
+                        width: Get.width,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 10,
+                          itemBuilder: (BuildContext context, int indext) {
+                            return Container(
+                              width: 90,
+                              height: 80,
+                              decoration: ShapeDecoration(
+                                color: const Color(0xFFEB5A5A).withOpacity(0.1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Image.asset(
+                                  'assets/images/greeting_avatar.png'),
+                            );
+                          },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const SizedBox(width: 15);
+                          },
                         ),
                       )
                     ],
                   ),
                 ),
-              )
-            ],
+
+                //------------- MESSAGE -------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Add a message (Limit 120 Characters)',
+                        style: TextStyle(
+                          color: Color(0xFF23233F),
+                          fontSize: 18,
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      TextFormField(
+                        controller: controller.messageCtrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter your message here',
+                          labelStyle: TextStyle(
+                            color: LightThemeColors.primaryColor,
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                        ),
+                        validator: (value) => controller.validateMessage(value),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // -------------- BUTTON ---------------
+                InkWell(
+                  onTap: () {
+                    value.onTransfer();
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 30, horizontal: 40),
+                    decoration: ShapeDecoration(
+                      color: LightThemeColors.primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 54,
+                          decoration: ShapeDecoration(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward,
+                            color: LightThemeColors.primaryColor,
+                          ),
+                        ),
+                        const Expanded(
+                          child: Text(
+                            'SWIPE TO TRANSFER',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'DM Sans',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       );

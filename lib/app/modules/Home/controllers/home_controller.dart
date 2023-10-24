@@ -1,5 +1,6 @@
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.dart';
+import 'package:edmonscan/app/modules/TransferPage/controllers/transfer_page_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -43,6 +44,10 @@ class HomeController extends GetxController {
     //   duration: const Duration(milliseconds: 300),
     //   curve: Curves.easeIn,
     // );
+    if (index == 1) {
+      Get.delete<TransferPageController>();
+      Get.toNamed(Routes.TRANSFER_PAGE);
+    }
     if (index == 2) {
       Get.toNamed(Routes.WITHDRAW_PAGE);
     }
@@ -54,7 +59,7 @@ class HomeController extends GetxController {
     if (index == 4) {
       Get.toNamed(Routes.MY_PROFILE);
     }
-    selectedInex.value = index;
+    // selectedInex.value = index;
     // setTitle(_titleList[index]);
     update();
   }

@@ -113,4 +113,29 @@ class BitcoinService {
     balance = balanceObj.total;
     return balanceObj.total;
   }
+
+  /*****************************
+   * Send BTC to other address
+   */
+  Future<Transaction> sendTx(String addressStr, int amount) async {
+    if (wallet == null)
+      throw "Your BTC wallet is not loaded yet. Please restart app";
+    try {
+      final blockchain = await blockchainInit();
+      final txBuilder = TxBuilder();
+      final address = await Address.create(address: addressStr);
+      final script = await address.scriptPubKey();
+      final txBuilderResult = await txBuilder
+          .addRecipient(script, amount)
+          .feeRate(1.0)
+          .finish(wallet!);
+      final sbt = await wallet!.sign(psbt: txBuilderResult.psbt);
+      final tx = await sbt.extractTx();
+      await blockchain.broadcast(tx);
+      print("🎉🎉🎉 Successfully broadcast $amount Sats to $addressStr 🎉🎉🎉");
+      return tx;
+    } on Exception catch (e) {
+      throw e.toString();
+    }
+  }
 }

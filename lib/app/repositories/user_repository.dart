@@ -102,6 +102,13 @@ class UserRepository {
     return body;
   }
 
+  // ========== GET ALL USERS  ==================
+  static Future<Map<String, dynamic>> getAllUsers() async {
+    var res = await Network().getData(Network.GET_ALL_USERS);
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // ========== UPLOAD FILE  ==================
   static Future uploadFile(File file) async {
     StreamedResponse res =
