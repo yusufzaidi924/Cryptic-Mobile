@@ -18,6 +18,8 @@ class BitcoinService {
   int balance = 0;
   Blockchain? blockchain;
 
+  List<TransactionDetails> transactionList = [];
+
   BitcoinService(
       {Network network = Network.Testnet,
       path = "m/84'/1'/0'",
@@ -52,6 +54,8 @@ class BitcoinService {
           databaseConfig: const DatabaseConfig.memory());
       wallet = res;
       await syncWallet(block);
+      await blockchainInit();
+
       return res;
     } on Exception catch (e) {
       print("Error: ${e.toString()}");
@@ -101,7 +105,7 @@ class BitcoinService {
                   stopGap: 10,
                   timeout: 5,
                   retry: 5,
-                  url: "ssl://electrum.blockstream.info:60002",
+                  url: "ssl://electrum.blockstream.info:50002",
                   validateDomain: false)));
       blockchain = _blockchain;
       return _blockchain;
@@ -115,7 +119,8 @@ class BitcoinService {
     final balanceObj = await wallet.getBalance();
     balance = balanceObj.total;
 
-    print("💖💖💖 Wallet Balance: ${balance} , ${balanceObj.confirmed}");
+    print(
+        "💖💖💖 Wallet Balance: ${balance} , ${balanceObj.confirmed} ${DateTime.now()}");
     return balanceObj.total;
   }
 
@@ -146,5 +151,19 @@ class BitcoinService {
 
   syncWallet(Blockchain blockchain) async {
     wallet!.sync(blockchain);
+  }
+
+  /**
+   * @Auth: geniusdev0813@gmail.com
+   * @Date: 2023.10.24
+   * @Desc: Get Transactions
+   */
+  Future<List<TransactionDetails>> getTransactionList({Wallet? wallet}) async {
+    Wallet? myWallet = wallet ?? this.wallet;
+    if (myWallet == null) return [];
+
+    final response = await myWallet.listTransactions(true);
+    transactionList = response;
+    return response;
   }
 }

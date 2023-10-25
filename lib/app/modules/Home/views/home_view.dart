@@ -2,11 +2,15 @@ import 'package:edmonscan/app/components/bell_widget.dart';
 import 'package:edmonscan/app/components/top_menu_item.dart';
 import 'package:edmonscan/app/modules/Home/views/bottom_bar_view.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/constants.dart';
+import 'package:edmonscan/utils/crypto_util.dart';
+import 'package:edmonscan/utils/formatDateTime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -48,7 +52,7 @@ class HomeView extends GetView<HomeController> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                          const Text(
                             'Balance',
                             style: TextStyle(
                               color: Colors.white,
@@ -65,7 +69,7 @@ class HomeView extends GetView<HomeController> {
                                 amount / CryptoConf.BITCOIN_DIGIT;
                             return Text(
                               '${btcAmount} BTC',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color(0xFFFEBC11),
                                 fontSize: 24,
                                 fontFamily: 'DM Sans',
@@ -82,11 +86,26 @@ class HomeView extends GetView<HomeController> {
 
                 //---------- NOTIFICATION ICON --------
                 Positioned(
-                  right: 30,
+                  right: 15,
                   top: 50,
                   child: BellWidget(
                     isShowBadge: true,
                     onTap: () {},
+                  ),
+                ),
+
+                //---------- REFESH ICON --------
+                Positioned(
+                  right: 35,
+                  top: 45,
+                  child: IconButton(
+                    onPressed: () async {
+                      await controller.initData();
+                    },
+                    icon: const Icon(
+                      Icons.refresh,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
 
@@ -183,19 +202,32 @@ class HomeView extends GetView<HomeController> {
                             margin: const EdgeInsets.only(top: 10),
                             height:
                                 100, // Set the height of the horizontal ListView
-                            child: ListView.builder(
-                              scrollDirection: Axis
-                                  .horizontal, // Set the scroll direction to horizontal
-                              itemCount: 10,
-                              itemBuilder: (context, index) {
-                                return _profileAvatar(
-                                    onTap: () {
-                                      value.goToProfilePage();
-                                    },
-                                    avatar: 'assets/images/avatar.png',
-                                    name: 'Ella Mai');
-                              },
-                            ),
+                            child: controller.loading.value
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : controller.recentUsers.isEmpty
+                                    ? const Center(
+                                        child: Text("No Data"),
+                                      )
+                                    : ListView.builder(
+                                        scrollDirection: Axis
+                                            .horizontal, // Set the scroll direction to horizontal
+                                        itemCount:
+                                            controller.recentUsers.length,
+                                        itemBuilder: (context, index) {
+                                          return _profileAvatar(
+                                              onTap: () {
+                                                value.goToProfilePage();
+                                              },
+                                              avatar: controller
+                                                  .recentUsers[index].selfie,
+                                              name: controller
+                                                      .recentUsers[index]
+                                                      .firstName ??
+                                                  "Cryptacy User");
+                                        },
+                                      ),
                           )
                         ],
                       ),
@@ -236,7 +268,7 @@ class HomeView extends GetView<HomeController> {
                                 childAspectRatio:
                                     1.1, // Width to height ratio of grid items
                               ),
-                              itemCount: 20, // Number of items in the grid
+                              itemCount: 10, // Number of items in the grid
                               itemBuilder: (context, index) {
                                 // Build each grid item
                                 return Column(
@@ -245,10 +277,10 @@ class HomeView extends GetView<HomeController> {
                                     const SizedBox(
                                       height: 8,
                                     ),
-                                    Text(
-                                      'BTC${index}',
+                                    const Text(
+                                      'BTC',
                                       textAlign: TextAlign.center,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Color(0xFF23233F),
                                         fontSize: 14,
                                         fontFamily: 'DM Sans',
@@ -307,112 +339,180 @@ class HomeView extends GetView<HomeController> {
                             height: 10,
                           ),
                           Expanded(
-                              child: ListView.separated(
-                            itemCount: 10,
-                            padding: EdgeInsets.zero,
-                            itemBuilder: (context, index) {
-                              return Row(
-                                children: [
-                                  Container(
-                                    width: 56,
-                                    height: 56,
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const ShapeDecoration(
-                                      shape: OvalBorder(
-                                        side: BorderSide(
-                                            width: 1, color: Color(0xFF655AF0)),
-                                      ),
-                                    ),
-                                    child: const CircleAvatar(
-                                      backgroundColor: Colors.grey,
-                                      backgroundImage: AssetImage(
-                                          'assets/images/avatar.png'),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  const Expanded(
-                                    child: Column(
-                                      // mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Hannah',
-                                              style: TextStyle(
-                                                color: Color(0xFF23233F),
-                                                fontSize: 16,
-                                                fontFamily: 'DM Sans',
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                            Text(
-                                              '-\$.02488878 BTC',
-                                              textAlign: TextAlign.right,
-                                              style: TextStyle(
-                                                color: Color(0xFFEB5A5A),
-                                                fontSize: 16,
-                                                fontFamily: 'DM Sans',
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.0,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 13,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Sent',
-                                              style: TextStyle(
-                                                color: Color(0xFFEB5A5A),
-                                                fontSize: 14,
-                                                fontFamily: 'DM Sans',
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.0,
-                                              ),
-                                            ),
-                                            Text(
-                                              'To day - 11:00 AM',
-                                              textAlign: TextAlign.right,
-                                              style: TextStyle(
-                                                color: Color(0xFF6E6E82),
-                                                fontSize: 14,
-                                                fontFamily: 'DM Sans',
-                                                fontWeight: FontWeight.w400,
-                                                height: 1.0,
-                                              ),
-                                            )
-                                          ],
+                              child: controller.loading.value
+                                  ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                  : controller.authCtrl.btcService!
+                                          .transactionList.isEmpty
+                                      ? const Center(
+                                          child: Text("No Transactions"),
                                         )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 5.0),
-                                child: Divider(
-                                  height: 1, // Set the height of the separator
-                                  color: Colors
-                                      .grey, // Set the color of the separator
-                                ),
-                              );
-                            },
-                          ))
+                                      : ListView.separated(
+                                          itemCount: controller
+                                              .authCtrl
+                                              .btcService!
+                                              .transactionList
+                                              .length,
+                                          padding: EdgeInsets.zero,
+                                          itemBuilder: (context, index) {
+                                            final trans = controller
+                                                .authCtrl
+                                                .btcService!
+                                                .transactionList[index];
+                                            // Logger().d(trans.txid)l
+                                            return Row(
+                                              children: [
+                                                Container(
+                                                  width: 56,
+                                                  height: 56,
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  decoration:
+                                                      const ShapeDecoration(
+                                                    shape: OvalBorder(
+                                                      side: BorderSide(
+                                                          width: 1,
+                                                          color: Color(
+                                                              0xFF655AF0)),
+                                                    ),
+                                                  ),
+                                                  child: const CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                    backgroundImage: AssetImage(
+                                                        'assets/images/coin.png'),
+                                                  ),
+                                                ),
+                                                const SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Expanded(
+                                                  child: Column(
+                                                    // mainAxisSize: MainAxisSize.max,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment.end,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Row(
+                                                        // mainAxisAlignment:
+                                                        //     MainAxisAlignment
+                                                        //         .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              '${trans.txid} ',
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Color(
+                                                                    0xFF23233F),
+                                                                fontSize: 16,
+                                                                fontFamily:
+                                                                    'DM Sans',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          InkWell(
+                                                            onTap: () {
+                                                              controller
+                                                                  .onViewTransaction(
+                                                                      trans
+                                                                          .txid);
+                                                            },
+                                                            child: Icon(
+                                                                Icons.ios_share,
+                                                                color: LightThemeColors
+                                                                    .primaryColor),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 13,
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Builder(builder:
+                                                              (context) {
+                                                            int amount =
+                                                                trans.received -
+                                                                    trans.sent;
+                                                            double btc =
+                                                                CryptoUtil
+                                                                    .satoToBtc(
+                                                                        amount);
+                                                            return Text(
+                                                              '${btc}',
+                                                              style: TextStyle(
+                                                                color: btc > 0
+                                                                    ? Colors
+                                                                        .green
+                                                                    : const Color(
+                                                                        0xFFEB5A5A),
+                                                                fontSize: 14,
+                                                                fontFamily:
+                                                                    'DM Sans',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                height: 1.0,
+                                                              ),
+                                                            );
+                                                          }),
+                                                          Text(
+                                                            trans.confirmationTime ==
+                                                                    null
+                                                                ? "Just Now"
+                                                                : timeAgoSinceDate(DateTime.fromMillisecondsSinceEpoch(
+                                                                    (trans.confirmationTime!.timestamp *
+                                                                            1000)
+                                                                        .toInt())),
+                                                            textAlign:
+                                                                TextAlign.right,
+                                                            style:
+                                                                const TextStyle(
+                                                              color: Color(
+                                                                  0xFF6E6E82),
+                                                              fontSize: 14,
+                                                              fontFamily:
+                                                                  'DM Sans',
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              height: 1.0,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            );
+                                          },
+                                          separatorBuilder: (context, index) {
+                                            return const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 5.0),
+                                              child: Divider(
+                                                height:
+                                                    1, // Set the height of the separator
+                                                color: Colors
+                                                    .grey, // Set the color of the separator
+                                              ),
+                                            );
+                                          },
+                                        ))
                         ],
                       ),
                     ),
@@ -431,7 +531,7 @@ class HomeView extends GetView<HomeController> {
   }
 
   _profileAvatar(
-      {required Function onTap, required String avatar, required String name}) {
+      {required Function onTap, String? avatar, required String name}) {
     return InkWell(
       onTap: () {
         return onTap();
@@ -452,10 +552,15 @@ class HomeView extends GetView<HomeController> {
                   side: BorderSide(width: 1, color: Color(0xFF655AF0)),
                 ),
               ),
-              child: CircleAvatar(
-                backgroundColor: Colors.grey,
-                backgroundImage: AssetImage(avatar),
-              ),
+              child: avatar == null
+                  ? const CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      backgroundImage: AssetImage('assets/images/default.png'),
+                    )
+                  : CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      backgroundImage: NetworkImage(avatar),
+                    ),
             ),
             const SizedBox(
               height: 5,

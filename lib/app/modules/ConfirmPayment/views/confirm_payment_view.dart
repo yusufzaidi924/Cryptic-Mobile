@@ -255,7 +255,7 @@ class ConfirmPaymentView extends GetView<ConfirmPaymentController> {
                     const EdgeInsets.symmetric(vertical: 30, horizontal: 40),
                 child: InkWell(
                   onTap: () {
-                    controller.verifyCode();
+                    controller.confirmCode();
                   },
                   child: Container(
                     width: double.infinity,

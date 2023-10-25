@@ -56,14 +56,20 @@ class MnemonicPageController extends GetxController {
  * @Desc: Generate Mnemonic
  */
   initWallet() async {
-    var res = await bitcoinService.generateMnemonic();
-    _mnemonic.value = res.toString();
-    Logger().d(mnemonic);
-    final arr = mnemonic.split(' ');
-    _mnemonicList.value = arr;
-    Logger().d(mnemonicList);
+    try {
+      var res = await bitcoinService.generateMnemonic();
+      _mnemonic.value = res.toString();
+      Logger().d(mnemonic);
+      final arr = mnemonic.split(' ');
+      _mnemonicList.value = arr;
+      Logger().d(mnemonicList);
 
-    update();
+      update();
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: e.toString());
+    }
   }
 
   /******************************

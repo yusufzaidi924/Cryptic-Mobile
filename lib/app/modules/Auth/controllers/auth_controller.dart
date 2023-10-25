@@ -1,5 +1,6 @@
 // import 'dart:io';
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -457,9 +458,9 @@ class AuthController extends GetxController {
               Get.toNamed(Routes.VERIFY_RESULT_PAGE);
             } else {
               // return Routes.MNEMONIC_PAGE;
-              Get.toNamed(Routes.HOME);
+              // Get.toNamed(Routes.HOME);
 
-              // Get.toNamed(Routes.MNEMONIC_PAGE);
+              Get.toNamed(Routes.MNEMONIC_PAGE);
             }
 
             break;
@@ -1145,6 +1146,7 @@ class AuthController extends GetxController {
               Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
               if (mnemonic_code != null && authUser!.btcAddress != null) {
                 await initBTCWallet(mnemonic_code);
+
                 return Routes.HOME;
               } else {
                 return Routes.MNEMONIC_PAGE;
@@ -1213,6 +1215,22 @@ class AuthController extends GetxController {
   }
 
   //---------------------------------------------- BITCOIN -------------------------------
+  Timer? _timer;
+  // Start the timer
+  void startTimer() {
+    _timer =
+        Timer.periodic(Duration(seconds: CryptoConf.SYNC_TIME), (timer) async {
+      await updateBalance();
+      await getTransactionHistory();
+      update(); // Update the UI
+    });
+  }
+
+  // Stop the timer
+  void stopTimer() {
+    _timer?.cancel();
+  }
+
   final _btcService = Rxn<BitcoinService>();
   BitcoinService? get btcService => _btcService.value;
   updateBTCservice(BitcoinService btcService) {
@@ -1241,6 +1259,10 @@ class AuthController extends GetxController {
       // Update User Wallet Address
       await updateBtcAddress(address);
       update();
+
+      // Internal Balance Update Timer
+      startTimer();
+
       CustomSnackBar.showCustomSnackBar(
           title: "SUCCESS",
           message: "Your BITCOIN wallet is loaded successfully!");
@@ -1250,6 +1272,36 @@ class AuthController extends GetxController {
       Logger().e(e.toString());
       CustomSnackBar.showCustomErrorSnackBar(
           title: "ERROR", message: e.toString());
+    }
+  }
+
+  /**
+   * Update Balance
+   */
+  updateBalance() async {
+    if (btcService == null) return;
+    int oldBalance = btcService!.balance;
+    await btcService!.blockchainInit();
+    int newBalance = await btcService!.getBalance(btcService!.wallet!);
+    if (newBalance != oldBalance) {
+      // Received
+      CustomSnackBar.showCustomSnackBar(
+          title: "ALERT",
+          message: 'You received a transfer. Please checked your wallet');
+    }
+  }
+
+  /**
+   * Transaction History
+   */
+  getTransactionHistory() async {
+    if (btcService == null) return;
+    try {
+      await btcService!.blockchainInit();
+      await btcService!.getTransactionList();
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomSnackBar(title: "ERROR", message: e.toString());
     }
   }
 

@@ -1,7 +1,9 @@
 import 'package:edmonscan/app/components/custom_snackbar.dart';
+import 'package:edmonscan/app/data/models/TransactionModel.dart';
 import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/ConfirmPayment/controllers/confirm_payment_controller.dart';
+import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +53,18 @@ class TransferPageController extends GetxController {
           final amount = double.parse(amountCtrl.text);
           int satAmount = (amount * CryptoConf.BITCOIN_DIGIT).toInt();
           Logger().d('SATOSHI : $satAmount');
-          await authCtrl.btcService!.sendTx(address, satAmount);
+          final trans = await authCtrl.btcService!.sendTx(address, satAmount);
+          String tx = await trans.txid();
+          // String tx = await 'fdsfdsfdsf';
           EasyLoading.dismiss();
+
+          // Save Transaction
+          await saveTransaction(
+            satAmount,
+            tx,
+            messageCtrl.text,
+            selectedUser!.id,
+          );
         } catch (e) {
           EasyLoading.dismiss();
           print(e.toString());
@@ -70,7 +82,45 @@ class TransferPageController extends GetxController {
    * @Date: 2023.10.24
    * @Desc: Save Transaction
    */
-  saveTransaction() {}
+  saveTransaction(int amount, String tx, String note, int toUser) async {
+    TransactionModel transaction = TransactionModel(
+      id: 0,
+      symbol: CryptoConf.BITCOIN_SYMBOL,
+      tx: tx,
+      amount: amount,
+      to_id: toUser,
+      from_id: authCtrl.authUser!.id,
+      note: note,
+    );
+
+    try {
+      EasyLoading.show();
+
+      final data = transaction.toJson();
+
+      final res = await UserRepository.saveTransaction(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomSnackBar(
+            title: "SUCCESS", message: 'BTC is sent successfully!');
+      } else {
+        EasyLoading.dismiss();
+
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      // EasyLoading.dismiss();
+      EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+  }
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final amountCtrl = TextEditingController();

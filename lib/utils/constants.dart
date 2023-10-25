@@ -128,9 +128,11 @@ class CryptoConf {
   // static const BITCOIN_NETWORK = Network.Testnet;
   // static const BITCOIN_PATH = "m/84'/1'/0'";
   // static const BITCOIN_PASSWORD = "password";
+  static const SYNC_TIME = 60 * 1; // 1min
   static const BITCOIN_NETWORK = Network.Bitcoin;
   static const BITCOIN_PATH = "m/84'/0'/0'";
   static const BITCOIN_PASSWORD = "password";
   static const BITCOIN_MIN_AMOUNT = 0.00000001;
   static const BITCOIN_DIGIT = 100000000;
+  static const BITCOIN_SYMBOL = 'BTC';
 }

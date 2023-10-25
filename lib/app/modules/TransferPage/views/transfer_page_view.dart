@@ -263,7 +263,7 @@ class TransferPageView extends GetView<TransferPageController> {
                       // SizedBox(height: 10),
                       TextFormField(
                         controller: controller.amountCtrl,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.text,
                         decoration: const InputDecoration(
                           prefix: Text('\$'),
                           labelText: 'Enter amount',

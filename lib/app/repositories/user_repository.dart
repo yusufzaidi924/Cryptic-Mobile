@@ -118,6 +118,20 @@ class UserRepository {
     return body;
   }
 
+  // ========== SAVE TRANSACTION  ==================
+  static Future<Map<String, dynamic>> saveTransaction(data) async {
+    var res = await Network().authData(data, Network.SAVE_TRANSACTION);
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ========== GET RECENT SENT USERS  ==================
+  static Future<Map<String, dynamic>> getRecentSentUsers(data) async {
+    var res = await Network().authData(data, Network.GET_RECENT_SENT_USERS);
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // ========== UPLOAD FILE  ==================
   static Future uploadFile(File file) async {
     StreamedResponse res =

@@ -1,14 +1,22 @@
+import 'package:edmonscan/app/components/custom_snackbar.dart';
+import 'package:edmonscan/app/data/models/UserModel.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.dart';
 import 'package:edmonscan/app/modules/TransferPage/controllers/transfer_page_controller.dart';
+import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
 
   final count = 0.obs;
+  final loading = true.obs;
 
   final authCtrl = Get.find<AuthController>();
 
@@ -83,9 +91,76 @@ class HomeController extends GetxController {
     Get.toNamed(Routes.USER_PROFILE);
   }
 
+  /**
+   * Init Home Page
+   */
+  initData() async {
+    loading.value = true;
+    update();
+    await authCtrl.updateBalance();
+    await authCtrl.getTransactionHistory();
+
+    await getRecentSentUser();
+
+    loading.value = false;
+    update();
+  }
+
+  /**
+   * Get Recent Sent Users
+   */
+  final _recentUsers = Rx<List<UserModel>>([]);
+  List<UserModel> get recentUsers => _recentUsers.value;
+  getRecentSentUser() async {
+    // EasyLoading.show();
+    try {
+      final data = {
+        'uid': authCtrl.authUser!.id,
+        'count': 10,
+      };
+
+      final res = await UserRepository.getRecentSentUsers(data);
+      Logger().i(res);
+      if (res['statusCode'] == 200) {
+        // EasyLoading.dismiss();
+        final resData = res['data'];
+        _recentUsers.value = resData
+            .map((data) => UserModel.fromJson(data))
+            .toList()
+            .cast<UserModel>();
+
+        update();
+      } else {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+      }
+    } catch (e) {
+      // EasyLoading.dismiss();
+
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  /**
+   * Go To View Transaction
+   */
+  onViewTransaction(String tx) async {
+    String url = "https://bitcoinexplorer.org/tx/${tx}";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: 'Could not launch $url');
+    }
+  }
+
   @override
   void onInit() {
     super.onInit();
+    initData();
   }
 
   @override
