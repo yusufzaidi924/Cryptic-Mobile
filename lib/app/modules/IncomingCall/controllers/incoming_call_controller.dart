@@ -139,6 +139,7 @@ class IncomingCallController extends GetxController {
           'user': user,
           'token': token,
           'channelID': channelID,
+          'callId': callId,
           'role': 'audience'
         });
       }
@@ -192,7 +193,7 @@ class IncomingCallController extends GetxController {
 
   @override
   void onClose() {
-    stopRing();
+    // stopRing();
     super.onClose();
   }
 

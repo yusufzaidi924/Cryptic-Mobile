@@ -1,20 +1,218 @@
-import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
-import 'package:get/get.dart';
+import 'dart:convert';
 
-class SplashController extends GetxController {
+import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
+import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
+import 'package:get/get.dart';
+import 'package:logger/logger.dart';
+
+class SplashController extends GetxController
+// with WidgetsBindingObserver
+{
   //TODO: Implement SplashController
 
   initApp() async {
     // Call Page Check
+    listenerEvent(onEvent);
+
     final authCtrl = Get.find<AuthController>();
-    String route = await authCtrl.restoreAccount();
-    Get.offNamed(route);
-    await authCtrl.checkAndNavigationCallingPage();
+    checkAndNavigationCallingPage(() async {
+      String route = await authCtrl.restoreAccount();
+      Get.toNamed(route);
+    });
+    // Future.delayed(Duration(milliseconds: 100), () async {
+    //   await authCtrl.checkAndNavigationCallingPage();
+    // });
+  }
+
+  void onEvent(CallEvent event) {
+    Logger().i(event.toString());
+    // if (!mounted) return;
+    // setState(() {
+    //   textEvents += '${event.toString()}\n';
+    // });
+  }
+
+  // Future<void> getDevicePushTokenVoIP() async {
+  //   var devicePushTokenVoIP =
+  //       await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+  //   print('🎁------------>');
+  //   print(devicePushTokenVoIP);
+  // }
+
+  Future<void> listenerEvent(void Function(CallEvent) callback) async {
+    try {
+      FlutterCallkitIncoming.onEvent.listen((event) async {
+        print('🎁------------>');
+        Logger().d('SPLASH: $event?.event');
+        switch (event!.event) {
+          case Event.actionCallIncoming:
+            // TODO: received an incoming call
+            break;
+          case Event.actionCallStart:
+            // TODO: started an outgoing call
+            // TODO: show screen calling in Flutter
+            break;
+          case Event.actionCallAccept:
+            // TODO: accepted an incoming call
+            // TODO: show screen calling in Flutter
+            checkAndNavigationCallingPage(() {});
+            break;
+          case Event.actionCallDecline:
+            // TODO: declined an incoming call
+            // await requestHttp("ACTION_CALL_DECLINE_FROM_DART");
+            break;
+          case Event.actionCallEnded:
+            // TODO: ended an incoming/outgoing call
+            break;
+          case Event.actionCallTimeout:
+            // TODO: missed an incoming call
+            break;
+          case Event.actionCallCallback:
+            // TODO: only Android - click action `Call back` from missed call notification
+            break;
+          case Event.actionCallToggleHold:
+            // TODO: only iOS
+            break;
+          case Event.actionCallToggleMute:
+            // TODO: only iOS
+            break;
+          case Event.actionCallToggleDmtf:
+            // TODO: only iOS
+            break;
+          case Event.actionCallToggleGroup:
+            // TODO: only iOS
+            break;
+          case Event.actionCallToggleAudioSession:
+            // TODO: only iOS
+            break;
+          case Event.actionDidUpdateDevicePushTokenVoip:
+            // TODO: only iOS
+            break;
+          case Event.actionCallCustom:
+            break;
+        }
+        callback(event);
+      });
+    } on Exception catch (e) {
+      print('🎃🎃🎃------------>');
+      Logger().e(e);
+    }
+  }
+
+  //////////////////////// INCOMING CALL //////////////////
+  Future<void> checkAndNavigationCallingPage(callback) async {
+    try {
+      var currentCall = await getCurrentCall();
+      if (currentCall != null) {
+        // NavigationService.instance
+        //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
+        print("🏆================= INCOMING CALL ============== 🏆");
+        Logger().d(currentCall);
+        final callId = currentCall['id'];
+        final expireTime = currentCall['extra']['expireTime'];
+        int currentTime = DateTime.now().millisecondsSinceEpoch;
+
+        if (currentTime < expireTime) {
+          final data = currentCall['extra']['payload']['content'];
+          final jsonData = jsonDecode(data);
+          final payload = jsonData['payload'];
+          Logger().d(payload);
+
+          final callToken = payload['token'];
+          final channelID = payload['channelID'];
+          final user = payload['user'];
+          final userModel = User.fromJson(user);
+          Logger().i('🌈 ---------- Call Token ------🌈');
+          Logger().d(callToken);
+          Logger().d(channelID);
+
+          Get.toNamed(Routes.CALL_PAGE, arguments: {
+            'user': userModel,
+            'token': callToken,
+            'channelID': channelID,
+            'callId': callId,
+            'role': 'audience'
+          });
+        } else {
+          return callback();
+        }
+      } else {
+        return callback();
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      await FlutterCallkitIncoming.endAllCalls();
+      return callback();
+    }
+  }
+
+  Future<dynamic> getCurrentCall() async {
+    //check current call from pushkit if possible
+    var calls = await FlutterCallkitIncoming.activeCalls();
+    if (calls is List) {
+      if (calls.isNotEmpty) {
+        // Logger().d('DATA: $calls');
+        // _currentUuid = calls[0]['id'];
+        return calls[0];
+      } else {
+        // _currentUuid = "";
+        return null;
+      }
+    }
+  }
+
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   Logger().d('🌈 -- Restore State  --- 🌈 ');
+  //   super.didChangeAppLifecycleState(state);
+  //   switch (state) {
+  //     case AppLifecycleState.resumed:
+  //       print('------🔔 APP RESUME -----');
+  //       // Code to run when the app is resumed
+  //       checkAndNavigationCallingPage(() {});
+
+  //       break;
+  //     case AppLifecycleState.inactive:
+  //       print('------🔔 APP INACTIVE -----');
+
+  //       // Code to run when the app is inactive
+  //       break;
+  //     case AppLifecycleState.paused:
+  //       print('------🔔 APP PAUSED -----');
+
+  //       // Code to run when the app is paused
+  //       break;
+  //     case AppLifecycleState.detached:
+  //       print('------🔔 APP DETACHED-----');
+
+  //       // Code to run when the app is detached
+  //       break;
+  //     case AppLifecycleState.hidden:
+  //       print('------🔔 APP HIDDEN -----');
+
+  //       // TODO: Handle this case.
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+  Future<void> getDevicePushTokenVoIP() async {
+    var devicePushTokenVoIP =
+        await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+    print(devicePushTokenVoIP);
   }
 
   @override
   void onInit() {
     super.onInit();
+
+    // WidgetsBinding.instance.addObserver(this);
+
     initApp();
   }
 
@@ -25,6 +223,7 @@ class SplashController extends GetxController {
 
   @override
   void onClose() {
+    // WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 }

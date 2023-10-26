@@ -15,7 +15,6 @@ import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/local_storage.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:edmonscan/utils/regex.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:get/get.dart';
@@ -35,7 +34,7 @@ import 'package:intl_phone_field/phone_number.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logger/logger.dart';
 
-class AuthController extends GetxController with WidgetsBindingObserver {
+class AuthController extends GetxController {
   //TODO: Implement AuthController
   AuthController();
   final count = 0.obs;
@@ -1134,25 +1133,25 @@ class AuthController extends GetxController with WidgetsBindingObserver {
               await initNotification();
 
               // CHECK MNEMONIC CODE
-              // await storeDataToLocal(
-              //     key: AppLocalKeys.MNEMONIC_CODE,
-              //     value:
-              //         "decide much danger enhance gown good rigid panic begin evoke ball winner",
-              //     type: StorableDataType.String);
-              // String? mnemonic_code = await getDataInLocal(
-              //     key: AppLocalKeys.MNEMONIC_CODE,
-              //     type: StorableDataType.String);
+              await storeDataToLocal(
+                  key: AppLocalKeys.MNEMONIC_CODE,
+                  value:
+                      "decide much danger enhance gown good rigid panic begin evoke ball winner",
+                  type: StorableDataType.String);
+              String? mnemonic_code = await getDataInLocal(
+                  key: AppLocalKeys.MNEMONIC_CODE,
+                  type: StorableDataType.String);
 
-              // Logger().d(mnemonic_code);
-              // Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
-              // if (mnemonic_code != null && authUser!.btcAddress != null) {
-              //   await initBTCWallet(mnemonic_code);
+              Logger().d(mnemonic_code);
+              Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
+              if (mnemonic_code != null && authUser!.btcAddress != null) {
+                await initBTCWallet(mnemonic_code);
 
-              return Routes.CHAT_LIST;
-              //   return Routes.HOME;
-              // } else {
-              //   return Routes.MNEMONIC_PAGE;
-              // }
+              // return Routes.CHAT_LIST;
+                return Routes.HOME;
+              } else {
+                return Routes.MNEMONIC_PAGE;
+              }
             } else {
               return Routes.SIGN_IN;
             }
@@ -1318,168 +1317,9 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     Get.offAllNamed(Routes.SIGN_IN);
   }
 
-  // saveUser({
-  //   required String name,
-  //   required String email,
-  //   String? imgUrl,
-  // }) async {
-  //   final splitted = name.split(' ');
-  //   String firstName = "";
-  //   String lastName = "";
-  //   if (splitted.length > 1) {
-  //     firstName = splitted[0];
-  //     lastName = splitted[1];
-  //   } else {
-  //     firstName = splitted[0];
-  //   }
-  //   // if (!await MobileNumber.hasPhonePermission) {
-  //   //   await MobileNumber.requestPhonePermission;
-  //   // }
-  //   // List<SimCard>? mobileNumber = await MobileNumber.getSimCards;
-
-  //   Map<String, dynamic> saveData = {
-  //     'email': email,
-  //     'name': name,
-  //     'firstName': firstName,
-  //     'lastName': lastName,
-  //     'imageUrl': imgUrl ??
-  //         (auth.currentUser != null ? auth.currentUser!.photoURL : ""),
-  //     'metadata': {
-  //       'status': "online",
-  //       'phone': ""
-  //       // 'phone': mobileNumber != null && mobileNumber.isNotEmpty
-  //       //     ? mobileNumber[0].number
-  //       //     : null,
-  //     }
-  //   };
-
-  //   await FirebaseFirestore.instance
-  //       .collection(DatabaseConfig.USER_COLLECTION)
-  //       .doc(auth.currentUser!.uid)
-  //       .set(saveData);
-
-  //   saveData['id'] = auth.currentUser!.uid;
-  //   types.User _user = types.User.fromJson(saveData);
-  //   authUser.value = _user;
-
-  //   final feedRef =
-  //       FirebaseFirestore.instance.collection(DatabaseConfig.CHAT_COLLECTION);
-  //   await feedRef.doc(DatabaseConfig.FEED_ROOM_ID).get().then(
-  //     (doc) async {
-  //       if (doc.exists) {
-  //         Map<String, dynamic>? data = doc.data();
-  //         List users = data!['userIds'];
-  //         if (!users.contains(auth.currentUser!.uid)) {
-  //           users.add(auth.currentUser!.uid);
-  //           data['userIds'] = users;
-
-  //           await FirebaseFirestore.instance
-  //               .collection(DatabaseConfi g.CHAT_COLLECTION)
-  //               .doc(DatabaseConfig.FEED_ROOM_ID)
-  //               .update(data);
-  //         }
-
-  //         await MySharedPref.saveData(
-  //             value: true, key: MySharedPref.IS_LOGIN, type: PrefType.BOOL);
-
-  //         await MySharedPref.saveData(
-  //             value: name, key: MySharedPref.LOGIN_NAME, type: PrefType.STRING);
-  //         await MySharedPref.saveData(
-  //             value: auth.currentUser!.email,
-  //             key: MySharedPref.LOGIN_EMAIL,
-  //             type: PrefType.STRING);
-  //         // List<types.User> users =
-  //         // _feedRoom.users.add(types.User(id: auth.currentUser!.uid));
-  //         // users.add(types.User(id: auth.currentUser!.uid));
-  //         // _feedRoom.users = users;
-  //         // types.Room updateRoom = _feedRoom.copyWith(users: users);
-
-  //         // FirebaseChatCore.instance.updateRoom(_feedRoom);
-
-  //         // if (!isAgreeTerms) {
-  //         Get.offAll(() => TermsView(isFirst: true));
-  //         // } else {
-  //         //   goToNextPage();
-  //         // }
-  //       }
-  //     },
-  //   );
-  // }
-
-  // updateUser({required types.User user}) async {
-  //   await FirebaseFirestore.instance
-  //       .collection(DatabaseConfig.USER_COLLECTION)
-  //       .doc(auth.currentUser!.uid)
-  //       .update(user.toJson());
-  // }
-
-  // /************************************
-  //  * @Date: 2023.3.10
-  //  * @Desc: Save Login Log
-  //  */
-  // saveLoginLog() async {
-  //   final _locationServiceController = Get.find<LocationServiceController>();
-
-  //   final location = _locationServiceController.myLocation;
-  //   String address = "";
-  //   String deviceID = "";
-  //   String deviceModel = "";
-  //   String type = "android";
-  //   String locationString = "";
-  //   try {
-  //     try {
-  //       List<Placemark> placemarks = await placemarkFromCoordinates(
-  //           location!.latitude, location.longitude);
-  //       locationString = "${location.latitude}, ${location.longitude}";
-  //       if (placemarks.isNotEmpty) {
-  //         Placemark addressMark = placemarks[0];
-  //         String countryCode = addressMark.isoCountryCode ?? "";
-  //         String city = addressMark.locality ?? "";
-  //         address = "$city, $countryCode";
-  //       }
-  //     } catch (e) {
-  //       Logger().e("Location Error", "Som");
-  //     }
-
-  //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  //     if (Platform.isAndroid) {
-  //       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  //       deviceID = androidInfo.display;
-  //       String model = androidInfo.model;
-  //       String version = androidInfo.version.release;
-  //       deviceModel = "$model $version";
-  //       type = "android";
-  //     } else if (Platform.isIOS) {
-  //       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-  //       deviceID = iosInfo.identifierForVendor ?? "Unknown";
-  //       String model = iosInfo.model ?? "Unknown";
-  //       String version = iosInfo.systemVersion ?? "1";
-  //       deviceModel = "$model $version";
-  //       type = "iPhone";
-  //     }
-
-  //     LoginLogModel _loginModel = LoginLogModel(
-  //         deviceID: deviceID,
-  //         deviceModel: deviceModel,
-  //         deviceType: type,
-  //         location: locationString,
-  //         address: address);
-  //     // Save data into firebase
-  //     await FirebaseFirestore.instance
-  //         .collection(DatabaseConfig.LOGIN_LOG_COLLECTION)
-  //         .doc()
-  //         .set(_loginModel.toJson());
-  //   } catch (e) {
-  //     Logger().e("Som");
-  //   }
-  // }
-
   @override
   void onInit() async {
     super.onInit();
-    WidgetsBinding.instance.addObserver(this);
-
-    // checkAndNavigationCallingPage();
   }
 
   @override
@@ -1489,70 +1329,7 @@ class AuthController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
-    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
-  }
-
-  //////////////////////// INCOMING CALL //////////////////
-  Future<void> checkAndNavigationCallingPage() async {
-    var currentCall = await getCurrentCall();
-    if (currentCall != null) {
-      // NavigationService.instance
-      //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
-
-      Get.toNamed(Routes.INCOMING_CALL, arguments: currentCall);
-    } else {}
-  }
-
-  Future<dynamic> getCurrentCall() async {
-    //check current call from pushkit if possible
-    var calls = await FlutterCallkitIncoming.activeCalls();
-    if (calls is List) {
-      if (calls.isNotEmpty) {
-        // Logger().d('DATA: $calls');
-        // _currentUuid = calls[0]['id'];
-        return calls[0];
-      } else {
-        // _currentUuid = "";
-        return null;
-      }
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    Logger().d('🌈 -- Restore State  --- 🌈 ');
-    super.didChangeAppLifecycleState(state);
-    switch (state) {
-      case AppLifecycleState.resumed:
-        print('------🔔 APP RESUME -----');
-        // Code to run when the app is resumed
-        checkAndNavigationCallingPage();
-
-        break;
-      case AppLifecycleState.inactive:
-        print('------🔔 APP INACTIVE -----');
-
-        // Code to run when the app is inactive
-        break;
-      case AppLifecycleState.paused:
-        print('------🔔 APP PAUSED -----');
-
-        // Code to run when the app is paused
-        break;
-      case AppLifecycleState.detached:
-        print('------🔔 APP DETACHED-----');
-
-        // Code to run when the app is detached
-        break;
-      case AppLifecycleState.hidden:
-        print('------🔔 APP HIDDEN -----');
-
-        // TODO: Handle this case.
-        break;
-      default:
-        break;
-    }
   }
 }
 

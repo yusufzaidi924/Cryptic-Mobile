@@ -4,6 +4,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/repositories/app_repository.dart';
+import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/constants.dart';
@@ -170,7 +171,7 @@ class CallPageController extends GetxController {
     channelID = params['channelID'];
     callId = params['callId'];
     role = params['role'] ?? 'publisher';
-    // onInitCall();
+    onInitCall();
   }
 
   @override
@@ -188,6 +189,8 @@ class CallPageController extends GetxController {
    * On Init Call
    */
   onInitCall() async {
+    await makeConnectCall(callId);
+
     if (callToken != null && channelID != null) {
       await initAgora(callToken!, channelID!);
     } else {
@@ -203,8 +206,18 @@ class CallPageController extends GetxController {
    * On Cancel Call
    */
   onCancelCall() async {
-    await _dispose();
-    Get.back();
+    try {
+      await _dispose();
+    } catch (e) {
+      Logger().e(e.toString());
+    }
+
+    if (authCtrl.authUser == null || authCtrl.btcService == null) {
+      Get.offAllNamed(Routes.SIGN_IN);
+    } else {
+      // Get.offNamed(Routes.HOME);
+      Get.back();
+    }
   }
 
   ///////////////////////// Agora Video Call  ///////////////////////////
@@ -339,6 +352,7 @@ class CallPageController extends GetxController {
    * Call Dispose
    */
   Future<void> _dispose() async {
+    Logger().d(callId);
     await makeEndCall(callId);
     if (rtcEngine != null) {
       EasyLoading.show(status: "Ending...");
@@ -372,11 +386,11 @@ class CallPageController extends GetxController {
   }
 
   Future<void> makeEndCall(id) async {
-    if (id != null) await FlutterCallkitIncoming.endCall(id);
+    // if (id != null)
+    await FlutterCallkitIncoming.endAllCalls();
   }
 
   Future<void> makeConnectCall(id) async {
-    if (id != null) ;
-    await FlutterCallkitIncoming.setCallConnected(id);
+    if (id != null) await FlutterCallkitIncoming.setCallConnected(id);
   }
 }

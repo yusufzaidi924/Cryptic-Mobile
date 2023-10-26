@@ -171,7 +171,7 @@ class AwesomeNotificationsHelper {
           nameCaller: title,
           appName: 'Cryptacy',
           avatar: largeIcon,
-          handle: '0123456789',
+          handle: body,
           type: 1,
           duration: 30000,
           textAccept: 'Accept',
@@ -182,7 +182,10 @@ class AwesomeNotificationsHelper {
             subtitle: 'Missed call',
             callbackText: 'Call back',
           ),
-          extra: payload,
+          extra: {
+            "expireTime": DateTime.now().millisecondsSinceEpoch + 30000,
+            'payload': payload
+          },
           headers: <String, dynamic>{
             'apiKey': 'Abc@123!',
             'platform': 'flutter'
