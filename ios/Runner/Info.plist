@@ -26,7 +26,6 @@
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true />
-
 		<!-- PERMISSION FOR MEDIA -->
 		<key>NSAppleMusicUsageDescription</key>
 		<string>Music!</string>
@@ -49,8 +48,11 @@
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Need to access photos to upload some document</string>
 
+
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true />
+
+
 		<key>UIBackgroundModes</key>
 		<array>
 			<string>fetch</string>
@@ -58,6 +60,12 @@
 			<string>remote-notification</string>
 			<string>voip</string>
 		</array>
+
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>com.criptyc.transfer</string>
+		</array>
+
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
@@ -77,5 +85,7 @@
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />
+		<!-- <key>kTCCServiceMediaLibrary</key>
+		<string>media</string> -->
 	</dict>
 </plist>
