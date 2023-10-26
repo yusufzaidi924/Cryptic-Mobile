@@ -248,12 +248,13 @@ class FcmHelper {
 
     //   notificationLayout: NotificationLayout.Messaging,
     // );
+    Logger().d('😜 BACKGROUND NOTIFICATION');
     handleNotification(message);
   }
 
   //handle fcm notification when app is open
   static Future<void> _fcmForegroundHandler(RemoteMessage message) async {
-    handleNotification(message);
+    // handleNotification(message);
     // Logger().d(message.notification?.body);
 
     // Map<String, dynamic>? data =
@@ -280,7 +281,7 @@ class FcmHelper {
     //         autoDismissible: true),
     //   ],
     // );
-
+    Logger().d('😎 FOREGOUND NOTIFICATION');
     handleNotification(message);
   }
 

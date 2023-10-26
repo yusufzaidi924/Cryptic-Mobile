@@ -149,8 +149,10 @@ class BitcoinService {
     }
   }
 
-  syncWallet(Blockchain blockchain) async {
-    wallet!.sync(blockchain);
+  syncWallet(Blockchain? _blockchain) async {
+    final block = _blockchain == null ? this.blockchain : blockchain;
+    if (block == null) return;
+    wallet!.sync(block);
   }
 
   /**

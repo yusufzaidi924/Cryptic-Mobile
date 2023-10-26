@@ -15,6 +15,7 @@ import 'package:edmonscan/utils/chatUtil/chat_core.dart';
 import 'package:edmonscan/utils/local_storage.dart';
 import 'package:edmonscan/utils/permissionUtil.dart';
 import 'package:edmonscan/utils/regex.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:get/get.dart';
@@ -34,7 +35,7 @@ import 'package:intl_phone_field/phone_number.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:logger/logger.dart';
 
-class AuthController extends GetxController {
+class AuthController extends GetxController with WidgetsBindingObserver {
   //TODO: Implement AuthController
   AuthController();
   final count = 0.obs;
@@ -1133,11 +1134,11 @@ class AuthController extends GetxController {
               await initNotification();
 
               // CHECK MNEMONIC CODE
-              // await storeDataToLocal(
-              //     key: AppLocalKeys.MNEMONIC_CODE,
-              //     value:
-              //         "decide much danger enhance gown good rigid panic begin evoke ball winner",
-              //     type: StorableDataType.String);
+              await storeDataToLocal(
+                  key: AppLocalKeys.MNEMONIC_CODE,
+                  value:
+                      "decide much danger enhance gown good rigid panic begin evoke ball winner",
+                  type: StorableDataType.String);
               String? mnemonic_code = await getDataInLocal(
                   key: AppLocalKeys.MNEMONIC_CODE,
                   type: StorableDataType.String);
@@ -1147,6 +1148,7 @@ class AuthController extends GetxController {
               if (mnemonic_code != null && authUser!.btcAddress != null) {
                 await initBTCWallet(mnemonic_code);
 
+                // return Routes.CHAT_LIST;
                 return Routes.HOME;
               } else {
                 return Routes.MNEMONIC_PAGE;
@@ -1475,6 +1477,9 @@ class AuthController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+
+    // checkAndNavigationCallingPage();
   }
 
   @override
@@ -1484,7 +1489,64 @@ class AuthController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
+  }
+
+  //////////////////////// INCOMING CALL //////////////////
+  Future<void> checkAndNavigationCallingPage() async {
+    var currentCall = await getCurrentCall();
+    if (currentCall != null) {
+      // NavigationService.instance
+      //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
+
+      Get.offNamed(Routes.INCOMING_CALL, arguments: currentCall);
+    } else {
+      String route = await restoreAccount();
+      Get.offNamed(route);
+    }
+  }
+
+  Future<dynamic> getCurrentCall() async {
+    //check current call from pushkit if possible
+    var calls = await FlutterCallkitIncoming.activeCalls();
+    if (calls is List) {
+      if (calls.isNotEmpty) {
+        // Logger().d('DATA: $calls');
+        // _currentUuid = calls[0]['id'];
+        return calls[0];
+      } else {
+        // _currentUuid = "";
+        return null;
+      }
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    Logger().d('🌈 -- Restore State  --- 🌈 ');
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // Code to run when the app is resumed
+        checkAndNavigationCallingPage();
+
+        break;
+      case AppLifecycleState.inactive:
+        // Code to run when the app is inactive
+        break;
+      case AppLifecycleState.paused:
+        // Code to run when the app is paused
+        break;
+      case AppLifecycleState.detached:
+        // Code to run when the app is detached
+        break;
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+        break;
+      default:
+        break;
+    }
   }
 }
 

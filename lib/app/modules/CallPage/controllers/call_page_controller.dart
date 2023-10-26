@@ -4,6 +4,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/repositories/app_repository.dart';
+import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -353,7 +354,7 @@ class CallPageController extends GetxController {
         title: "Call Request!",
         message:
             '${authCtrl.chatUser?.firstName ?? "Criptacy"} ${authCtrl.chatUser?.lastName ?? "User"} is calling you now.',
-        largeIcon: 'https://placebear.com/g/200/300',
+        largeIcon: '${Network.BASE_URL}${authCtrl.chatUser!.imageUrl}',
         payload: {
           'token': callToken,
           'channelID': channelID,

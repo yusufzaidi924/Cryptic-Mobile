@@ -9,6 +9,7 @@ class SplashView extends GetView<SplashController> {
   SplashView({Key? key}) : super(key: key);
 
   final controller = Get.put(SplashController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,8 +7,12 @@ import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:flutter_callkit_incoming/entities/notification_params.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
 import 'fcm_helper.dart';
 
@@ -102,42 +106,7 @@ class AwesomeNotificationsHelper {
     ]);
   }
 
-  static playRing() async {
-    try {
-      final audioPlayer = AudioPlayer();
-
-      // player.setReleaseMode(ReleaseMode.loop);
-      int repeatCount = 0;
-      await audioPlayer.play(
-          AssetSource(
-            'audios/ringing.mp3',
-          ),
-          mode: PlayerMode.mediaPlayer);
-
-      // if (result == 1) {
-      audioPlayer.onPlayerComplete.listen((_) async {
-        repeatCount++;
-
-        Logger().i(repeatCount);
-        if (repeatCount < 2) {
-          await audioPlayer.play(
-              AssetSource(
-                'audios/ringing.mp3',
-              ),
-              mode: PlayerMode.mediaPlayer);
-        } else {
-          Logger().d("Ended Player");
-
-          await audioPlayer.stop();
-          await audioPlayer.dispose();
-        }
-      });
-      // }
-    } catch (e) {
-      Logger().e(e.toString());
-    }
-  }
-
+  //
   //display notification for user with sound
   static showNotification(
       {required String title,
@@ -154,7 +123,6 @@ class AwesomeNotificationsHelper {
       if (!isAllowed) {
         awesomeNotifications.requestPermissionToSendNotifications();
       } else {
-        // playRing();
         // u can show notification
         awesomeNotifications.createNotification(
           content: NotificationContent(
@@ -183,17 +151,6 @@ class AwesomeNotificationsHelper {
     });
   }
 
-  // // stopRing() async {
-  // //   try {
-  // //     if (player != null) {
-  // //       await player.stop();
-  // //       await player.release();
-  // //     }
-  // //   } catch (e) {
-  // //     Logger().e(e.toString());
-  // //   }
-  // }
-
   //Display Notification for user with sound
   static showCallRequestNotification(
       {required String title,
@@ -203,36 +160,85 @@ class AwesomeNotificationsHelper {
       // List<NotificationActionButton>? actionButtons,
       Map<String, String>? payload,
       String? largeIcon}) async {
-    // RING INCOMING CALL
-    playRing();
-
-    awesomeNotifications.isNotificationAllowed().then((isAllowed) {
+    awesomeNotifications.isNotificationAllowed().then((isAllowed) async {
       if (!isAllowed) {
         awesomeNotifications.requestPermissionToSendNotifications();
       } else {
-        // u can show notification
-        awesomeNotifications.createNotification(
-          content: NotificationContent(
-            id: id,
-            title: title,
-            body: body,
-            groupKey: NotificationChannels.callGroupKey,
-            channelKey: NotificationChannels.callChannelKey,
-            showWhen:
-                true, // Hide/show the time elapsed since notification was displayed
-            payload:
-                payload, // data of the notification (it will be used when user clicks on notification)
-            notificationLayout: NotificationLayout
-                .BigPicture, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
-            autoDismissible:
-                true, // dismiss notification when user clicks on it
-            // summary:
-            //     summary, // for ex: New message (it will be shown on status bar before notificaiton shows up)
-            largeIcon:
-                'https://placebear.com/g/200/300', // image of sender for ex (when someone send you message his image will be shown)
+        String _currentUuid = Uuid().v4();
+
+        final params = CallKitParams(
+          id: _currentUuid,
+          nameCaller: title,
+          appName: 'Cryptacy',
+          avatar: largeIcon,
+          handle: '0123456789',
+          type: 1,
+          duration: 30000,
+          textAccept: 'Accept',
+          textDecline: 'Decline',
+          missedCallNotification: const NotificationParams(
+            showNotification: true,
+            isShowCallback: true,
+            subtitle: 'Missed call',
+            callbackText: 'Call back',
           ),
-          // actionButtons: actionButtons,
+          extra: payload,
+          headers: <String, dynamic>{
+            'apiKey': 'Abc@123!',
+            'platform': 'flutter'
+          },
+          android: const AndroidParams(
+            isCustomNotification: true,
+            isShowLogo: false,
+            ringtonePath: 'system_ringtone_default',
+            backgroundColor: '#0955fa',
+            // backgroundUrl: 'assets/test.png',
+            actionColor: '#4CAF50',
+            incomingCallNotificationChannelName: 'Incoming Call',
+            missedCallNotificationChannelName: 'Missed Call',
+          ),
+          ios: const IOSParams(
+            iconName: 'CallKitLogo',
+            handleType: '',
+            supportsVideo: true,
+            maximumCallGroups: 2,
+            maximumCallsPerCallGroup: 1,
+            audioSessionMode: 'default',
+            audioSessionActive: true,
+            audioSessionPreferredSampleRate: 44100.0,
+            audioSessionPreferredIOBufferDuration: 0.005,
+            supportsDTMF: true,
+            supportsHolding: true,
+            supportsGrouping: false,
+            supportsUngrouping: false,
+            ringtonePath: 'system_ringtone_default',
+          ),
         );
+        await FlutterCallkitIncoming.showCallkitIncoming(params);
+
+        // u can show notification
+        // awesomeNotifications.createNotification(
+        //   content: NotificationContent(
+        //     id: id,
+        //     title: title,
+        //     body: body,
+        //     groupKey: NotificationChannels.callGroupKey,
+        //     channelKey: NotificationChannels.callChannelKey,
+        //     showWhen:
+        //         true, // Hide/show the time elapsed since notification was displayed
+        //     payload:
+        //         payload, // data of the notification (it will be used when user clicks on notification)
+        //     notificationLayout: NotificationLayout
+        //         .BigPicture, // notification shape (message,media player..etc) For ex => NotificationLayout.Messaging
+        //     autoDismissible:
+        //         true, // dismiss notification when user clicks on it
+        //     // summary:
+        //     //     summary, // for ex: New message (it will be shown on status bar before notificaiton shows up)
+        //     largeIcon:
+        //         'https://placebear.com/g/200/300', // image of sender for ex (when someone send you message his image will be shown)
+        //   ),
+        //   // actionButtons: actionButtons,
+        // );
       }
     });
   }

@@ -662,6 +662,8 @@ PODS:
   - AgoraRtcEngine_iOS/VideoCodecEnc (4.2.3)
   - AgoraRtcEngine_iOS/VirtualBackground (4.2.3)
   - AgoraRtcEngine_iOS/VQA (4.2.3)
+  - audioplayers_darwin (0.0.1):
+    - Flutter
   - awesome_notifications (0.8.1):
     - Flutter
     - IosAwnCore (~> 0.8.0)
@@ -678,6 +680,7 @@ PODS:
     - firebase_core
     - Flutter
     - nanopb (< 2.30910.0, >= 2.30908.0)
+  - CryptoSwift (1.8.0)
   - device_info_plus (0.0.1):
     - Flutter
   - DKImagePickerController/Core (4.3.4):
@@ -804,6 +807,9 @@ PODS:
     - FirebaseCoreExtension (~> 10.0)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
   - Flutter (1.0.0)
+  - flutter_callkit_incoming (0.0.1):
+    - CryptoSwift
+    - Flutter
   - flutter_contacts (0.0.1):
     - Flutter
   - flutter_image_compress_common (1.0.0):
@@ -952,6 +958,7 @@ PODS:
 
 DEPENDENCIES:
   - agora_rtc_engine (from `.symlinks/plugins/agora_rtc_engine/ios`)
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
@@ -963,6 +970,7 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `Flutter`)
+  - flutter_callkit_incoming (from `.symlinks/plugins/flutter_callkit_incoming/ios`)
   - flutter_contacts (from `.symlinks/plugins/flutter_contacts/ios`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -981,6 +989,7 @@ SPEC REPOS:
     - AgoraIrisRTC_iOS
     - AgoraRtcEngine_iOS
     - BoringSSL-GRPC
+    - CryptoSwift
     - DKImagePickerController
     - DKPhotoGallery
     - Firebase
@@ -1015,6 +1024,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   agora_rtc_engine:
     :path: ".symlinks/plugins/agora_rtc_engine/ios"
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   awesome_notifications:
     :path: ".symlinks/plugins/awesome_notifications/ios"
   bdk_flutter:
@@ -1037,6 +1048,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: Flutter
+  flutter_callkit_incoming:
+    :path: ".symlinks/plugins/flutter_callkit_incoming/ios"
   flutter_contacts:
     :path: ".symlinks/plugins/flutter_contacts/ios"
   flutter_image_compress_common:
@@ -1065,10 +1078,12 @@ SPEC CHECKSUMS:
   agora_rtc_engine: cc22abc8de5d9050ecb697c3eb62e7f576d0b533
   AgoraIrisRTC_iOS: e7d823fbc6c0aace26a3eb3d8444ee7f9bc7489c
   AgoraRtcEngine_iOS: eb0a7e87dbc9e818b267d413b48f76a57959e6f4
+  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   awesome_notifications: db394d2e061e4583ba0f738ddea611e3986cc3fb
   bdk_flutter: ceee48a7dbeb52ebf9774fb583f57dd50d9e9823
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: 0b05c34e8b36cde7026bed89616962c4e03aa307
+  CryptoSwift: 52aaf3fce7337552863b1d952e408085f0e65030
   device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
@@ -1091,6 +1106,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 0c0ae1eb722ef0c07f7801e5ded8dccd1357d6d4
   FirebaseStorage: 1d4be239ea32fb3c0f3680a6f2b706d6cabe37f2
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_callkit_incoming: 417dd1b46541cdd5d855ad795ccbe97d1c18155e
   flutter_contacts: edb1c5ce76aa433e20e6cb14c615f4c0b66e0983
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a

@@ -31,6 +31,7 @@ Future<void> main() async {
     name: "EdMonScan",
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   Get.put(AuthController());
 
   // inti fcm services
