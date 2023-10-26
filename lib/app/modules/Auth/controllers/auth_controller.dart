@@ -1500,11 +1500,8 @@ class AuthController extends GetxController with WidgetsBindingObserver {
       // NavigationService.instance
       //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
 
-      Get.offNamed(Routes.INCOMING_CALL, arguments: currentCall);
-    } else {
-      String route = await restoreAccount();
-      Get.offNamed(route);
-    }
+      Get.toNamed(Routes.INCOMING_CALL, arguments: currentCall);
+    } else {}
   }
 
   Future<dynamic> getCurrentCall() async {

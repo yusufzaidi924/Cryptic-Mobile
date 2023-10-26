@@ -7,6 +7,8 @@ class SplashController extends GetxController {
   initApp() async {
     // Call Page Check
     final authCtrl = Get.find<AuthController>();
+    String route = await authCtrl.restoreAccount();
+    Get.offNamed(route);
     await authCtrl.checkAndNavigationCallingPage();
   }
 
