@@ -1134,25 +1134,25 @@ class AuthController extends GetxController with WidgetsBindingObserver {
               await initNotification();
 
               // CHECK MNEMONIC CODE
-              await storeDataToLocal(
-                  key: AppLocalKeys.MNEMONIC_CODE,
-                  value:
-                      "decide much danger enhance gown good rigid panic begin evoke ball winner",
-                  type: StorableDataType.String);
-              String? mnemonic_code = await getDataInLocal(
-                  key: AppLocalKeys.MNEMONIC_CODE,
-                  type: StorableDataType.String);
+              // await storeDataToLocal(
+              //     key: AppLocalKeys.MNEMONIC_CODE,
+              //     value:
+              //         "decide much danger enhance gown good rigid panic begin evoke ball winner",
+              //     type: StorableDataType.String);
+              // String? mnemonic_code = await getDataInLocal(
+              //     key: AppLocalKeys.MNEMONIC_CODE,
+              //     type: StorableDataType.String);
 
-              Logger().d(mnemonic_code);
-              Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
-              if (mnemonic_code != null && authUser!.btcAddress != null) {
-                await initBTCWallet(mnemonic_code);
+              // Logger().d(mnemonic_code);
+              // Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
+              // if (mnemonic_code != null && authUser!.btcAddress != null) {
+              //   await initBTCWallet(mnemonic_code);
 
-                // return Routes.CHAT_LIST;
-                return Routes.HOME;
-              } else {
-                return Routes.MNEMONIC_PAGE;
-              }
+              return Routes.CHAT_LIST;
+              //   return Routes.HOME;
+              // } else {
+              //   return Routes.MNEMONIC_PAGE;
+              // }
             } else {
               return Routes.SIGN_IN;
             }
@@ -1528,20 +1528,29 @@ class AuthController extends GetxController with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.resumed:
+        print('------🔔 APP RESUME -----');
         // Code to run when the app is resumed
         checkAndNavigationCallingPage();
 
         break;
       case AppLifecycleState.inactive:
+        print('------🔔 APP INACTIVE -----');
+
         // Code to run when the app is inactive
         break;
       case AppLifecycleState.paused:
+        print('------🔔 APP PAUSED -----');
+
         // Code to run when the app is paused
         break;
       case AppLifecycleState.detached:
+        print('------🔔 APP DETACHED-----');
+
         // Code to run when the app is detached
         break;
       case AppLifecycleState.hidden:
+        print('------🔔 APP HIDDEN -----');
+
         // TODO: Handle this case.
         break;
       default:

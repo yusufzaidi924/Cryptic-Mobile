@@ -8,6 +8,7 @@ import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -160,12 +161,16 @@ class CallPageController extends GetxController {
     super.onInit();
 
     final params = Get.arguments;
+
+    print('🎧🎧🎧 ----- CALL PAGE ----');
+    Logger().d(params);
+
     _user.value = params['user'];
     callToken = params['token'];
     channelID = params['channelID'];
+    callId = params['callId'];
     role = params['role'] ?? 'publisher';
-
-    onInitCall();
+    // onInitCall();
   }
 
   @override
@@ -220,6 +225,7 @@ class CallPageController extends GetxController {
 
   String? channelID;
   String? callToken;
+  String? callId;
   String role = 'publisher';
 
   /************************
@@ -333,6 +339,7 @@ class CallPageController extends GetxController {
    * Call Dispose
    */
   Future<void> _dispose() async {
+    await makeEndCall(callId);
     if (rtcEngine != null) {
       EasyLoading.show(status: "Ending...");
       await rtcEngine!.leaveChannel();
@@ -362,5 +369,14 @@ class CallPageController extends GetxController {
         },
       );
     }
+  }
+
+  Future<void> makeEndCall(id) async {
+    if (id != null) await FlutterCallkitIncoming.endCall(id);
+  }
+
+  Future<void> makeConnectCall(id) async {
+    if (id != null) ;
+    await FlutterCallkitIncoming.setCallConnected(id);
   }
 }
