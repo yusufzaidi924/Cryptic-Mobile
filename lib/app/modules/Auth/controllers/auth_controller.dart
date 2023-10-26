@@ -1281,7 +1281,8 @@ class AuthController extends GetxController {
   updateBalance() async {
     if (btcService == null) return;
     int oldBalance = btcService!.balance;
-    await btcService!.blockchainInit();
+    final block = await btcService!.blockchainInit();
+    await btcService!.syncWallet(block);
     int newBalance = await btcService!.getBalance(btcService!.wallet!);
     if (newBalance != oldBalance) {
       // Received
@@ -1297,7 +1298,6 @@ class AuthController extends GetxController {
   getTransactionHistory() async {
     if (btcService == null) return;
     try {
-      await btcService!.blockchainInit();
       await btcService!.getTransactionList();
     } catch (e) {
       Logger().e(e.toString());

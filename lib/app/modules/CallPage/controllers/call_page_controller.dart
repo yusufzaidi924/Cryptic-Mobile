@@ -41,7 +41,7 @@ class CallPageController extends GetxController {
 
   final _isEnableCamera = false.obs;
   bool get isEnableCamera => _isEnableCamera.value;
-  onUpdateCamera({isShowAlert = true}) async {
+  onUpdateCamera({bool isShowAlert = true}) async {
     if (isEnableCamera) // Camera Off Request
     {
       // rtcEngine!.disableVideo();
@@ -51,21 +51,38 @@ class CallPageController extends GetxController {
 
       _isEnableCamera.value = false;
     } else {
-      // Camera Open Request
-      if (await Permission.camera.request().isGranted) {
-        // Either the permission was already granted before or the user just granted it.
-        _isEnableCamera.value = true;
-        debugPrint('👌 Camera Permission Granted');
+      try {
+        final status = await Permission.camera.request();
+        print(status.isGranted);
         if (rtcEngine != null) {
           rtcEngine!.enableLocalVideo(true);
+          _isEnableCamera.value = true;
         }
-      } else {
+      } catch (e) {
         debugPrint('😜 Camera Permission Denied');
         _isEnableCamera.value = false;
-        if (isShowAlert) {
-          showPermissionDeniedDialog("Camera");
-        }
+        // if (isShowAlert) {
+        //   showPermissionDeniedDialog("Camera");
+        // }
+        Logger().e(e.toString());
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR", message: e.toString());
       }
+      // Camera Open Request
+      // if (await Permission.camera.request().isGranted) {
+      // Either the permission was already granted before or the user just granted it.
+      //   _isEnableCamera.value = true;
+      //   debugPrint('👌 Camera Permission Granted');
+      //   if (rtcEngine != null) {
+      //     rtcEngine!.enableLocalVideo(true);
+      //   }
+      // } else {
+      //   debugPrint('😜 Camera Permission Denied');
+      //   _isEnableCamera.value = false;
+      //   if (isShowAlert) {
+      //     showPermissionDeniedDialog("Camera");
+      //   }
+      // }
     }
     update();
   }
@@ -94,7 +111,7 @@ class CallPageController extends GetxController {
 
   final _isEnableMic = false.obs;
   bool get isEnableMic => _isEnableMic.value;
-  onUpdateMic({isShowAlert = true}) async {
+  onUpdateMic({bool isShowAlert = true}) async {
     if (isEnableMic) // Mic Off Request
     {
       if (rtcEngine != null) {

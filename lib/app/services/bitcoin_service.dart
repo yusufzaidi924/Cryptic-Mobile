@@ -162,7 +162,7 @@ class BitcoinService {
     Wallet? myWallet = wallet ?? this.wallet;
     if (myWallet == null) return [];
 
-    final response = await myWallet.listTransactions(true);
+    final response = await myWallet.listTransactions(false);
     transactionList = response;
     return response;
   }

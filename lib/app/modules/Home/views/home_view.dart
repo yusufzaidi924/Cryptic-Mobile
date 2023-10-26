@@ -360,7 +360,7 @@ class HomeView extends GetView<HomeController> {
                                                 .authCtrl
                                                 .btcService!
                                                 .transactionList[index];
-                                            // Logger().d(trans.txid)l
+                                            // Logger().d(trans.txid );
                                             return Row(
                                               children: [
                                                 Container(
