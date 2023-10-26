@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
@@ -101,6 +102,42 @@ class AwesomeNotificationsHelper {
     ]);
   }
 
+  static playRing() async {
+    try {
+      final audioPlayer = AudioPlayer();
+
+      // player.setReleaseMode(ReleaseMode.loop);
+      int repeatCount = 0;
+      await audioPlayer.play(
+          AssetSource(
+            'audios/ringing.mp3',
+          ),
+          mode: PlayerMode.mediaPlayer);
+
+      // if (result == 1) {
+      audioPlayer.onPlayerComplete.listen((_) async {
+        repeatCount++;
+
+        Logger().i(repeatCount);
+        if (repeatCount < 2) {
+          await audioPlayer.play(
+              AssetSource(
+                'audios/ringing.mp3',
+              ),
+              mode: PlayerMode.mediaPlayer);
+        } else {
+          Logger().d("Ended Player");
+
+          await audioPlayer.stop();
+          await audioPlayer.dispose();
+        }
+      });
+      // }
+    } catch (e) {
+      Logger().e(e.toString());
+    }
+  }
+
   //display notification for user with sound
   static showNotification(
       {required String title,
@@ -113,10 +150,11 @@ class AwesomeNotificationsHelper {
       List<NotificationActionButton>? actionButtons,
       Map<String, String>? payload,
       String? largeIcon}) async {
-    awesomeNotifications.isNotificationAllowed().then((isAllowed) {
+    awesomeNotifications.isNotificationAllowed().then((isAllowed) async {
       if (!isAllowed) {
         awesomeNotifications.requestPermissionToSendNotifications();
       } else {
+        // playRing();
         // u can show notification
         awesomeNotifications.createNotification(
           content: NotificationContent(
@@ -145,6 +183,17 @@ class AwesomeNotificationsHelper {
     });
   }
 
+  // // stopRing() async {
+  // //   try {
+  // //     if (player != null) {
+  // //       await player.stop();
+  // //       await player.release();
+  // //     }
+  // //   } catch (e) {
+  // //     Logger().e(e.toString());
+  // //   }
+  // }
+
   //Display Notification for user with sound
   static showCallRequestNotification(
       {required String title,
@@ -154,6 +203,9 @@ class AwesomeNotificationsHelper {
       // List<NotificationActionButton>? actionButtons,
       Map<String, String>? payload,
       String? largeIcon}) async {
+    // RING INCOMING CALL
+    playRing();
+
     awesomeNotifications.isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         awesomeNotifications.requestPermissionToSendNotifications();

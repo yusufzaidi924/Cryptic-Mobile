@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/modules/CallPage/views/testCall.dart';
@@ -12,6 +13,8 @@ import 'package:logger/logger.dart';
 class IncomingCallController extends GetxController {
   //TODO: Implement IncomingCallController
 
+  final player = AudioPlayer();
+
   final count = 0.obs;
   final _user = Rxn<User>();
   User? get user => _user.value;
@@ -20,6 +23,7 @@ class IncomingCallController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    playRing();
 
     final params = Get.arguments;
     final data = params['data'];
@@ -36,10 +40,57 @@ class IncomingCallController extends GetxController {
     update();
   }
 
+  playRing() async {
+    try {
+      // player.setReleaseMode(ReleaseMode.loop);
+
+      // player.setReleaseMode(ReleaseMode.loop);
+      int repeatCount = 0;
+      await player.play(
+          AssetSource(
+            'audios/ringing.mp3',
+          ),
+          mode: PlayerMode.mediaPlayer);
+
+      player.onPlayerComplete.listen((_) async {
+        repeatCount++;
+
+        Logger().i(repeatCount);
+        if (repeatCount < 2) {
+          await player.play(
+              AssetSource(
+                'audios/ringing.mp3',
+              ),
+              mode: PlayerMode.mediaPlayer);
+        } else {
+          await stopRing();
+        }
+      });
+    } catch (e) {
+      Logger().e(e.toString());
+    }
+  }
+
+  stopRing() async {
+    try {
+      if (player != null) {
+        await player.stop();
+        await player.dispose();
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+    }
+  }
+
   /******************************
    * onCancelCall
    */
   onCancelCall() async {
+    try {
+      await stopRing();
+    } catch (e) {
+      Logger().e(e.toString());
+    }
     Get.back();
   }
 
@@ -105,6 +156,7 @@ class IncomingCallController extends GetxController {
 
   @override
   void onClose() {
+    stopRing();
     super.onClose();
   }
 

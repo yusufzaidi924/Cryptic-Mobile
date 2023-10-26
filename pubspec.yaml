@@ -98,6 +98,8 @@ dependencies:
 
   jwt_decoder: ^2.0.1
   bdk_flutter: ^0.29.1
+  audioplayers: ^5.2.0
+
 
 
 dev_dependencies:
@@ -145,6 +147,7 @@ flutter:
     - assets/vectors/
     - assets/fonts/
     - assets/doc/
+    - assets/audios/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
