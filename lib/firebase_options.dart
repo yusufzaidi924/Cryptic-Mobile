@@ -50,6 +50,7 @@ class DefaultFirebaseOptions {
     projectId: 'cryptic-a727a',
     authDomain: 'cryptic-a727a.firebaseapp.com',
     storageBucket: 'cryptic-a727a.appspot.com',
+    measurementId: 'G-RD6PBB51HG',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

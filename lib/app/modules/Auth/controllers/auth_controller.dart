@@ -1147,7 +1147,7 @@ class AuthController extends GetxController {
               if (mnemonic_code != null && authUser!.btcAddress != null) {
                 await initBTCWallet(mnemonic_code);
 
-              // return Routes.CHAT_LIST;
+                // return Routes.CHAT_LIST;
                 return Routes.HOME;
               } else {
                 return Routes.MNEMONIC_PAGE;

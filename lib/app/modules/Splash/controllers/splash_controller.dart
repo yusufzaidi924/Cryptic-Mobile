@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +107,9 @@ class SplashController extends GetxController
   //////////////////////// INCOMING CALL //////////////////
   Future<void> checkAndNavigationCallingPage(callback) async {
     try {
+      await requestNotificationPermission();
+
+      
       var currentCall = await getCurrentCall();
       if (currentCall != null) {
         // NavigationService.instance
@@ -138,13 +142,21 @@ class SplashController extends GetxController
             'role': 'audience'
           });
         } else {
+          CustomSnackBar.showCustomErrorSnackBar(
+              title: "ERROR",
+              message:
+                  "Call Expired: Now :${currentTime} , Expired: ${expireTime}");
           return callback();
         }
       } else {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR", message: "There is no call");
         return callback();
       }
     } catch (e) {
       Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: e.toString());
       await FlutterCallkitIncoming.endAllCalls();
       return callback();
     }
@@ -163,6 +175,15 @@ class SplashController extends GetxController
         return null;
       }
     }
+  }
+
+  Future<void> requestNotificationPermission() async {
+    await FlutterCallkitIncoming.requestNotificationPermission({
+      "rationaleMessagePermission":
+          "Notification permission is required, to show notification.",
+      "postNotificationMessageRequired":
+          "Notification permission is required, Please allow notification permission from setting."
+    });
   }
 
   // @override

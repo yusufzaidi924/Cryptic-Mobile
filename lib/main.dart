@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,6 +34,8 @@ Future<void> main() async {
   );
 
   Get.put(AuthController());
+
+  await requestNotificationPermission();
 
   // inti fcm services
   await FcmHelper.initFcm();
@@ -68,6 +71,15 @@ Future<void> main() async {
   );
 
   configLoading();
+}
+
+Future<void> requestNotificationPermission() async {
+  await FlutterCallkitIncoming.requestNotificationPermission({
+    "rationaleMessagePermission":
+        "Notification permission is required, to show notification.",
+    "postNotificationMessageRequired":
+        "Notification permission is required, Please allow notification permission from setting."
+  });
 }
 
 void configLoading() {

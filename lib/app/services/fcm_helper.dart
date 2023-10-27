@@ -291,6 +291,7 @@ class FcmHelper {
     Logger().i('✨----- FCM  Handler ------> ${jsonEncode(message.data)}');
 
     String type = message.data['type'];
+    Logger().d(type);
     Map<String, dynamic>? data =
         (message.data != null && message.data['content'] != null)
             ? jsonDecode(message.data['content'])
