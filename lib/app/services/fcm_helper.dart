@@ -135,7 +135,8 @@ class FcmHelper {
                 body: json.encode(
                   {
                     "to": fcmToken,
-                    "mutable_content": true,
+                    // "mutable_content": true,
+                    "content_available": true,
                     "priority": "high",
                     "notification": {
                       "badge": 1,
@@ -190,7 +191,11 @@ class FcmHelper {
                       "content": {
                         "id": 1,
                         "badge": 50,
-                        "channelKey": "alerts",
+                        "channelKey": messageType == MessageType.CALL
+                            ? NotificationChannels.callChannelKey
+                            : messageType == MessageType.MESSAGE
+                                ? NotificationChannels.chatChannelKey
+                                : NotificationChannels.generalChannelKey,
                         "displayOnForeground": true,
                         "notificationLayout": "BigPicture",
                         "largeIcon": largeIcon,

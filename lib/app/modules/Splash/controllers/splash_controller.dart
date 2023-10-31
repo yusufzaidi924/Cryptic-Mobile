@@ -48,7 +48,9 @@ class SplashController extends GetxController
     try {
       FlutterCallkitIncoming.onEvent.listen((event) async {
         print('🎁------------>');
-        Logger().d('SPLASH: $event?.event');
+        if (event != null) {
+          Logger().d('SPLASH: ${event?.event}');
+        }
         switch (event!.event) {
           case Event.actionCallIncoming:
             // TODO: received an incoming call
@@ -107,9 +109,8 @@ class SplashController extends GetxController
   //////////////////////// INCOMING CALL //////////////////
   Future<void> checkAndNavigationCallingPage(callback) async {
     try {
-      await requestNotificationPermission();
+      // await requestNotificationPermission();
 
-      
       var currentCall = await getCurrentCall();
       if (currentCall != null) {
         // NavigationService.instance

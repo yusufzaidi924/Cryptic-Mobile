@@ -31,7 +31,16 @@ class AwesomeNotificationsHelper {
     await _initNotification();
 
     // request permission to show notifications
-    awesomeNotifications.requestPermissionToSendNotifications();
+  //  final result = await  awesomeNotifications.requestPermissionToSendNotifications(channelKey: NotificationChannels.callChannelKey, permissions: [
+  //       NotificationPermission.Alert,
+  //       NotificationPermission.Sound,
+  //       NotificationPermission.Badge,
+  //       // NotificationPermission.Vibration,
+  //       // NotificationPermission.Light
+  //     ]  );
+
+      // Logger().d(result);
+    // awesomeNotifications.requestPermissionToSendNotifications(channelKey: NotificationChannels.callChannelKey  );
 
     // list when user click on notifications
     listenToActionButtons();

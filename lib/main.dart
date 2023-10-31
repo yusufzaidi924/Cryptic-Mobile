@@ -13,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'app/data/local/my_shared_pref.dart';
 import 'app/routes/app_pages.dart';
 
@@ -35,7 +36,9 @@ Future<void> main() async {
 
   Get.put(AuthController());
 
-  await requestNotificationPermission();
+  // await requestNotificationPermission();
+  var status = await Permission.camera.status;
+  Logger().d(status);
 
   // inti fcm services
   await FcmHelper.initFcm();
