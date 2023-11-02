@@ -47,6 +47,15 @@ enum UserStatus {
   OFFLINE,
 }
 
+class AuthUserStatus {
+  static const int DELETED = -1;
+  static const int REJECTED = -3;
+  static const int SUSPENDED = -2;
+  static const int SUBMITTED = 1;
+  static const int APPROVED = 2;
+  static const int NEW_ACCOUNT = 0;
+}
+
 class DatabaseConfig {
   static const String PROJECT_COLLECTION = "projects";
   static const String STORAGE_IMAGE_COLLECTION = "testimages";

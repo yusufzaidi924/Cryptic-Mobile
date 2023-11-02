@@ -17,11 +17,18 @@ class Network {
   static String SAVE_USER_DETAIL = 'saveUserDetail';
   static String SEND_INVITE_SMS = 'sendInviteSMS';
   static String GET_ALL_USERS = 'getUsers';
+  static String UPDATE_USER = 'updateUser';
+  static String UPDATE_PASSWORD = 'updatePassword';
+  static String DELETE_ACCOUNT = 'deleteAccount';
+
   static String UPDATE_BTC_ADDRESS = 'updateBtcAddress';
 
   static String GET_CALL_TOKEN = 'app/getCallToken';
   static String GET_RECENT_SENT_USERS = 'app/getRecentSentUsers';
   static String SAVE_TRANSACTION = 'app/saveTransaction';
+  static String SEND_REFERRAL_CODE = 'app/sendReferralCode';
+  static String ADD_NEW_CARD = 'app/addNewCard';
+  static String ADD_NEW_BANK = 'app/addNewBank';
 
   static String UPLOAD_FILE = 'uploadFile';
 

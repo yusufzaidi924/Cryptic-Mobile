@@ -1,4 +1,8 @@
+import 'package:edmonscan/app/modules/AffiliatePage/controllers/affiliate_page_controller.dart';
+import 'package:edmonscan/app/modules/Friends/controllers/friends_controller.dart';
+import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
+import 'package:edmonscan/utils/chatUtil/chat_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,7 +18,7 @@ class MyProfileView extends GetView<MyProfileController> {
   Widget build(BuildContext context) {
     return GetBuilder<MyProfileController>(builder: (value) {
       return Scaffold(
-        backgroundColor: Color(0xFFEEEFF3),
+        backgroundColor: const Color(0xFFEEEFF3),
         appBar: AppBar(
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -36,57 +40,40 @@ class MyProfileView extends GetView<MyProfileController> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(Icons.arrow_back_ios,
+            icon: const Icon(Icons.arrow_back_ios,
                 color: LightThemeColors.primaryColor),
           ),
-          actions: [
-            PopupMenuButton(
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  child: Text('Option 1'),
-                  value: 1,
-                ),
-                PopupMenuItem(
-                  child: Text('Option 2'),
-                  value: 2,
-                ),
-                PopupMenuItem(
-                  child: Text('Option 3'),
-                  value: 3,
-                ),
-              ],
-              icon: Icon(
-                Icons.more_vert,
-                color: Color(0xFF23233F),
-              ),
-              onSelected: (value) {
-                // Handle menu item selection
-              },
-            ),
-          ],
           centerTitle: true,
-          elevation: 0.0,
+          // elevation: 0.0,
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
               // --------- USER INFO ------
               Container(
-                margin: EdgeInsets.symmetric(vertical: 15),
+                margin: const EdgeInsets.symmetric(vertical: 15),
                 width: Get.width,
                 color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/images/avatar.png',
-                          ),
-                          radius: 32,
-                        ),
+                        value.authCtrl.authUser?.selfie != null
+                            ? CircleAvatar(
+                                backgroundColor: Colors.grey,
+                                backgroundImage: NetworkImage(
+                                    "${Network.BASE_URL}${value.authCtrl.authUser?.selfie}"),
+                                radius: 32,
+                              )
+                            : CircleAvatar(
+                                backgroundImage: AssetImage(
+                                  'assets/images/avatar.png',
+                                ),
+                                radius: 32,
+                              ),
                         SizedBox(
                           width: 15,
                         ),
@@ -94,7 +81,9 @@ class MyProfileView extends GetView<MyProfileController> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Jonathan Doe',
+                              value.authCtrl.chatUser != null
+                                  ? getUserName(value.authCtrl.chatUser!)
+                                  : "",
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
@@ -106,7 +95,7 @@ class MyProfileView extends GetView<MyProfileController> {
                               height: 8,
                             ),
                             Text(
-                              '505-287-8051',
+                              '${value.authCtrl.authUser?.phone ?? ""}',
                               style: TextStyle(
                                 color: Color(0xFF6E6E82),
                                 fontSize: 16,
@@ -126,8 +115,9 @@ class MyProfileView extends GetView<MyProfileController> {
               Container(
                 width: Get.width,
                 color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -154,7 +144,7 @@ class MyProfileView extends GetView<MyProfileController> {
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
                       child: Divider(
                         color: Color(0xFFE7E6E6),
                       ),
@@ -191,18 +181,19 @@ class MyProfileView extends GetView<MyProfileController> {
               Container(
                 width: Get.width,
                 color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                margin: EdgeInsets.symmetric(vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                margin: const EdgeInsets.symmetric(vertical: 15),
                 child: ListView.separated(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.zero,
                     itemBuilder: (BuildContext context, int index) {
                       return value.menuList[index];
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 0.0),
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 0.0),
                         child: Divider(
                           color: Color(0xFFE7E6E6),
                         ),
@@ -218,15 +209,16 @@ class MyProfileView extends GetView<MyProfileController> {
                 },
                 child: Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(15),
-                  margin: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  padding: const EdgeInsets.all(15),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
                   decoration: ShapeDecoration(
                     color: LightThemeColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
@@ -254,20 +246,22 @@ class MyProfileView extends GetView<MyProfileController> {
 menuItem({required Widget icon, required String title, required String route}) {
   return ListTile(
     onTap: () {
+      Get.delete<FriendsController>();
+      Get.delete<AffiliatePageController>();
       Get.toNamed(route);
     },
-    contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
     leading: icon,
     title: Text(
       '${title}',
-      style: TextStyle(
+      style: const TextStyle(
         color: Color(0xFF23233F),
         fontSize: 16,
         fontFamily: 'DM Sans',
         fontWeight: FontWeight.w400,
       ),
     ),
-    trailing: Icon(
+    trailing: const Icon(
       Icons.arrow_forward_ios,
       size: 12,
       color: Colors.black,

@@ -41,6 +41,10 @@ class AuthController extends GetxController {
 
   final _userModel = Rxn<UserModel>();
   UserModel? get authUser => _userModel.value;
+  updateAuthUser(UserModel user) {
+    _userModel.value = user;
+    update();
+  }
 
   // ========= SignIn ========================
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
@@ -437,16 +441,16 @@ class AuthController extends GetxController {
             title: "SUCCESS", message: res['message']);
 
         switch (authUser!.status) {
-          case 0: // Not Submitted
+          case AuthUserStatus.NEW_ACCOUNT: // Not Submitted
             Get.toNamed(Routes.SIGNUP_DETAIL);
 
             break;
-          case 1: //  Submitted
+          case AuthUserStatus.SUBMITTED: //  Submitted
             Get.toNamed(Routes.VERIFY_RESULT_PAGE);
 
             break;
 
-          case 2: //  Approved
+          case AuthUserStatus.APPROVED: //  Approved
 
             // CHECK MNEMONIC CODE
             String? mnemonic_code = await getDataInLocal(
@@ -465,7 +469,7 @@ class AuthController extends GetxController {
 
             break;
 
-          case -1: //  Rejected
+          case AuthUserStatus.REJECTED: //  Rejected
             Get.toNamed(Routes.VERIFY_RESULT_PAGE);
 
             break;
@@ -1059,7 +1063,8 @@ class AuthController extends GetxController {
           //     .collection(DatabaseConfig.USER_COLLECTION)
           //     .doc(user.id.toString())
           //     .set(_user.toJson());
-          await FirebaseChatCore.instance.createUserInFirestore(_user);
+          await MyChatCore.instance.createUserInFirestore(_user);
+          // await FirebaseChatCore.instance.createUserInFirestore(_user);
           return _user;
         }
       },
@@ -1120,7 +1125,7 @@ class AuthController extends GetxController {
             print(userData['id']);
             _userModel.value = UserModel.fromJson(userData);
 
-            if (authUser!.status == 2) {
+            if (authUser!.status == AuthUserStatus.APPROVED) {
               // SAVE/GET FIRESTORE USER FOR CHAT
               _chatUser.value = await getFirebaseUser(authUser!);
 
@@ -1147,7 +1152,7 @@ class AuthController extends GetxController {
               if (mnemonic_code != null && authUser!.btcAddress != null) {
                 await initBTCWallet(mnemonic_code);
 
-                // return Routes.CHAT_LIST;
+                // return Routes.MY_PROFILE;
                 return Routes.HOME;
               } else {
                 return Routes.MNEMONIC_PAGE;
@@ -1304,6 +1309,14 @@ class AuthController extends GetxController {
       Logger().e(e.toString());
       CustomSnackBar.showCustomSnackBar(title: "ERROR", message: e.toString());
     }
+  }
+
+  /**
+   * Get User Name
+   */
+  String getUserName(UserModel? user) {
+    return '${user?.firstName ?? 'Criptacy'} ${user?.lastName ?? 'User'}'
+        .trim();
   }
 
   /***********************************

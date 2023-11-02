@@ -140,6 +140,49 @@ class UserRepository {
     return res;
   }
 
+  // ======== UPDATE USER ======
+  static Future updateUser(int uid, data) async {
+    var res = await Network().authData(data, "${Network.UPDATE_USER}/${uid}");
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ======== UPDATE PASSWORD ======
+  static Future updatePassword(data) async {
+    var res = await Network().authData(data, Network.UPDATE_PASSWORD);
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ======== DELETE ACCOUNT ======
+  static Future deleteAccount(int uid, data) async {
+    var res =
+        await Network().authData(data, "${Network.DELETE_ACCOUNT}/${uid}");
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ======== SEND REFERRAL CODE ======
+  static Future sendReferralCode(data) async {
+    var res = await Network().authData(data, "${Network.SEND_REFERRAL_CODE}");
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ======== ADD NEW CARD ======
+  static Future addNewCard(data) async {
+    var res = await Network().authData(data, "${Network.ADD_NEW_CARD}");
+    var body = json.decode(res.body);
+    return body;
+  }
+
+  // ======== ADD NEW BANK ======
+  static Future addNewBank(data) async {
+    var res = await Network().authData(data, "${Network.ADD_NEW_BANK}");
+    var body = json.decode(res.body);
+    return body;
+  }
+
   // // ========= LOG OUT =============
   // static Future logout() async {
   //   var res = await Network().getData('/logout');
@@ -154,13 +197,6 @@ class UserRepository {
   //   var res = await Network().authData(data, '/registerUser');
   //   var body = json.decode(res.body);
   //   return body;
-  // }
-
-  // // ======== UPDATE USER ======
-  // static Future updateUser(UserModel userModel) async {
-  //   var res = await Network().authData(userModel.toJson(), '/updateUser');
-  //   // var body = json.decode(res.body);
-  //   return res;
   // }
 
   // // ======== CHANGE USER ======

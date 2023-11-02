@@ -16,6 +16,7 @@ Widget UnderLineInputBox({
   Color? borderColor,
   Color? textColor,
   Color? hintColor,
+  List<TextInputFormatter>? inputFormat,
 }) {
   return Container(
     width: double.infinity,
@@ -24,6 +25,7 @@ Widget UnderLineInputBox({
       controller: controller,
       obscureText: isSecure ?? false,
       keyboardType: keyboardType ?? TextInputType.text,
+      inputFormatters: inputFormat,
       // maxLength: 100,
       style: TextStyle(
         color: textColor ?? LightThemeColors.bodyTextColor,
@@ -36,7 +38,7 @@ Widget UnderLineInputBox({
           color: hintColor ?? Colors.grey,
           fontSize: 14,
         ),
-        contentPadding: EdgeInsets.fromLTRB(15, 10, 20, 15),
+        contentPadding: EdgeInsets.fromLTRB(10, 15, 20, 10),
         isDense: true,
         suffixIcon: suffixWidget != null
             ? suffixWidget

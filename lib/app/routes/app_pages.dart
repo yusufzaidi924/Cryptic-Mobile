@@ -3,8 +3,12 @@ import 'package:get/get.dart';
 import '../data/models/ProjectModel.dart';
 import '../modules/AccountSecurity/bindings/account_security_binding.dart';
 import '../modules/AccountSecurity/views/account_security_view.dart';
+import '../modules/AddNewBank/bindings/add_new_bank_binding.dart';
+import '../modules/AddNewBank/views/add_new_bank_view.dart';
 import '../modules/AddNewCard/bindings/add_new_card_binding.dart';
 import '../modules/AddNewCard/views/add_new_card_view.dart';
+import '../modules/AffiliatePage/bindings/affiliate_page_binding.dart';
+import '../modules/AffiliatePage/views/affiliate_page_view.dart';
 import '../modules/Auth/bindings/auth_binding.dart';
 import '../modules/Auth/views/sign_in_view.dart';
 import '../modules/Auth/views/sign_up_view.dart';
@@ -23,6 +27,8 @@ import '../modules/ConfirmPayment/bindings/confirm_payment_binding.dart';
 import '../modules/ConfirmPayment/views/confirm_payment_view.dart';
 import '../modules/CreateChat/bindings/create_chat_binding.dart';
 import '../modules/CreateChat/views/create_chat_view.dart';
+import '../modules/Friends/bindings/friends_binding.dart';
+import '../modules/Friends/views/friends_view.dart';
 import '../modules/Home/bindings/home_binding.dart';
 import '../modules/Home/views/home_view.dart';
 import '../modules/IncomingCall/bindings/incoming_call_binding.dart';
@@ -223,6 +229,21 @@ class AppPages {
       name: _Paths.MY_Q_R,
       page: () => MyQRView(),
       binding: MyQRBinding(),
+    ),
+    GetPage(
+      name: _Paths.FRIENDS,
+      page: () => FriendsView(),
+      binding: FriendsBinding(),
+    ),
+    GetPage(
+      name: _Paths.AFFILIATE_PAGE,
+      page: () => AffiliatePageView(),
+      binding: AffiliatePageBinding(),
+    ),
+    GetPage(
+      name: _Paths.ADD_NEW_BANK,
+      page: () => AddNewBankView(),
+      binding: AddNewBankBinding(),
     ),
   ];
 }

@@ -36,6 +36,9 @@ abstract class Routes {
   static const SPLASH = _Paths.SPLASH;
   static const MNEMONIC_PAGE = _Paths.MNEMONIC_PAGE;
   static const MY_Q_R = _Paths.MY_Q_R;
+  static const FRIENDS = _Paths.FRIENDS;
+  static const AFFILIATE_PAGE = _Paths.AFFILIATE_PAGE;
+  static const ADD_NEW_BANK = _Paths.ADD_NEW_BANK;
 }
 
 abstract class _Paths {
@@ -74,4 +77,7 @@ abstract class _Paths {
   static const SPLASH = '/splash';
   static const MNEMONIC_PAGE = '/mnemonic-page';
   static const MY_Q_R = '/my-q-r';
+  static const FRIENDS = '/friends';
+  static const AFFILIATE_PAGE = '/affiliate-page';
+  static const ADD_NEW_BANK = '/add-new-bank';
 }

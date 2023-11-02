@@ -14,7 +14,7 @@ class AccountSecurityView extends GetView<AccountSecurityController> {
   Widget build(BuildContext context) {
     return GetBuilder<AccountSecurityController>(builder: (value) {
       return Scaffold(
-        backgroundColor: Color(0xFFEEEFF3),
+        backgroundColor: const Color(0xFFEEEFF3),
         appBar: AppBar(
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -36,111 +36,256 @@ class AccountSecurityView extends GetView<AccountSecurityController> {
             onPressed: () {
               Get.back();
             },
-            icon: Icon(Icons.arrow_back_ios,
+            icon: const Icon(Icons.arrow_back_ios,
                 color: LightThemeColors.primaryColor),
           ),
-          actions: [
-            PopupMenuButton(
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  child: Text('Option 1'),
-                  value: 1,
-                ),
-                PopupMenuItem(
-                  child: Text('Option 2'),
-                  value: 2,
-                ),
-                PopupMenuItem(
-                  child: Text('Option 3'),
-                  value: 3,
-                ),
-              ],
-              icon: Icon(
-                Icons.more_vert,
-                color: Color(0xFF23233F),
-              ),
-              onSelected: (value) {
-                // Handle menu item selection
-              },
-            ),
-          ],
           centerTitle: true,
-          elevation: 0.0,
+          // elevation: 0.0,
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              // ------------ CURRENT PASSWORD ------
-              Container(
-                width: Get.width,
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 15),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Enter Current Password',
-                      style: TextStyle(
-                        color: Color(0xFF7E7E91),
-                        fontSize: 14,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+          child: Form(
+            key: controller.formKey,
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
                 ),
-              ),
-
-              // ------------ NEW PASSWORD ------
-              Container(
-                width: Get.width,
-                color: Colors.white,
-                margin: EdgeInsets.symmetric(vertical: 15),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Enter New Password',
-                      style: TextStyle(
-                        color: Color(0xFF7E7E91),
-                        fontSize: 14,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w400,
+                // ------------ CURRENT PASSWORD ------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(top: 15),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: controller.oldPassCtrl,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter Current Password',
+                          labelStyle: TextStyle(
+                            color: Color(0xFF7E7E91),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                        ),
+                        onChanged: (value) =>
+                            controller.formKey.currentState!.validate(),
+                        validator: (value) => controller.validatePass(value),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              // --------------UPDATE PASSWORD BUTTON ---------------
-              InkWell(
-                onTap: () {
-                  // value.onRequestPayment();
-                },
-                child: Container(
+                // ------------ NEW PASSWORD ------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(top: 15),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: controller.newPassCtrl,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Enter New Password',
+                          labelStyle: TextStyle(
+                            color: Color(0xFF7E7E91),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                        ),
+                        onChanged: (value) =>
+                            controller.formKey.currentState!.validate(),
+                        validator: (value) => controller.validatePass(value),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ---------- CONFIRM PASSWORD -----------
+                Container(
+                  width: Get.width,
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(top: 15),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: controller.confirmPassCtrl,
+                        obscureText: true,
+                        decoration: const InputDecoration(
+                          labelText: 'Confirm New Password',
+                          labelStyle: TextStyle(
+                            color: Color(0xFF7E7E91),
+                          ),
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                                color: LightThemeColors.primaryColor),
+                          ),
+                        ),
+                        onChanged: (value) =>
+                            controller.formKey.currentState!.validate(),
+                        validator: (value) =>
+                            controller.validateConfirmPass(value),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // --------------UPDATE PASSWORD BUTTON ---------------
+                Container(
                   width: double.infinity,
-                  padding: EdgeInsets.all(15),
-                  margin: EdgeInsets.symmetric(vertical: 25, horizontal: 20),
+                  padding: const EdgeInsets.all(15),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 25, horizontal: 20),
                   decoration: ShapeDecoration(
                     color: LightThemeColors.primaryColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: InkWell(
+                    onTap: () {
+                      controller.onUpdatePassword();
+                    },
+                    child: Container(
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Update Password',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontFamily: 'DM Sans',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                //-------------- DELETE ACCOUNT BUTTON ---------------------
+                Container(
+                  // margin: EdgeInsets.symmetric(vertical: 25),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  color: Colors.white,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Update Password',
+                      const Text(
+                        'Delete Account?',
+                        style: TextStyle(
+                          color: Color(0xFF23233F),
+                          fontSize: 18,
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Form(
+                        key: controller.deleteFormKey,
+                        child: TextFormField(
+                          controller: controller.deleteTextCtrl,
+                          decoration: const InputDecoration(
+                            // labelText: 'Please',
+                            hintStyle: TextStyle(
+                              color: Color(0xFF7E7E91),
+                            ),
+                            hintText: 'Please type "DELETE ACCOUNT"',
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: LightThemeColors.primaryColor),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: LightThemeColors.primaryColor),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: LightThemeColors.primaryColor),
+                            ),
+                          ),
+                          onChanged: (value) =>
+                              controller.deleteFormKey.currentState!.validate(),
+                          validator: (value) =>
+                              controller.validateDeleteText(value),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: InkWell(
+                          onTap: () {
+                            controller.onDeleteAccount();
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 50,
+                            decoration: ShapeDecoration(
+                              color: const Color.fromARGB(255, 205, 0, 7),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'DELETE MY ACCOUNT',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Text(
+                        'WARNING: DELETING YOUR ACCOUNT IS PERMANENT AND IRREVERSIBLE',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                          color: Colors.black,
+                          fontSize: 16,
                           fontFamily: 'DM Sans',
                           fontWeight: FontWeight.w500,
                         ),
@@ -148,73 +293,8 @@ class AccountSecurityView extends GetView<AccountSecurityController> {
                     ],
                   ),
                 ),
-              ),
-
-              //-------------- DELETE ACCOUNT BUTTON ---------------------
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 25),
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                color: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Delete Account?',
-                      style: TextStyle(
-                        color: Color(0xFF23233F),
-                        fontSize: 18,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Text(
-                      'Please Type “DELETE ACCOUNT”',
-                      style: TextStyle(
-                        color: Color(0xFF6E6E82),
-                        fontSize: 16,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Container(
-                        width: 327,
-                        height: 50,
-                        decoration: ShapeDecoration(
-                          color: Color.fromARGB(255, 205, 0, 7),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'DELETE MY ACCOUNT',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontFamily: 'DM Sans',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      'WARNING: DELETING YOUR ACCOUNT IS PERMANENT AND IRREVERSIBLE',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontFamily: 'DM Sans',
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );

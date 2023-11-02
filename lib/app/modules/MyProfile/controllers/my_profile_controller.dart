@@ -24,14 +24,14 @@ class MyProfileController extends GetxController {
           color: Colors.black,
         ),
         title: "Affilate Service",
-        route: Routes.ADD_NEW_CARD),
+        route: Routes.AFFILIATE_PAGE),
     menuItem(
         icon: Icon(
           Icons.people_outline,
           color: Colors.black,
         ),
         title: "Manage Contacts",
-        route: Routes.ADD_NEW_CARD),
+        route: Routes.FRIENDS),
     menuItem(
         icon: Icon(
           Icons.lock_outline,
@@ -44,7 +44,7 @@ class MyProfileController extends GetxController {
           Icons.settings_outlined,
           color: Colors.black,
         ),
-        title: "Account Security",
+        title: "Settings",
         route: Routes.SETTING_PAGE),
   ];
 

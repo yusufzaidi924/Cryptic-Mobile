@@ -100,6 +100,7 @@ dependencies:
   bdk_flutter: ^0.29.1
   audioplayers: ^5.2.0
   flutter_callkit_incoming: ^2.0.0+2
+  clipboard: ^0.1.3
 
 
 

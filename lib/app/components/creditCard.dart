@@ -46,7 +46,9 @@ CreditCard({
 
               // CARD NUMBER
               Text(
-                '****  ****  **** ${cardNumber.substring(cardNumber.length - 4)}',
+                cardNumber.length > 12
+                    ? '****  ****  **** ${cardNumber.substring(cardNumber.length - 4)}'
+                    : cardNumber,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,

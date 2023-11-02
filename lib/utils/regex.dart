@@ -4,6 +4,19 @@ class Regex {
     return regExp.hasMatch(email);
   }
 
+  static bool isValidFullName(String value) {
+    // Define a regex that matches a full name with at least two words
+    final RegExp nameExp = RegExp(r'^[A-Za-z]+(?:\s[A-Za-z]+)+$');
+
+    // Check if the input matches the regex
+    if (!nameExp.hasMatch(value)) {
+      return false;
+    }
+
+    // If the input is valid, return null
+    return true;
+  }
+
   static bool validateZipCode(String value) {
     RegExp zipCodeRegExp = new RegExp(r'^\d{5}(?:[-\s]\d{4})?$');
     return zipCodeRegExp.hasMatch(value);

@@ -3,8 +3,8 @@ class UserModel {
   String username;
   String password;
   String phone;
-  String? lastName;
-  String? firstName;
+  String lastName;
+  String firstName;
   String? street;
   String? city;
   String? state;
@@ -21,14 +21,18 @@ class UserModel {
   DateTime? updatedAt;
   int otp;
   int status = 0;
+  List friends = [];
+  String? referral_code;
+  String? received_ref_code;
+  int balance = 0;
 
   UserModel({
     required this.id,
     required this.username,
     required this.password,
     required this.phone,
-    this.lastName,
-    this.firstName,
+    required this.lastName,
+    required this.firstName,
     this.street,
     this.city,
     this.state,
@@ -45,6 +49,10 @@ class UserModel {
     this.btcAddress,
     required this.otp,
     required this.status,
+    required this.friends,
+    this.referral_code,
+    this.received_ref_code,
+    required this.balance,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -77,6 +85,11 @@ class UserModel {
           : null,
       otp: json['otp'] as int,
       status: json['status'] as int,
+      friends:
+          json['friends'] != null ? json['friends'].toString().split(",") : [],
+      referral_code: json['referral_code'] as String?,
+      received_ref_code: json['received_ref_code'] as String?,
+      balance: json['balance'] != null ? int.parse("${json['balance']}") : 0,
     );
   }
 
@@ -103,6 +116,7 @@ class UserModel {
     data['created_at'] = this.createdAt?.toIso8601String();
     data['updated_at'] = this.updatedAt?.toIso8601String();
     data['otp'] = this.otp;
+    data['friends'] = this.friends.toString();
     return data;
   }
 }
