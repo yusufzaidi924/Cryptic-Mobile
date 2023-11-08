@@ -121,7 +121,7 @@ class SplashController extends GetxController
         final expireTime = currentCall['extra']['expireTime'];
         int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-        if (currentTime < expireTime) {
+        if (true) {
           final data = currentCall['extra']['payload']['content'];
           final jsonData = jsonDecode(data);
           final payload = jsonData['payload'];

@@ -46,7 +46,7 @@ dependencies:
   # faker:
   file_picker:
   firebase_core: ^2.14.0 # to initialize firebase services
-  firebase_messaging: # fcm services
+  firebase_messaging: ^14.7.3
   firebase_storage: ^11.0.0
   credit_card_validator: ^2.1.0
 
