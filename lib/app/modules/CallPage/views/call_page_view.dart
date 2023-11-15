@@ -1,4 +1,5 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_uikit/agora_uikit.dart';
 import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/formatDateTime.dart';
@@ -36,58 +37,70 @@ class CallPageView extends GetView<CallPageController> {
               // centerTitle: true,
               elevation: 0,
             ),
-            body: Stack(
-              children: [
-                Container(
-                  width: Get.width,
-                  height: Get.height,
-                  color: Colors.black,
-                ),
-                if (controller.remoteUserUID != null) _remoteUserVideo(),
-
-                // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
-                Obx(
-                  () => AnimatedPositioned(
-                    width: controller.remoteUserUID != null
-                        ? Get.width * 0.3
-                        : Get.width,
-                    height: controller.remoteUserUID != null
-                        ? Get.width * 0.4
-                        : Get.height,
-                    top: controller.remoteUserUID != null ? 100.0 : 0.0,
-                    right: controller.remoteUserUID != null ? 0 : 0.0,
-                    duration: _animationDuration,
-                    curve: _animationCurve,
-                    child: Container(
-                      decoration: ShapeDecoration(
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              controller.remoteUserUID != null ? 10 : 0),
-                          side: BorderSide(
-                              color: Colors.yellow,
-                              width: controller.remoteUserUID != null ? 1 : 0),
-                        ),
+            body: (controller.agoraClient == null)
+                ? Center(child: CircularProgressIndicator())
+                : Stack(
+                    children: [
+                      AgoraVideoViewer(
+                        client: controller.agoraClient!,
+                        layoutType: Layout.floating,
+                        enableHostControls:
+                            true, // Add this to enable host controls
                       ),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                              controller.remoteUserUID != null ? 10 : 0),
-                          child: _localUserVideo()),
-                    ),
+                      AgoraVideoButtons(
+                        client: controller.agoraClient!,
+                      ),
+                      // Container(
+                      //   width: Get.width,
+                      //   height: Get.height,
+                      //   color: Colors.black,
+                      // ),
+
+                      // if (controller.remoteUserUID != null) _remoteUserVideo(),
+
+                      // SHOW LOCAL USER WINDOWS WHEN REMOTE USER JOINED
+                      // Obx(
+                      //   () => AnimatedPositioned(
+                      //     width: controller.remoteUserUID != null
+                      //         ? Get.width * 0.3
+                      //         : Get.width,
+                      //     height: controller.remoteUserUID != null
+                      //         ? Get.width * 0.4
+                      //         : Get.height,
+                      //     top: controller.remoteUserUID != null ? 100.0 : 0.0,
+                      //     right: controller.remoteUserUID != null ? 0 : 0.0,
+                      //     duration: _animationDuration,
+                      //     curve: _animationCurve,
+                      //     child: Container(
+                      //       decoration: ShapeDecoration(
+                      //         color: Colors.transparent,
+                      //         shape: RoundedRectangleBorder(
+                      //           borderRadius: BorderRadius.circular(
+                      //               controller.remoteUserUID != null ? 10 : 0),
+                      //           side: BorderSide(
+                      //               color: Colors.yellow,
+                      //               width: controller.remoteUserUID != null ? 1 : 0),
+                      //         ),
+                      //       ),
+                      //       child: ClipRRect(
+                      //           borderRadius: BorderRadius.circular(
+                      //               controller.remoteUserUID != null ? 10 : 0),
+                      //           child: _localUserVideo()),
+                      //     ),
+                      //   ),
+                      // ),
+
+                      // // BOTTOM ACTION BAR
+                      // Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
+
+                      // // CALL INFO PANEL
+                      // Positioned(
+                      //   bottom: Get.height * 0.2,
+                      //   left: 0,
+                      //   child: callInfoPanel(),
+                      // )
+                    ],
                   ),
-                ),
-
-                // BOTTOM ACTION BAR
-                Positioned(bottom: 20, left: 0, child: _bottomActionBar()),
-
-                // CALL INFO PANEL
-                Positioned(
-                  bottom: Get.height * 0.2,
-                  left: 0,
-                  child: callInfoPanel(),
-                )
-              ],
-            ),
           );
         });
   }

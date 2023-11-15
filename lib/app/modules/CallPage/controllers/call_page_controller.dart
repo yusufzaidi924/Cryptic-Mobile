@@ -15,6 +15,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:agora_uikit/agora_uikit.dart';
 
 class CallPageController extends GetxController {
   //TODO: Implement CallPageController
@@ -157,6 +158,8 @@ class CallPageController extends GetxController {
     }
   }
 
+  final _agoraClient = Rxn<AgoraClient>();
+  AgoraClient? get agoraClient => _agoraClient.value;
   @override
   void onInit() {
     super.onInit();
@@ -189,10 +192,22 @@ class CallPageController extends GetxController {
    * On Init Call
    */
   onInitCall() async {
-    await makeConnectCall(callId);
+    // await makeConnectCall(callId);
 
     if (callToken != null && channelID != null) {
-      await initAgora(callToken!, channelID!);
+      // await initAgora(callToken!, channelID!);
+      final AgoraClient client = AgoraClient(
+        agoraConnectionData: AgoraConnectionData(
+          appId: ArgoraConf.APPID,
+          channelName: channelID!,
+          tempToken: callToken,
+          uid: int.tryParse(callId ?? "0"),
+        ),
+      );
+      await client.initialize();
+      _agoraClient.value = client;
+
+      update();
     } else {
       // Get.back();
       CustomSnackBar.showCustomErrorSnackBar(
