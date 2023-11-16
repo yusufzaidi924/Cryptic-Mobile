@@ -43,123 +43,10 @@ class CallPageController extends GetxController {
     update(); // Update the UI
   }
 
-  final _isEnableCamera = false.obs;
-  bool get isEnableCamera => _isEnableCamera.value;
-  onUpdateCamera({bool isShowAlert = true}) async {
-    if (isEnableCamera) // Camera Off Request
-    {
-      // rtcEngine!.disableVideo();
-      if (rtcEngine != null) {
-        rtcEngine!.enableLocalVideo(false);
-      }
-
-      _isEnableCamera.value = false;
-    } else {
-      try {
-        final status = await Permission.camera.request();
-        print(status.isGranted);
-        if (rtcEngine != null) {
-          rtcEngine!.enableLocalVideo(true);
-          _isEnableCamera.value = true;
-        }
-      } catch (e) {
-        debugPrint('😜 Camera Permission Denied');
-        _isEnableCamera.value = false;
-        // if (isShowAlert) {
-        //   showPermissionDeniedDialog("Camera");
-        // }
-        Logger().e(e.toString());
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: "ERROR", message: e.toString());
-      }
-      // Camera Open Request
-      // if (await Permission.camera.request().isGranted) {
-      // Either the permission was already granted before or the user just granted it.
-      //   _isEnableCamera.value = true;
-      //   debugPrint('👌 Camera Permission Granted');
-      //   if (rtcEngine != null) {
-      //     rtcEngine!.enableLocalVideo(true);
-      //   }
-      // } else {
-      //   debugPrint('😜 Camera Permission Denied');
-      //   _isEnableCamera.value = false;
-      //   if (isShowAlert) {
-      //     showPermissionDeniedDialog("Camera");
-      //   }
-      // }
-    }
-    update();
-  }
-
-  void showPermissionDeniedDialog(String item) {
-    Get.dialog(
-      AlertDialog(
-        title: Text('${item} Permission denied'),
-        content: Text('Please grant ${item} permission to use this feature.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Get.back(); // Close the dialog
-            },
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  var isFullScreen = false.obs;
-  toggleTap() {
-    isFullScreen.toggle();
-  }
-
-  final _isEnableMic = false.obs;
-  bool get isEnableMic => _isEnableMic.value;
-  onUpdateMic({bool isShowAlert = true}) async {
-    if (isEnableMic) // Mic Off Request
-    {
-      if (rtcEngine != null) {
-        await rtcEngine!.muteLocalAudioStream(true);
-        _isEnableMic.value = false;
-        update();
-      }
-    } else {
-      // Mic Open Request
-      if (await Permission.microphone.request().isGranted) {
-        // Either the permission was already granted before or the user just granted it.
-        debugPrint('👌 Mic Permission Granted');
-        if (rtcEngine != null) {
-          _isEnableMic.value = true;
-          await rtcEngine!.muteLocalAudioStream(false);
-          update();
-        }
-      } else {
-        debugPrint('😜 Mic Permission Denied');
-        // if (rtcEngine != null) {
-        //   await rtcEngine!.muteLocalAudioStream(true);
-        // }
-        _isEnableMic.value = false;
-        update();
-        if (isShowAlert) {
-          showPermissionDeniedDialog("Microphone");
-        }
-      }
-    }
-  }
-
-  final _isEnableSwitchCam = false.obs;
-  bool get isEnableSwitchCam => _isEnableSwitchCam.value;
-  onSwitchCamera() async {
-    if (rtcEngine != null) {
-      Logger().i('----------- SWITCH CAMERA ---------');
-      await rtcEngine!.switchCamera();
-      _isEnableSwitchCam.value = !_isEnableSwitchCam.value;
-      update();
-    }
-  }
-
+  // Agora Client
   final _agoraClient = Rxn<AgoraClient>();
   AgoraClient? get agoraClient => _agoraClient.value;
+
   @override
   void onInit() {
     super.onInit();
@@ -192,20 +79,28 @@ class CallPageController extends GetxController {
    * On Init Call
    */
   onInitCall() async {
-    // await makeConnectCall(callId);
+    await makeConnectCall(callId);
 
     if (callToken != null && channelID != null) {
-      // await initAgora(callToken!, channelID!);
       final AgoraClient client = AgoraClient(
         agoraConnectionData: AgoraConnectionData(
           appId: ArgoraConf.APPID,
           channelName: channelID!,
           tempToken: callToken,
-          uid: int.tryParse(callId ?? "0"),
+          uid: authCtrl.authUser?.id ?? 0,
         ),
       );
       await client.initialize();
       _agoraClient.value = client;
+
+      // Send Call Request Push Notification
+      if (role == 'publisher') {
+        // SEND CALL REQUEST NOTIFICATION
+        sendCallRequestNotification();
+      }
+
+      // Start Call Timer
+      startTimer();
 
       update();
     } else {
@@ -235,134 +130,10 @@ class CallPageController extends GetxController {
     }
   }
 
-  ///////////////////////// Agora Video Call  ///////////////////////////
-  final _engine = Rxn<RtcEngine>();
-  RtcEngine? get rtcEngine => _engine.value;
-
-  final _isLocalUserJoin = Rx<bool>(false);
-  bool get isLocalUserJoin => _isLocalUserJoin.value;
-
-  final _remoteUserUID = Rxn<int>(null);
-  int? get remoteUserUID => _remoteUserUID.value;
-
-  final _isEnableRemoteVideo = false.obs;
-  bool get isEnableRemoteVideo => _isEnableRemoteVideo.value;
-
-  final _isEnableRemoteMic = false.obs;
-  bool get isEnableRemoteMic => _isEnableRemoteMic.value;
-
   String? channelID;
   String? callToken;
   String? callId;
   String role = 'publisher';
-
-  /************************
-   * Init Argora Engine
-   */
-  Future<void> initAgora(String token, String channelName) async {
-    Logger().i('🎁 ------- Agora Init ----------✨');
-    await onUpdateCamera(isShowAlert: false);
-    await onUpdateMic(isShowAlert: false);
-    // retrieve permissions
-    // await [Permission.microphone, Permission.camera].request();
-
-    //create the engine
-    _engine.value = createAgoraRtcEngine();
-    await rtcEngine!.initialize(const RtcEngineContext(
-      appId: ArgoraConf.APPID,
-      channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-    ));
-
-    print('************** RTC Engine End Create ***********');
-
-    rtcEngine!.registerEventHandler(
-      RtcEngineEventHandler(
-        onError: (ErrorCodeType err, String msg) {
-          Logger().e('[onError] err: $err, msg: $msg');
-        },
-        onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
-          Logger().i("local user ${connection.localUid} joined");
-
-          _isLocalUserJoin.value = true;
-          startTimer();
-          update();
-
-          if (role == 'publisher') {
-            // SEND CALL REQUEST NOTIFICATION
-            sendCallRequestNotification();
-          }
-        },
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
-          Logger().i("remote user $remoteUid joined");
-
-          _remoteUserUID.value = remoteUid;
-
-          // Move Local Camera to Top Right Corner
-
-          update();
-        },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          Logger().e("remote user $remoteUid left channel");
-
-          _remoteUserUID.value = null;
-
-          // Restore Local Camear As Full Screen
-
-          update();
-        },
-        // onRemoteAudioStats: (RtcConnection connection, RemoteAudioStats stats) {
-        //   if (stats != RemoteAudioState.remoteAudioStateDecoding) {
-        //     _isEnableRemoteMic.value = false;
-        //   }
-        //   update();
-        // },
-        // onRemoteVideoStats: (connection, state) {
-        //   if (state != RemoteVideoState.remoteVideoStateDecoding) {
-        //     _isEnableRemoteVideo.value = false;
-        //   }
-        //   update();
-        // },
-        onUserEnableVideo: (connection, remoteUid, enabled) {
-          _isEnableRemoteVideo.value = enabled;
-          update();
-        },
-        onUserMuteAudio: (connection, remoteUid, muted) {
-          _isEnableRemoteMic.value = !muted;
-          update();
-        },
-        onUserMuteVideo: (connection, remoteUid, muted) {
-          _isEnableRemoteVideo.value = !muted;
-          update();
-        },
-        onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
-          Logger().i(
-              '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
-        },
-      ),
-    );
-
-    print('************** RTC Engine Event Register ***********');
-
-    // if (role == 'publisher') {
-    await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    // } else {
-    //   await rtcEngine!.setClientRole(role: ClientRoleType.clientRoleAudience);
-    // }
-    await rtcEngine!.enableVideo();
-    await rtcEngine!.startPreview();
-
-    print('************** RTC Engine conf eng 🚒 ***********');
-    print(token);
-    print(channelName);
-    await rtcEngine!.joinChannel(
-      //
-      token: token,
-      channelId: channelName,
-      uid: int.parse(authCtrl.chatUser?.id ?? '0'),
-      options: const ChannelMediaOptions(),
-    );
-  }
 
   /****************************
    * Call Dispose
@@ -370,12 +141,6 @@ class CallPageController extends GetxController {
   Future<void> _dispose() async {
     Logger().d(callId);
     await makeEndCall(callId);
-    if (rtcEngine != null) {
-      EasyLoading.show(status: "Ending...");
-      await rtcEngine!.leaveChannel();
-      await rtcEngine!.release();
-      EasyLoading.dismiss();
-    }
   }
 
   /********************************

@@ -1145,21 +1145,21 @@ class AuthController extends GetxController {
               //     value:
               //         "decide much danger enhance gown good rigid panic begin evoke ball winner",
               //     type: StorableDataType.String);
-              // String? mnemonic_code = await getDataInLocal(
-              //     key: AppLocalKeys.MNEMONIC_CODE,
-              //     type: StorableDataType.String);
+              String? mnemonic_code = await getDataInLocal(
+                  key: AppLocalKeys.MNEMONIC_CODE,
+                  type: StorableDataType.String);
 
-              // Logger().d(mnemonic_code);
-              // Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
-              // if (mnemonic_code != null && authUser!.btcAddress != null) {
-              //   await initBTCWallet(mnemonic_code);
+              Logger().d(mnemonic_code);
+              Logger().d('Loaded User Wallet: ${authUser!.btcAddress}');
+              if (mnemonic_code != null && authUser!.btcAddress != null) {
+                await initBTCWallet(mnemonic_code);
 
-              // return Routes.TRENDING_PAGE;
-              return Routes.CHAT_LIST;
-              //   return Routes.HOME;
-              // } else {
-              //   return Routes.MNEMONIC_PAGE;
-              // }
+                // return Routes.TRENDING_PAGE;
+                //return Routes.CHAT_LIST;
+                return Routes.HOME;
+              } else {
+                return Routes.MNEMONIC_PAGE;
+              }
             } else {
               return Routes.SIGN_IN;
             }

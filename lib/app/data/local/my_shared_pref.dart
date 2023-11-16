@@ -20,6 +20,7 @@ class MySharedPref {
 
   // STORING KEYS
   static const String FCM_TOKEN = 'fcm_token';
+  static const String VOIP_TOKEN = 'voip_token';
   static const String CURRENT_LOCAL = 'current_local';
   static const String LIGHT_THEME = 'is_theme_light';
   static const String TOKEN = 'auth_token';
@@ -65,6 +66,13 @@ class MySharedPref {
   /// save generated fcm token
   static Future<void> setFcmToken(String token) =>
       _sharedPreferences.setString(FCM_TOKEN, token);
+
+  /// save generated VoIP token
+  static Future<void> setVoIPToken(String token) =>
+      _sharedPreferences.setString(FCM_TOKEN, token);
+
+  /// get generated VoIP token
+  static String? getVoIPToken() => _sharedPreferences.getString(VOIP_TOKEN);
 
   /// get generated fcm token
   static String? getFcmToken() => _sharedPreferences.getString(FCM_TOKEN);

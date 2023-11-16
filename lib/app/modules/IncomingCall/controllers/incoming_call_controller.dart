@@ -158,18 +158,12 @@ class IncomingCallController extends GetxController {
    */
   Future<String?> getTokenFromServer(String channelName) async {
     try {
-      final authCtrl = Get.find<AuthController>();
-      // if(authCtrl!= null)
-      final data = {
-        'channelId': channelName,
-        'uid': authCtrl.chatUser?.id ?? 0,
-        'role': 'audience'
-      };
-
-      final res = await AppRepository.getCallToken(data);
-      Logger().i(res);
-      if (res['statusCode'] == 200) {
-        String token = res['data']['token'];
+      final res = await AppRepository.getCallToken(
+          channelName: channelName, uid: authCtrl.authUser?.id ?? 0);
+      Logger().i('🎨🎨🎨------- Agora TOKEN-----🎨🎨🎨');
+      Logger().i(res['rtcToken']);
+      if (res['rtcToken'] != '') {
+        String token = res['rtcToken'];
         Logger().i(token);
         return token;
       } else {

@@ -7,8 +7,9 @@ import 'package:logger/logger.dart';
 
 class AppRepository {
   // ========== GET CALL TOKEN ==================
-  static Future<Map<String, dynamic>> getCallToken(data) async {
-    var res = await Network().authData(data, Network.GET_CALL_TOKEN);
+  static Future<Map<String, dynamic>> getCallToken(
+      {required String channelName, required int uid}) async {
+    var res = await Network().getAgoraToken(channelName: channelName, uid: uid);
     Logger().i('================= LOGIN WITH CUSTOMER SERVER =============');
     print(res.statusCode);
     Logger().i(res.body);

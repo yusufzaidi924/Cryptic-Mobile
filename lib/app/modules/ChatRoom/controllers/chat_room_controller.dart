@@ -395,8 +395,9 @@ class ChatRoomController extends GetxController {
   onCall() async {
     if (room != null) {
       User? otherUser = getOtherUser(room: room!);
-      // String channelName = DateTime.now().millisecondsSinceEpoch.toString();
-      String channelName = 'criptacyvideocallroom';
+      String datetime = DateTime.now().millisecondsSinceEpoch.toString();
+      String channelName = 'criptacyvideocallroom-${datetime}';
+      Logger().d(channelName);
       String? token = await getTokenFromServer(channelName);
       if (token != null) {
         Get.delete<CallPageController>();
@@ -419,17 +420,12 @@ class ChatRoomController extends GetxController {
    */
   Future<String?> getTokenFromServer(String channelName) async {
     try {
-      final data = {
-        'channelId': channelName,
-        'uid': authCtrl.chatUser?.id ?? 0,
-        'role': 'publisher',
-        'tokentype' : 'uid'
-      };
-
-      final res = await AppRepository.getCallToken(data);
+      final res = await AppRepository.getCallToken(
+          channelName: channelName, uid: authCtrl.authUser?.id ?? 0);
+      Logger().i('🎨🎨🎨------- Agora TOKEN-----🎨🎨🎨');
       Logger().i(res);
-      if (res['statusCode'] == 200) {
-        String token = res['data']['token'];
+      if (res['rtcToken'] != '') {
+        String token = res['rtcToken'];
         Logger().i(token);
         return token;
       } else {

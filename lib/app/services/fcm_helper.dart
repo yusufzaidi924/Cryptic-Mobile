@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,7 @@ import 'package:edmonscan/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
@@ -82,6 +84,11 @@ class FcmHelper {
       if (token != null) {
         MySharedPref.setFcmToken(token);
         _sendFcmTokenToServer(token);
+
+        if (Platform.isIOS) {
+          await getDevicePushTokenVoIP();
+        }
+        // GET VOIP TOKEN
       } else {
         // retry generating token
         await Future.delayed(const Duration(seconds: 5));
@@ -89,6 +96,32 @@ class FcmHelper {
       }
     } catch (error) {
       Logger().e(error);
+    }
+  }
+
+  static Future<void> getDevicePushTokenVoIP() async {
+    var devicePushTokenVoIP =
+        await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+    print('🎁------- VOIP TOKEN -----🎁');
+    print(devicePushTokenVoIP);
+    MySharedPref.setVoIPToken(devicePushTokenVoIP);
+    _sendVoIPTokenToServer(devicePushTokenVoIP);
+  }
+
+  static _sendVoIPTokenToServer(String token) {
+    final AuthCtrl = Get.find<AuthController>();
+
+    // TODO SEND FCM TOKEN TO SERVER
+    try {
+      final myAuth = AuthCtrl.chatUser;
+      if (myAuth == null) return;
+
+      FirebaseFirestore.instance
+          .collection(DatabaseConfig.USER_COLLECTION)
+          .doc(myAuth.id)
+          .update({"metadata.voip_token": token});
+    } catch (e) {
+      Logger().e(e.toString());
     }
   }
 

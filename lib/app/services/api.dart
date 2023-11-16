@@ -174,6 +174,28 @@ class Network {
     // });
   }
 
+  /******************************
+   * Get Agora Token
+   */
+  Future<Response> getAgoraToken(
+      {required String channelName, required int uid}) async {
+    String fullPath =
+        "https://agora-token-server-y8ti.onrender.com/rtc/${channelName}/publisher/uid/${uid}";
+
+    print(fullPath);
+    var fullUrl = Uri.parse(fullPath);
+
+    // await _getToken();
+    return await http.get(fullUrl, headers: _setHeaders()).timeout(
+      Duration(seconds: timeout),
+      onTimeout: () {
+        // Time has run out, do what you wanted to do.
+        return http.Response(
+            'Error', 408); // Request Timeout response status code
+      },
+    );
+  }
+
   _setHeaders() => {
         'Content-type': 'application/json',
         'Accept': 'application/json',

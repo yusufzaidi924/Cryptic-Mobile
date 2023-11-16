@@ -632,6 +632,11 @@ PODS:
     - AgoraIrisRTC_iOS (= 4.2.3-build.3)
     - AgoraRtcEngine_iOS (= 4.2.3)
     - Flutter
+  - agora_rtm (1.5.8):
+    - AgoraRtm_iOS (= 1.5.1)
+    - Flutter
+  - agora_uikit (0.0.1):
+    - Flutter
   - AgoraIrisRTC_iOS (4.2.3-build.3)
   - AgoraRtcEngine_iOS (4.2.3):
     - AgoraRtcEngine_iOS/AIAEC (= 4.2.3)
@@ -662,6 +667,7 @@ PODS:
   - AgoraRtcEngine_iOS/VideoCodecEnc (4.2.3)
   - AgoraRtcEngine_iOS/VirtualBackground (4.2.3)
   - AgoraRtcEngine_iOS/VQA (4.2.3)
+  - AgoraRtm_iOS (1.5.1)
   - audioplayers_darwin (0.0.1):
     - Flutter
   - awesome_notifications (0.8.1):
@@ -959,6 +965,8 @@ PODS:
 
 DEPENDENCIES:
   - agora_rtc_engine (from `.symlinks/plugins/agora_rtc_engine/ios`)
+  - agora_rtm (from `.symlinks/plugins/agora_rtm/ios`)
+  - agora_uikit (from `.symlinks/plugins/agora_uikit/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
@@ -989,6 +997,7 @@ SPEC REPOS:
     - abseil
     - AgoraIrisRTC_iOS
     - AgoraRtcEngine_iOS
+    - AgoraRtm_iOS
     - BoringSSL-GRPC
     - CryptoSwift
     - DKImagePickerController
@@ -1025,6 +1034,10 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   agora_rtc_engine:
     :path: ".symlinks/plugins/agora_rtc_engine/ios"
+  agora_rtm:
+    :path: ".symlinks/plugins/agora_rtm/ios"
+  agora_uikit:
+    :path: ".symlinks/plugins/agora_uikit/ios"
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
   awesome_notifications:
@@ -1077,8 +1090,11 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   abseil: 926fb7a82dc6d2b8e1f2ed7f3a718bce691d1e46
   agora_rtc_engine: cc22abc8de5d9050ecb697c3eb62e7f576d0b533
+  agora_rtm: 49a7d867ad91dfe587a3da4636273b80df0fe00d
+  agora_uikit: ca47b21e2af19474ddd8ec153670c2dc8cf3a9e8
   AgoraIrisRTC_iOS: e7d823fbc6c0aace26a3eb3d8444ee7f9bc7489c
   AgoraRtcEngine_iOS: eb0a7e87dbc9e818b267d413b48f76a57959e6f4
+  AgoraRtm_iOS: 595a9fa33a409831e6183396ea8f8bc563918403
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   awesome_notifications: db394d2e061e4583ba0f738ddea611e3986cc3fb
   bdk_flutter: ceee48a7dbeb52ebf9774fb583f57dd50d9e9823

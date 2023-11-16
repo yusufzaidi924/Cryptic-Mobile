@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
+import 'package:edmonscan/app/repositories/app_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
@@ -24,9 +26,6 @@ class SplashController extends GetxController
       String route = await authCtrl.restoreAccount();
       Get.toNamed(route);
     });
-    // Future.delayed(Duration(milliseconds: 100), () async {
-    //   await authCtrl.checkAndNavigationCallingPage();
-    // });
   }
 
   void onEvent(CallEvent event) {
@@ -36,13 +35,6 @@ class SplashController extends GetxController
     //   textEvents += '${event.toString()}\n';
     // });
   }
-
-  // Future<void> getDevicePushTokenVoIP() async {
-  //   var devicePushTokenVoIP =
-  //       await FlutterCallkitIncoming.getDevicePushTokenVoIP();
-  //   print('🎁------------>');
-  //   print(devicePushTokenVoIP);
-  // }
 
   Future<void> listenerEvent(void Function(CallEvent) callback) async {
     try {
@@ -115,44 +107,38 @@ class SplashController extends GetxController
       if (currentCall != null) {
         // NavigationService.instance
         //     .pushNamedIfNotCurrent(AppRoute.callingPage, args: currentCall);
-        print("🏆================= INCOMING CALL ============== 🏆");
+        print(" 🏆================= INCOMING CALL ============== 🏆");
         Logger().d(currentCall);
         final callId = currentCall['id'];
-        final expireTime = currentCall['extra']['expireTime'];
-        int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-        if (true) {
-          final data = currentCall['extra']['payload']['content'];
-          final jsonData = jsonDecode(data);
-          final payload = jsonData['payload'];
-          Logger().d(payload);
+        final data = currentCall['extra']['payload']['content'];
+        final jsonData = jsonDecode(data);
+        final payload = jsonData['payload'];
+        Logger().d(payload);
 
-          final callToken = payload['token'];
-          final channelID = payload['channelID'];
-          final user = payload['user'];
-          final userModel = User.fromJson(user);
-          Logger().i('🌈 ---------- Call Token ------🌈');
-          Logger().d(callToken);
-          Logger().d(channelID);
+        final callToken = payload['token'];
+        final channelID = payload['channelID'];
+        final user = payload['user'];
+        final userModel = User.fromJson(user);
+        // Logger().i('🌈 ---------- Call Token ------ 🌈');
+        // Logger().d(callToken);
+        // Logger().d(channelID);
 
+        String? token = await getTokenFromServer(channelID);
+        if (token != null) {
           Get.toNamed(Routes.CALL_PAGE, arguments: {
             'user': userModel,
-            'token': callToken,
+            'token': token,
             'channelID': channelID,
             'callId': callId,
             'role': 'audience'
           });
-        } else {
-          CustomSnackBar.showCustomErrorSnackBar(
-              title: "ERROR",
-              message:
-                  "Call Expired: Now :${currentTime} , Expired: ${expireTime}");
-          return callback();
         }
       } else {
-        CustomSnackBar.showCustomErrorSnackBar(
-            title: "ERROR", message: "There is no call");
-        return callback();
+        Logger().e("There is no call");
+        // CustomSnackBar.showCustomErrorSnackBar(
+        //     title: "ERROR", message: "There is no call");
+        // return callback();
       }
     } catch (e) {
       Logger().e(e.toString());
@@ -185,6 +171,33 @@ class SplashController extends GetxController
       "postNotificationMessageRequired":
           "Notification permission is required, Please allow notification permission from setting."
     });
+  }
+
+  /*****************
+   * Get Call Token
+   */
+  Future<String?> getTokenFromServer(String channelName) async {
+    try {
+      final res =
+          await AppRepository.getCallToken(channelName: channelName, uid: 0);
+      Logger().i('🎨🎨🎨------- Agora TOKEN-----🎨🎨🎨');
+      Logger().i(res['rtcToken']);
+      if (res['rtcToken'] != '') {
+        String token = res['rtcToken'];
+        Logger().i(token);
+        return token;
+      } else {
+        CustomSnackBar.showCustomErrorSnackBar(
+            title: "ERROR",
+            message: res['message'] ?? Messages.SOMETHING_WENT_WRONG);
+        return null;
+      }
+    } catch (e) {
+      Logger().e(e.toString());
+      CustomSnackBar.showCustomErrorSnackBar(
+          title: "ERROR", message: Messages.SOMETHING_WENT_WRONG);
+      return null;
+    }
   }
 
   // @override
