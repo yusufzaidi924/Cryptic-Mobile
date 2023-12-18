@@ -1,3 +1,5 @@
+import 'package:edmonscan/app/modules/Trending/bindings/trending_page_binding.dart';
+import 'package:edmonscan/app/modules/Trending/views/trending_page_view.dart';
 import 'package:get/get.dart';
 
 import '../data/models/ProjectModel.dart';
@@ -244,6 +246,11 @@ class AppPages {
       name: _Paths.ADD_NEW_BANK,
       page: () => AddNewBankView(),
       binding: AddNewBankBinding(),
+    ),
+    GetPage(
+      name: _Paths.TRENDING_PAGE,
+      page: () => TrendingPageView(),
+      binding: TrendingPageBinding(),
     ),
   ];
 }

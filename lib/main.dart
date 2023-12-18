@@ -13,6 +13,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'app/data/local/my_shared_pref.dart';
 import 'app/routes/app_pages.dart';
@@ -25,6 +26,11 @@ import 'utils/constants.dart';
 Future<void> main() async {
   // wait for bindings
   WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp(
+  //   name: "FCM",
+  //   // TODO: uncomment this line if you connected to firebase via cli
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
 
   // init shared preference
   await MySharedPref.init();
@@ -36,15 +42,14 @@ Future<void> main() async {
 
   Get.put(AuthController());
 
-  // await requestNotificationPermission();
   var status = await Permission.camera.status;
   Logger().d(status);
 
-  // inti fcm services
-  await FcmHelper.initFcm();
+  // // inti fcm services
+  // await FcmHelper.initFcm();
 
   // initialize local notifications service
-  await AwesomeNotificationsHelper.init();
+  // await AwesomeNotificationsHelper.init();
 
   runApp(
     ScreenUtilInit(
@@ -55,34 +60,27 @@ Future<void> main() async {
       useInheritedMediaQuery: true,
       rebuildFactor: (old, data) => true,
       builder: (context, widget) {
-        return GetMaterialApp(
-          // todo add your app name
-          title: "EdMon Scan",
-          useInheritedMediaQuery: true,
-          debugShowCheckedModeBanner: false,
-          theme: MyTheme.getThemeData(isLight: true),
-          builder: EasyLoading.init(),
-          initialRoute:
-              Routes.SPLASH, // first screen to show when app is running
-          getPages: AppPages.routes, // app screens
-          locale: MySharedPref.getCurrentLocal(), // app language
-          translations: LocalizationService
-              .getInstance(), // localization services in app (controller app language)
+        return OverlaySupport.global(
+          child: GetMaterialApp(
+            // todo add your app name
+            title: "EdMon Scan",
+            useInheritedMediaQuery: true,
+            debugShowCheckedModeBanner: false,
+            theme: MyTheme.getThemeData(isLight: true),
+            builder: EasyLoading.init(),
+            initialRoute:
+                Routes.SPLASH, // first screen to show when app is running
+            getPages: AppPages.routes, // app screens
+            locale: MySharedPref.getCurrentLocal(), // app language
+            translations: LocalizationService
+                .getInstance(), // localization services in app (controller app language)
+          ),
         );
       },
     ),
   );
 
   configLoading();
-}
-
-Future<void> requestNotificationPermission() async {
-  await FlutterCallkitIncoming.requestNotificationPermission({
-    "rationaleMessagePermission":
-        "Notification permission is required, to show notification.",
-    "postNotificationMessageRequired":
-        "Notification permission is required, Please allow notification permission from setting."
-  });
 }
 
 void configLoading() {

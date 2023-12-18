@@ -1,11 +1,13 @@
 import 'dart:convert';
+import 'package:agora_uikit/controllers/rtc_token_handler.dart';
+import 'package:edmonscan/app/services/api_dio.dart';
 import 'package:edmonscan/utils/local_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Network {
+class Network extends Api {
   static String BASE_URL = 'http://3.19.101.55:3300/';
   // static String BASE_URL = 'http://192.168.2.4:3300/';
 
@@ -29,6 +31,7 @@ class Network {
   static String SEND_REFERRAL_CODE = 'app/sendReferralCode';
   static String ADD_NEW_CARD = 'app/addNewCard';
   static String ADD_NEW_BANK = 'app/addNewBank';
+  static String SEND_VOIP = 'sendVoip';
 
   static String UPLOAD_FILE = 'uploadFile';
 
@@ -41,6 +44,7 @@ class Network {
   Future _getToken() async {
     token = await getDataInLocal(
         key: AppLocalKeys.TOKEN, type: StorableDataType.String);
+    print("token: $token");
   }
 
   authData(data, apiUrl) async {
@@ -183,17 +187,20 @@ class Network {
         "https://agora-token-server-y8ti.onrender.com/rtc/${channelName}/publisher/uid/${uid}";
 
     print(fullPath);
-    var fullUrl = Uri.parse(fullPath);
+    await _getToken();
+    final response =
+        await request(fullPath, Method.get, customHeader: _setHeaders());
+    return response.data; // var fullUrl = Uri.parse(fullPath);
 
-    // await _getToken();
-    return await http.get(fullUrl, headers: _setHeaders()).timeout(
-      Duration(seconds: timeout),
-      onTimeout: () {
-        // Time has run out, do what you wanted to do.
-        return http.Response(
-            'Error', 408); // Request Timeout response status code
-      },
-    );
+    // // await _getToken();
+    // return await http.get(fullUrl, headers: _setHeaders()).timeout(
+    //   Duration(seconds: timeout),
+    //   onTimeout: () {
+    //     // Time has run out, do what you wanted to do.
+    //     return http.Response(
+    //         'Error', 408); // Request Timeout response status code
+    //   },
+    // );
   }
 
   _setHeaders() => {

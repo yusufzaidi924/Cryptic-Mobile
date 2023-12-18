@@ -39,6 +39,7 @@ abstract class Routes {
   static const FRIENDS = _Paths.FRIENDS;
   static const AFFILIATE_PAGE = _Paths.AFFILIATE_PAGE;
   static const ADD_NEW_BANK = _Paths.ADD_NEW_BANK;
+  static const TRENDING = _Paths.TRENDING_PAGE;
 }
 
 abstract class _Paths {
@@ -80,4 +81,5 @@ abstract class _Paths {
   static const FRIENDS = '/friends';
   static const AFFILIATE_PAGE = '/affiliate-page';
   static const ADD_NEW_BANK = '/add-new-bank';
+  static const TRENDING_PAGE = '/trending';
 }

@@ -2,6 +2,7 @@ import 'package:edmonscan/app/components/bell_widget.dart';
 import 'package:edmonscan/app/components/top_menu_item.dart';
 import 'package:edmonscan/app/modules/Home/views/bottom_bar_view.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:edmonscan/utils/crypto_util.dart';

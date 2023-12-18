@@ -5,6 +5,7 @@ import 'package:edmonscan/app/modules/ChatList/controllers/chat_list_controller.
 import 'package:edmonscan/app/modules/TransferPage/controllers/transfer_page_controller.dart';
 import 'package:edmonscan/app/repositories/user_repository.dart';
 import 'package:edmonscan/app/routes/app_pages.dart';
+import 'package:edmonscan/app/services/fcm_helper.dart';
 import 'package:edmonscan/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -95,6 +96,9 @@ class HomeController extends GetxController {
    * Init Home Page
    */
   initData() async {
+    // inti fcm services
+    await FcmHelper.initFcm();
+
     loading.value = true;
     update();
     await authCtrl.updateBalance();

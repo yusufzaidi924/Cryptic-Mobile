@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:edmonscan/app/services/api.dart';
+import 'package:edmonscan/app/services/api_dio.dart';
 import 'package:http/http.dart';
 import 'package:logger/logger.dart';
 
