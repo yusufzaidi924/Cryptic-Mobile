@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_uikit/controllers/rtc_buttons.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:edmonscan/app/components/custom_snackbar.dart';
 import 'package:edmonscan/app/modules/Auth/controllers/auth_controller.dart';
@@ -39,8 +40,15 @@ class CallPageController extends GetxController {
   bool cameraOn = true;
   bool isFrontCamera = true;
   Timer? get timer => _timer;
+  Timer? _waitingTimer;
+  int _waitingTime = 0;
+  // final player = AudioPlayer();
   // Start the timer
   void startTimer() {
+    _timer?.cancel();
+    _waitingTimer?.cancel();
+    // player.release();
+
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _estimateTime.value++;
       update(); // Update the UI
@@ -98,10 +106,24 @@ class CallPageController extends GetxController {
     _dispose();
   }
 
+  _startWaiting() {
+    _waitingTimer?.cancel();
+    _waitingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _waitingTime++;
+      if (_waitingTime > 30) {
+        _waitingTimer?.cancel();
+        // player.release();
+        onCancelCall();
+      }
+    });
+  }
+
   /***********************************
    * On Init Call
    */
   onInitCall() async {
+    await makeConnectCall(callId);
+
     if (callToken != null && channelID != null) {
       final AgoraClient client = AgoraClient(
         agoraConnectionData: AgoraConnectionData(
@@ -110,31 +132,32 @@ class CallPageController extends GetxController {
           tempToken: callToken,
           uid: authCtrl.authUser?.id ?? 0,
         ),
+        agoraEventHandlers: AgoraRtcEventHandlers(
+          onUserJoined: (connection, remoteUid, elapsed) {
+            print("user join: $remoteUid");
+            startTimer();
+          },
+          onUserOffline: (connection, remoteUid, reason) {
+            onCancelCall();
+          },
+          onLeaveChannel: (connection, stats) {
+            print("onLeaveChannel $stats");
+          },
+          onConnectionStateChanged: (connection, state, reason) {
+            print("onConnectionStateChanged $state");
+          },
+        ),
       );
       await client.initialize();
-      startTimer();
-      // _agoraClient.addListener(_agoraClient.subject);
-      // _agoraClient.value = client;
 
-      // _agoraClient.stream.listen((event) {
-      //   print("stream: $event");
-      // });
+      _agoraClient.value = client;
 
-      // _agoraClient.listen((p0) {
-      //   print("listen: $p0");
-      //   if ((p0?.users.length ?? 0) > 1 && _timer == null) {
-
-      //   }
-      //   if (_timer != null && (p0?.users.length ?? 0) < 2) {
-      //     onCancelCall();
-      //   }
-      // });
-      // agoraClient.sessionController.value.agoraRtmChannel.sendMessage2(message);
       // Send Call Request Push Notification
       if (role == 'publisher') {
         // SEND CALL REQUEST NOTIFICATION
         sendCallRequestNotification();
       }
+      _startWaiting();
 
       // Start Call Timer
       // startTimer();
@@ -151,11 +174,11 @@ class CallPageController extends GetxController {
     }
   }
 
-  void _listener(GetStream<AgoraClient?> value) {}
   /***************************************
    * On Cancel Call
    */
   onCancelCall() async {
+    // player.release();
     try {
       if (callId != null) {
         await FlutterCallkitIncoming.endCall(callId!);
@@ -225,7 +248,19 @@ class CallPageController extends GetxController {
                     "content": {
                       "token": callToken,
                       "channelID": channelID,
-                      "user": authCtrl.authUser?.toJson(),
+                      "user": {
+                        // "createdAt": authCtrl.authUser,
+                        "firstName": authCtrl.authUser?.firstName,
+                        "id": "${authCtrl.authUser?.id}",
+                        "imageUrl": "",
+                        "lastName": authCtrl.authUser?.lastName,
+                        // "lastSeen": 1697589516417,
+                        "metadata": {},
+                        "role": "user",
+                        // "updatedAt": 1697589516417
+                      }
+
+                      // "user": authCtrl.authUser?.toJson(),
                     }
                   }
                 }

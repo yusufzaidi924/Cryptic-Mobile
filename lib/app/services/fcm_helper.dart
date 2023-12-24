@@ -49,21 +49,8 @@ class FcmHelper {
 
       // background and foreground handlers
       FirebaseMessaging.onMessage.listen(_fcmForegroundHandler);
-      FirebaseMessaging.onBackgroundMessage((message) {
-        var payload = message.data.cast();
-        String type = payload['type']!;
-        if (type == MessageType.CALL) {
-          CallKitHelper.showCallRequestNotification(
-            id: message.hashCode,
-            title: message.notification?.title ?? 'Title',
-            body: message.notification?.body ?? 'Body',
-            payload: message.data.cast(),
-          );
-        } else {
-          handleNotificationTap(message.data.cast());
-        }
-        return Future.value(null);
-      });
+      FirebaseMessaging.onBackgroundMessage(
+          _firebaseMessagingBackgroundHandler);
       FirebaseMessaging.onMessageOpenedApp.listen((event) {
         handleNotificationTap(event.data.cast());
       });
@@ -82,6 +69,24 @@ class FcmHelper {
       // or stop fcm service from main.dart class
       Logger().e(error);
     }
+  }
+
+  @pragma('vm:entry-point')
+  static Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message) async {
+    var payload = message.data.cast();
+    String type = payload['type']!;
+    if (type == MessageType.CALL) {
+      CallKitHelper.showCallRequestNotification(
+        id: message.hashCode,
+        title: message.notification?.title ?? 'Title',
+        body: message.notification?.body ?? 'Body',
+        payload: message.data.cast(),
+      );
+    } else {
+      handleNotificationTap(message.data.cast());
+    }
+    return Future.value(null);
   }
 
   static Future<void> showNotification(

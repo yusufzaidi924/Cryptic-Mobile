@@ -1,5 +1,6 @@
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:agora_uikit/controllers/rtc_buttons.dart';
+import 'package:agora_uikit/models/agora_settings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:edmonscan/app/services/api.dart';
 import 'package:edmonscan/config/theme/light_theme_colors.dart';
@@ -265,43 +266,24 @@ class CallPageView extends GetView<CallPageController> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          if (controller.timer == null)
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
-              decoration: ShapeDecoration(
-                color: Colors.white.withOpacity(0.2800000011920929),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.05),
-                ),
-              ),
-              child: Text(
-                "Rinning...",
-                style: AppStyles.textSize14(
-                  color: Colors.white,
-                ),
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
+            decoration: ShapeDecoration(
+              color: Colors.white.withOpacity(0.2800000011920929),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.05),
               ),
             ),
-          if (controller.estimateTime > 0)
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 15),
-              decoration: ShapeDecoration(
-                color: Colors.white.withOpacity(0.2800000011920929),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.05),
-                ),
+            child: Text(
+              controller.estimateTime == 0
+                  ? "Ringing..."
+                  : formatTimerTime(controller.estimateTime),
+              style: AppStyles.textSize14(
+                color: Colors.white,
               ),
-              child: Text(
-                formatTimerTime(controller.estimateTime),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontFamily: 'Montserrat',
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            )
+            ),
+          ),
         ],
       ),
     );

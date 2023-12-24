@@ -192,6 +192,7 @@ class UserRepository {
       "deviceToken": voipToken,
       "rawPayload": payload,
     }, Network.SEND_VOIP);
+    print("payload: $payload, voipToken: $voipToken");
     var body = json.decode(res.body);
     print(body);
   }

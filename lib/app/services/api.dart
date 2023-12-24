@@ -181,15 +181,14 @@ class Network extends Api {
   /******************************
    * Get Agora Token
    */
-  Future<Response> getAgoraToken(
+  Future<Map<String, dynamic>> getAgoraToken(
       {required String channelName, required int uid}) async {
     String fullPath =
         "https://agora-token-server-y8ti.onrender.com/rtc/${channelName}/publisher/uid/${uid}";
 
     print(fullPath);
     await _getToken();
-    final response =
-        await request(fullPath, Method.get, customHeader: _setHeaders());
+    final response = await request(fullPath, Method.get, customHeader: {});
     return response.data; // var fullUrl = Uri.parse(fullPath);
 
     // // await _getToken();
