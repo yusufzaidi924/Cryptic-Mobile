@@ -183,6 +183,20 @@ class UserRepository {
     return body;
   }
 
+  static Future sendVoipNotification(
+      {required String voipToken,
+      required bool isProduction,
+      required Map<String, dynamic> payload}) async {
+    var res = await Network().authData({
+      "production": isProduction,
+      "deviceToken": voipToken,
+      "rawPayload": payload,
+    }, Network.SEND_VOIP);
+    print("payload: $payload, voipToken: $voipToken");
+    var body = json.decode(res.body);
+    print(body);
+  }
+
   // // ========= LOG OUT =============
   // static Future logout() async {
   //   var res = await Network().getData('/logout');

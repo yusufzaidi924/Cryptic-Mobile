@@ -670,9 +670,6 @@ PODS:
   - AgoraRtm_iOS (1.5.1)
   - audioplayers_darwin (0.0.1):
     - Flutter
-  - awesome_notifications (0.8.1):
-    - Flutter
-    - IosAwnCore (~> 0.8.0)
   - bdk_flutter (0.29.2):
     - Flutter
   - BoringSSL-GRPC (0.0.24):
@@ -914,7 +911,6 @@ PODS:
     - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - IosAwnCore (0.8.0)
   - iris_method_channel (0.0.1):
     - Flutter
   - leveldb-library (1.22.2)
@@ -968,7 +964,6 @@ DEPENDENCIES:
   - agora_rtm (from `.symlinks/plugins/agora_rtm/ios`)
   - agora_uikit (from `.symlinks/plugins/agora_uikit/ios`)
   - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
-  - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -1020,7 +1015,6 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
-    - IosAwnCore
     - leveldb-library
     - libwebp
     - Mantle
@@ -1040,8 +1034,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/agora_uikit/ios"
   audioplayers_darwin:
     :path: ".symlinks/plugins/audioplayers_darwin/ios"
-  awesome_notifications:
-    :path: ".symlinks/plugins/awesome_notifications/ios"
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
   cloud_firestore:
@@ -1096,7 +1088,6 @@ SPEC CHECKSUMS:
   AgoraRtcEngine_iOS: eb0a7e87dbc9e818b267d413b48f76a57959e6f4
   AgoraRtm_iOS: 595a9fa33a409831e6183396ea8f8bc563918403
   audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
-  awesome_notifications: db394d2e061e4583ba0f738ddea611e3986cc3fb
   bdk_flutter: ceee48a7dbeb52ebf9774fb583f57dd50d9e9823
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: 9c120317e1273a19c6b80fe837f5d2bd3623d698
@@ -1134,7 +1125,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: e8647203b65cee28c5f73d0f473d096653945e72
   image_picker_ios: 4a8aadfbb6dc30ad5141a2ce3832af9214a705b5
   integration_test: 13825b8a9334a850581300559b8839134b124670
-  IosAwnCore: ed1b2b6d84962a758354dbacd9ce525c72ce28a9
   iris_method_channel: 0617c689164d8154c020c50f63ca79f92b8a7b9d
   leveldb-library: f03246171cce0484482ec291f88b6d563699ee06
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
@@ -1154,4 +1144,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 516b13395e125d3e0709551721422ced0187130b
 
-COCOAPODS: 1.13.0
+COCOAPODS: 1.11.3

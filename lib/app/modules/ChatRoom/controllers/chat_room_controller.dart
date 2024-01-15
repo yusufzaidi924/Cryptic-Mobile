@@ -398,16 +398,18 @@ class ChatRoomController extends GetxController {
       String datetime = DateTime.now().millisecondsSinceEpoch.toString();
       String channelName = 'criptacyvideocallroom-${datetime}';
       Logger().d(channelName);
-      String? token = await getTokenFromServer(channelName);
-      if (token != null) {
-        Get.delete<CallPageController>();
-        Get.toNamed(Routes.CALL_PAGE, arguments: {
-          'user': otherUser,
-          'token': token,
-          'channelID': channelName,
-          'role': 'publisher'
-        });
-      }
+
+      Get.delete<CallPageController>();
+      Get.toNamed(Routes.CALL_PAGE, arguments: {
+        'user': otherUser,
+        // 'token': token,
+        'channelID': channelName,
+        'role': 'publisher'
+      });
+      // String? token = await getTokenFromServer(channelName);
+      // if (token != null) {
+
+      // }
       // Navigator.push(
       //   Get.context!,
       //   MaterialPageRoute(builder: (context) => JoinChannelVideo()),
