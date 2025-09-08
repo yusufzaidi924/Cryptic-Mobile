@@ -25,7 +25,7 @@ import 'package:overlay_support/overlay_support.dart';
 
 class FcmHelper {
   static const String FCM_SERVER_KEY =
-      "AAAAsT8Xmng:APA91bGsG6TTGfXElpWgJs7fXooR-wfekXC5zjNgbKRJLzSJULO_aAz8GZ7loWWc3U5LFPe_3-mIWjt_G5t4UpTKJfQRIK1jxbAD_90xvf3TSw2Qn0XWrjmC7ruRLpwC8NAzeOWaZJPS";
+      "";
 
   // prevent making instance
   FcmHelper._();
